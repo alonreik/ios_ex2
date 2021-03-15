@@ -7,15 +7,28 @@
 
 import Foundation
 
-struct SetCard
+// it is a class because i want it to be a reference type
+
+class SetCard: Equatable
 {
+    
+    // Static Methods
+
+    /**
+     
+     */
+    static func ==(lhs: SetCard, rhs: SetCard) -> Bool {
+        return lhs.shapeType == rhs.shapeType && lhs.shapesNum == rhs.shapesNum && lhs.filling == rhs.filling && lhs.color == rhs.color
+    }
+    
     // Properties
+    
     let shapeType: Int
     let shapesNum: Int
     let filling: Int
     let color: Int
     
-    private var matched = false
+    var matched = false
     var isSelected = false
     
     static let legalValues = 1...3
@@ -35,5 +48,7 @@ struct SetCard
     
     
     // Methods
+    
+    
     
 }

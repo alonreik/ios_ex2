@@ -23,7 +23,6 @@ struct SetGame
         let shapesColor: Set<Int> = [c1.color, c2.color, c3.color]
         
         return shapesTypes.count != 2 && shapesNumber.count != 2 && shapesFill.count != 2 && shapesColor.count != 2
-
     }
         
     
@@ -35,10 +34,8 @@ struct SetGame
     
     private var score = 0
     
-    private var selectedCards: [SetCard]? {
+    var selectedCards: [SetCard] {
         get {
-            // The line below is equivalent to:
-            // return openCards.filter({(c1: SetCard) -> Bool in return c1.isSelected})
             return openCards.filter({$0.isSelected})
         }
     }
@@ -51,11 +48,57 @@ struct SetGame
     
     // Methods
     
+    /**
+     
+     */
+    mutating func chooseCard(at index: Int) {
+        
+        assert(openCards.indices.contains(index), "Set.chooseCard(at: \(index)): chosen index is not in the open cards")
+        
+        openCards[index].isSelected = true
+        
+        if selectedCards.count == 3 { // after picking 3 cards
+            if SetGame.isMatch(c1: selectedCards[0], c2: selectedCards[1], c3: selectedCards[2]) {
+                score += 1 // TODO - update score correctly
+                
+                // mark selected cards as matched
+                selectedCards[0].matched = true
+                selectedCards[1].matched = true
+                selectedCards[2].matched = true
+                
+                // update open cards (remove the matched cards)
+                openCards = openCards.filter({!$0.matched})
+                
+                // draw 3 cards
+                if (deck.count > 0) {
+                    drawThreeCards()
+                }
+            }
+            // In any case, after 3 cards were selected, deselect all cards.
+            deselectAll()
+        }
+    }
+    
+    /**
+     
+     */
+    mutating func drawThreeCards() {
+        assert(deck.count > 2, "SetGame.drawThreeCards(): Tried to draw cards from a deck with less than 3 cards. ")
+        
+        openCards.append(contentsOf: deck.prefix(3))
+        deck.removeFirst(3)
+    }
+         
+    
+    
+    // Private Methods
+    
     /*
         Returns an initial shuffled Deck of 81 SetCard unique instances.
      */
-    func getInitialDeck() -> [SetCard] {
-        var resultDeck: [SetCard] = []
+    private func getInitialDeck() -> [SetCard] {
+        
+        var resultDeck = [SetCard]()
         for shape in SetCard.legalValues {
             for numShapes in SetCard.legalValues {
                 for filling in SetCard.legalValues {
@@ -67,11 +110,10 @@ struct SetGame
         }
         return resultDeck.shuffled()
     }
-         
     
-    
-    // Private Methods
-    
+    /**
+     
+     */
     private mutating func startGame() {
         
         // reset score
@@ -80,10 +122,19 @@ struct SetGame
         // initiate an 81 SetCards deck
         deck = getInitialDeck()
         
-        // open first 12 cards from the deck
+        // reset openCards array, and open first 12 cards from the deck
+        openCards = []
         openCards.append(contentsOf: deck.prefix(12))
         deck.removeFirst(12)
-        
+    }
+    
+    /**
+     
+     */
+    private func deselectAll() {
+        for card in openCards {
+            card.isSelected = false
+        }
     }
     
 }
