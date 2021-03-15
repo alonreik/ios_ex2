@@ -48,9 +48,7 @@ struct SetGame
     
     // Methods
     
-    /**
-     
-     */
+    //Marks the card at the given index as "chosen", and updates the array of openCards if a match\set was found with this card.
     mutating func chooseCard(at index: Int) {
         
         assert(openCards.indices.contains(index), "Set.chooseCard(at: \(index)): chosen index is not in the open cards")
@@ -79,9 +77,7 @@ struct SetGame
         }
     }
     
-    /**
-     
-     */
+    // Removes 3 cards from the deck and places them in the array of openCards.
     mutating func drawThreeCards() {
         assert(deck.count > 2, "SetGame.drawThreeCards(): Tried to draw cards from a deck with less than 3 cards. ")
         
@@ -90,12 +86,10 @@ struct SetGame
     }
          
     
-    
     // Private Methods
     
-    /*
-        Returns an initial shuffled Deck of 81 SetCard unique instances.
-     */
+    
+    // Returns an initial shuffled Deck of 81 SetCard unique instances.
     private func getInitialDeck() -> [SetCard] {
         
         var resultDeck = [SetCard]()
@@ -111,9 +105,7 @@ struct SetGame
         return resultDeck.shuffled()
     }
     
-    /**
-     
-     */
+    // Resets the SetGame's instance properties.
     private mutating func startGame() {
         
         // reset score
@@ -128,9 +120,7 @@ struct SetGame
         deck.removeFirst(12)
     }
     
-    /**
-     
-     */
+    // Marks all open cards as not selected.
     private func deselectAll() {
         for card in openCards {
             card.isSelected = false
