@@ -53,8 +53,13 @@ struct SetGame
         
         assert(openCards.indices.contains(index), "Set.chooseCard(at: \(index)): chosen index is not in the open cards")
         
+        if selectedCards.count == 3 { // if the current turn is occuring after 3 cards were already marked as selected
+            deselectAll() // "start over"
+        }
+        
         openCards[index].isSelected = true
         
+        // if the current card is the 3rd card selected
         if selectedCards.count == 3 { // after picking 3 cards
             if SetGame.isMatch(c1: selectedCards[0], c2: selectedCards[1], c3: selectedCards[2]) {
                 score += 1 // TODO - update score correctly
@@ -67,18 +72,13 @@ struct SetGame
                 // update open cards (remove the matched cards)
                 openCards = openCards.filter({!$0.matched})
                 
-                // draw 3 cards
-                if (deck.count > 0) {
-                    drawThreeCards()
-                }
             }
-            // In any case, after 3 cards were selected, deselect all cards.
-            deselectAll()
         }
     }
     
     // Removes 3 cards from the deck and places them in the array of openCards.
     mutating func drawThreeCards() {
+        
         assert(deck.count > 2, "SetGame.drawThreeCards(): Tried to draw cards from a deck with less than 3 cards. ")
         
         openCards.append(contentsOf: deck.prefix(3))

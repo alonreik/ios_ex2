@@ -8,18 +8,17 @@
 import Foundation
 
 // it is a class because i want it to be a reference type
-
 class SetCard: Equatable
 {
     
     // Static Methods
 
-    /**
-     
+    /*
+        Returns true iff both SetCard instances has equal values in every property. 
      */
-    static func ==(lhs: SetCard, rhs: SetCard) -> Bool {
-        return lhs.shapeType == rhs.shapeType && lhs.shapesNum == rhs.shapesNum && lhs.filling == rhs.filling && lhs.color == rhs.color
-    }
+//    static func ==(lhs: SetCard, rhs: SetCard) -> Bool {
+//        return lhs.shapeType == rhs.shapeType && lhs.shapesNum == rhs.shapesNum && lhs.filling == rhs.filling && lhs.color == rhs.color
+//    }
     
     // Properties
     
@@ -34,7 +33,6 @@ class SetCard: Equatable
     static let legalValues = 1...3
     
     // Initiators
-    
     init (shapeType: Int, shapesNum: Int, filling: Int, color: Int) {
         
         // assert that all given values are valid.
