@@ -10,14 +10,21 @@ import Foundation
 struct SetCard
 {
     // Properties
-    let shapeType: Int
-    let shapesNum: Int
-    let shapeFilling: Int
+    private let shapeType: Int
+    private let shapesNum: Int
+    private let shapeFilling: Int
     
-    var matched = false
+    private var matched = false
+    
+    var isSelected = false
     
     // Initiators
     
+    init (shapeType: Int, shapesNum: Int, shapeFilling: Int) {
+        self.shapeType = shapeType
+        self.shapesNum = shapesNum
+        self.shapeFilling = shapeFilling
+    }
     
     
     // Methods

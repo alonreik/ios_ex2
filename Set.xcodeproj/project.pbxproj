@@ -14,6 +14,7 @@
 		9434416725FF41C20015C4D5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9434416625FF41C20015C4D5 /* Assets.xcassets */; };
 		9434416A25FF41C20015C4D5 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9434416825FF41C20015C4D5 /* LaunchScreen.storyboard */; };
 		9434417625FF4F230015C4D5 /* SetCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9434417525FF4F230015C4D5 /* SetCard.swift */; };
+		9434417925FF55B50015C4D5 /* Set.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9434417825FF55B50015C4D5 /* Set.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +27,7 @@
 		9434416925FF41C20015C4D5 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		9434416B25FF41C20015C4D5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9434417525FF4F230015C4D5 /* SetCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetCard.swift; sourceTree = "<group>"; };
+		9434417825FF55B50015C4D5 /* Set.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Set.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -61,6 +63,7 @@
 				9434417325FF41F50015C4D5 /* Supporting Files */,
 				9434416125FF41C10015C4D5 /* ViewController.swift */,
 				9434417525FF4F230015C4D5 /* SetCard.swift */,
+				9434417825FF55B50015C4D5 /* Set.swift */,
 				9434416325FF41C10015C4D5 /* Main.storyboard */,
 				9434416B25FF41C20015C4D5 /* Info.plist */,
 			);
@@ -148,6 +151,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9434417925FF55B50015C4D5 /* Set.swift in Sources */,
 				9434416225FF41C10015C4D5 /* ViewController.swift in Sources */,
 				9434415E25FF41C10015C4D5 /* AppDelegate.swift in Sources */,
 				9434417625FF4F230015C4D5 /* SetCard.swift in Sources */,
