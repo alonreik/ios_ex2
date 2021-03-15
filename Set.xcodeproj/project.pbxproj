@@ -56,15 +56,23 @@
 		9434415C25FF41C10015C4D5 /* Set */ = {
 			isa = PBXGroup;
 			children = (
-				9434415D25FF41C10015C4D5 /* AppDelegate.swift */,
-				9434415F25FF41C10015C4D5 /* SceneDelegate.swift */,
+				9434417325FF41F50015C4D5 /* Supporting Files */,
 				9434416125FF41C10015C4D5 /* ViewController.swift */,
 				9434416325FF41C10015C4D5 /* Main.storyboard */,
-				9434416625FF41C20015C4D5 /* Assets.xcassets */,
-				9434416825FF41C20015C4D5 /* LaunchScreen.storyboard */,
 				9434416B25FF41C20015C4D5 /* Info.plist */,
 			);
 			path = Set;
+			sourceTree = "<group>";
+		};
+		9434417325FF41F50015C4D5 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				9434415D25FF41C10015C4D5 /* AppDelegate.swift */,
+				9434415F25FF41C10015C4D5 /* SceneDelegate.swift */,
+				9434416625FF41C20015C4D5 /* Assets.xcassets */,
+				9434416825FF41C20015C4D5 /* LaunchScreen.storyboard */,
+			);
+			path = "Supporting Files";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -288,6 +296,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				INFOPLIST_FILE = Set/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -306,6 +315,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				INFOPLIST_FILE = Set/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
