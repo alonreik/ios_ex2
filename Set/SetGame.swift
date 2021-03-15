@@ -13,7 +13,6 @@ struct SetGame
         // todo - method of is a match? (gets 3 cards)
     
     
-    
     // Properties
     
     private var deck: [SetCard] = [] // todo - should be optional?
@@ -28,14 +27,9 @@ struct SetGame
         }
     }
     
-    
-    
     // Initiators
     init () {
         self.deck = getInitialDeck()
-        
-        
-        
     }
     
     

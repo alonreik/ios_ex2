@@ -21,6 +21,10 @@ struct SetCard
     // Initiators
     
     init (shapeType: Int, shapesNum: Int, shapeFilling: Int) {
+        let legalValues = 1...3
+        
+        assert(legalValues.contains(shapeType) && legalValues.contains(shapesNum) && legalValues.contains(shapeFilling), "SetCard.init(\(shapeType), \(shapesNum), \(shapeFilling)): One of the provided values is not in the range 1..3")
+        
         self.shapeType = shapeType
         self.shapesNum = shapesNum
         self.shapeFilling = shapeFilling
