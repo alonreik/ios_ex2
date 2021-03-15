@@ -53,7 +53,8 @@ struct SetGame
         
         assert(openCards.indices.contains(index), "Set.chooseCard(at: \(index)): chosen index is not in the open cards")
         
-        if selectedCards.count == 3 { // if the current turn is occuring after 3 cards were already marked as selected
+        // if 3 cards are already marked, and a new cards was picked:
+        if selectedCards.count == 3 && !selectedCards.contains(openCards[index]){
             deselectAll() // "start over"
         }
         
@@ -71,7 +72,6 @@ struct SetGame
                 
                 // update open cards (remove the matched cards)
                 openCards = openCards.filter({!$0.matched})
-                
             }
         }
     }

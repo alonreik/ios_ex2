@@ -16,9 +16,9 @@ class SetCard: Equatable
     /*
         Returns true iff both SetCard instances has equal values in every property. 
      */
-//    static func ==(lhs: SetCard, rhs: SetCard) -> Bool {
-//        return lhs.shapeType == rhs.shapeType && lhs.shapesNum == rhs.shapesNum && lhs.filling == rhs.filling && lhs.color == rhs.color
-//    }
+    static func ==(lhs: SetCard, rhs: SetCard) -> Bool {
+        return lhs.shapeType == rhs.shapeType && lhs.shapesNum == rhs.shapesNum && lhs.filling == rhs.filling && lhs.color == rhs.color
+    }
     
     // Properties
     
