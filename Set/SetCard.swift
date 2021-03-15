@@ -10,24 +10,27 @@ import Foundation
 struct SetCard
 {
     // Properties
-    private let shapeType: Int
-    private let shapesNum: Int
-    private let shapeFilling: Int
+    let shapeType: Int
+    let shapesNum: Int
+    let filling: Int
+    let color: Int
     
     private var matched = false
-    
     var isSelected = false
+    
+    static let legalValues = 1...3
     
     // Initiators
     
-    init (shapeType: Int, shapesNum: Int, shapeFilling: Int) {
-        let legalValues = 1...3
+    init (shapeType: Int, shapesNum: Int, filling: Int, color: Int) {
         
-        assert(legalValues.contains(shapeType) && legalValues.contains(shapesNum) && legalValues.contains(shapeFilling), "SetCard.init(\(shapeType), \(shapesNum), \(shapeFilling)): One of the provided values is not in the range 1..3")
+        // assert that all given values are valid.
+        assert(SetCard.legalValues.contains(shapeType) && SetCard.legalValues.contains(shapesNum) && SetCard.legalValues.contains(filling) && SetCard.legalValues.contains(color), "SetCard.init(\(shapeType), \(shapesNum), \(filling)): One of the provided values is not in the range 1..3")
         
         self.shapeType = shapeType
         self.shapesNum = shapesNum
-        self.shapeFilling = shapeFilling
+        self.filling = filling
+        self.color = color
     }
     
     
