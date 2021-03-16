@@ -38,12 +38,14 @@ class ViewController: UIViewController {
     }
     
     private func setViewForGameBeginning() {
+        //
         for openCard in openCardsButtons {
-            if let title = openCard.currentTitle {
-                print(title)
-            } else {
-                print("got to an empty card")
-            }
+            openCard.setAttributedTitle(nil, for: UIControl.State.normal)
+            openCard.setTitle(nil, for: UIControl.State.normal)
+        }
+    
+        for i in 12..<openCardsButtons.count {
+            openCardsButtons[i].backgroundColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 0)
         }
     }
 }
