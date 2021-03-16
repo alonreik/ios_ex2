@@ -34,11 +34,7 @@ struct SetGame
     
     private var score = 0
     
-    var selectedCards: [SetCard] {
-        get {
-            return openCards.filter({$0.isSelected})
-        }
-    }
+    var selectedCards: [SetCard] = []
     
     // Initiators
     init () {
@@ -53,13 +49,16 @@ struct SetGame
         
         assert(openCards.indices.contains(index), "Set.chooseCard(at: \(index)): chosen index is not in the open cards")
         
-        // if 3 cards are already marked, and a new cards was picked:
         if selectedCards.count == 3 && !selectedCards.contains(openCards[index]){
-            deselectAll() // "start over"
+            // if 3 cards are already selected, and a new cards was picked:
+            selectedCards.removeAll() // reset selected cards monitoring
         }
         
-        openCards[index].isSelected = true
-        
+        if !selectedCards.contains(openCards[index]) {
+            // if a new card was picked:
+            selectedCards.append(openCards[index])
+        }
+
         // if the current card is the 3rd card selected
         if selectedCards.count == 3 { // after picking 3 cards
             if SetGame.areMatching(c1: selectedCards[0], c2: selectedCards[1], c3: selectedCards[2]) {
@@ -118,13 +117,6 @@ struct SetGame
         openCards = []
         openCards.append(contentsOf: deck.prefix(12))
         deck.removeFirst(12)
-    }
-    
-    // Marks all open cards as not selected.
-    private func deselectAll() {
-        for card in openCards {
-            card.isSelected = false
-        }
     }
     
 }

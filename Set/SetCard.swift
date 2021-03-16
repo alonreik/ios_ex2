@@ -28,7 +28,6 @@ class SetCard: Equatable
     let color: Int
     
     var matched = false
-    var isSelected = false
     
     static let legalValues = 1...3
     
