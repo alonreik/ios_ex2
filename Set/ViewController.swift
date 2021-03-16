@@ -17,10 +17,10 @@ class ViewController: UIViewController {
     @IBOutlet var cardButtons: [UIButton]!
     @IBOutlet weak var scoreLabel: UILabel!
 
-    // each index of this array represents a cardButton, and each value is the SetCard instance (or nil) linked to it
+    // each index of this array represents a cardButton, and each value is a reference to a SetCard instance (or nil) linked to it
     var gameCardsOnView = [SetCard?](repeating: nil, count: 24)
     
-    
+
     // Methods
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -34,7 +34,7 @@ class ViewController: UIViewController {
     @IBAction func newGamePressed(_ sender: UIButton) {
     }
     
-    @IBAction func touchCard(_ sender: UIButton) {
+    @IBAction func touchCard(_ sender: UIButton) { // todo = start here on wednesday.
         if let index = cardButtons.firstIndex(of: sender){
             game.chooseCard(at: index)
             updateViewFromModel()
@@ -47,12 +47,23 @@ class ViewController: UIViewController {
     
     private func updateViewFromModel() {
         
+        // Make sure that the view only holds the game's open cards.
+        for index in gameCardsOnView.indices {
+            if let card = gameCardsOnView[index] {
+                if !game.openCards.contains(card) {
+                    // if this card is no longer in the game then we don't need a reference to it
+                    gameCardsOnView[index] = nil
+                }
+            }// else: gameCardsOnView[index] = nil
+        }
+        
         // make sure the view recognize all open cards from the model.
         for index in game.openCards.indices {
             if !gameCardsOnView.contains(game.openCards[index]) {
                 addGameCardToView(gameCard: game.openCards[index])
             }
         }
+        
         // Go over all cardButtons and update the info that they present
         for index in gameCardsOnView.indices {
             if let card = gameCardsOnView[index] {
@@ -71,13 +82,9 @@ class ViewController: UIViewController {
         
     // TODO
     private func attriubtedStringForCard(card: SetCard) -> NSAttributedString {
-                 
-        let alpha: CGFloat
-        if card.filling == 3 {
-            alpha = 0.15
-        } else {
-            alpha = 1.0
-        }
+        
+        // alpha is 0.15 for striped shapes, 1.0 otherwise
+        let alpha: CGFloat = card.filling == 3 ? 0.15: 1.0
         
         if let color = colorDict[card.color] {
             let attributes: [NSAttributedString.Key: Any] = [
@@ -93,7 +100,7 @@ class ViewController: UIViewController {
                 return NSAttributedString(string: string, attributes: attributes)
             }
         }
-        // TODO - comment that this is the other side of optional
+        // todo - comment about this.
         return NSAttributedString(string: "")
     }
     

@@ -26,9 +26,7 @@ class SetCard: Equatable
     let shapesNum: Int
     let filling: Int
     let color: Int
-    
-    var matched = false
-    
+        
     static let legalValues = 1...3
     
     // Initiators

@@ -36,6 +36,8 @@ struct SetGame
     
     var selectedCards: [SetCard] = []
     
+    var matches: [[SetCard]] = [] // every item in this array is of the form [SetCard, SetCard, SetCard]
+    
     // Initiators
     init () {
         startGame()
@@ -43,33 +45,28 @@ struct SetGame
     
     // Methods
     
-    //Marks the card at the given index as "chosen", and updates the array of openCards if a match\set was found with this card.
+    /*
+    
+    */
     mutating func chooseCard(at index: Int) {
-        
         assert(openCards.indices.contains(index), "Set.chooseCard(at: \(index)): chosen index is not in the open cards")
         
-        if selectedCards.count == 3 && !selectedCards.contains(openCards[index]){
-            // if 3 cards are already selected, and a new cards was picked:
-            selectedCards.removeAll() // reset selected cards monitoring
-        }
+        let currentCard = openCards[index]
+        if selectedCards.contains(currentCard){// if a selected card was picked again, ignore.
+            return}
         
-        if !selectedCards.contains(openCards[index]) {
-            // if a new card was picked:
-            selectedCards.append(openCards[index])
+        if selectedCards.count == 3 { // if there were already 3 selected cards
+            if matches.contains(selectedCards) { // if the 3 selected cards are a match
+                openCards = openCards.filter({!selectedCards.contains($0)}) // remove selected cards from open cards
+            }
+            selectedCards.removeAll() // in any case, reset selected cards
         }
-
-        // if the current card is the 3rd card selected
-        if selectedCards.count == 3 { // after picking 3 cards
+        selectedCards.append(currentCard)
+        
+        if selectedCards.count == 3 { // if the current card is the third selected card
             if SetGame.areMatching(c1: selectedCards[0], c2: selectedCards[1], c3: selectedCards[2]) {
                 score += 1 // TODO - update score correctly
-                
-                // mark selected cards as matched
-                selectedCards[0].matched = true
-                selectedCards[1].matched = true
-                selectedCards[2].matched = true
-                
-                // update open cards (remove the matched cards)
-                openCards = openCards.filter({!$0.matched})
+                matches.append(selectedCards)
             }
         }
     }
@@ -117,6 +114,4 @@ struct SetGame
         openCards.append(contentsOf: deck.prefix(12))
         deck.removeFirst(12)
     }
-    
 }
-
