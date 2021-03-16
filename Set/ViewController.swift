@@ -31,5 +31,30 @@ class ViewController: UIViewController {
     @IBAction func newGamePressed(_ sender: UIButton) {
     }
     
+    
+    
+    // Private Methods
+    
+    private func updateViewFromModel() {
+        // TODO
+    }
+    
 }
 
+enum SetShapes {
+    case circle
+    case triangle
+    case square
+}
+
+enum fillingOptions {
+    case full
+    case striped
+    case empty
+}
+
+enum color {
+    case purple
+    case green
+    case pink
+}

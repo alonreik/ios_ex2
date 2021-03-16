@@ -32,7 +32,6 @@
                                                             <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="249" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Hs0-Sm-bBG">
                                                                 <rect key="frame" x="0.0" y="0.0" width="47" height="100"/>
                                                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                                <state key="normal" title="Button"/>
                                                             </button>
                                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="evg-Mj-agF">
                                                                 <rect key="frame" x="76" y="0.0" width="46" height="100"/>
@@ -213,9 +212,18 @@
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacingType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="iCk-FR-V1g">
                                 <rect key="frame" x="122" y="753" width="170" height="92"/>
                                 <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="751" text="Score: 0" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AVB-K3-Hof">
+                                        <rect key="frame" x="0.0" y="0.0" width="170" height="26"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
                                     <button opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="249" verticalCompressionResistancePriority="749" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2Tg-DG-pUV">
-                                        <rect key="frame" x="0.0" y="0.0" width="170" height="54"/>
+                                        <rect key="frame" x="0.0" y="34" width="170" height="25"/>
                                         <color key="backgroundColor" systemColor="systemYellowColor"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="25" id="ZNg-sb-QEj"/>
+                                        </constraints>
                                         <fontDescription key="fontDescription" type="system" pointSize="26"/>
                                         <state key="normal" title="Deal"/>
                                         <connections>
@@ -223,8 +231,11 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="PgK-J9-bb9">
-                                        <rect key="frame" x="0.0" y="62" width="170" height="30"/>
+                                        <rect key="frame" x="0.0" y="67" width="170" height="25"/>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="25" id="CmV-Oc-NAI"/>
+                                        </constraints>
                                         <state key="normal" title="New Game"/>
                                         <connections>
                                             <action selector="newGamePressed:" destination="BYZ-38-t0r" eventType="touchUpInside" id="wAJ-GM-dGD"/>
@@ -244,7 +255,7 @@
                             <constraint firstItem="fOB-OL-HXc" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="71" id="PS8-Et-ngK"/>
                             <constraint firstItem="fOB-OL-HXc" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="27" id="XkL-fp-Lgm"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="fOB-OL-HXc" secondAttribute="trailing" constant="71" id="YFl-zB-nID"/>
-                            <constraint firstItem="iCk-FR-V1g" firstAttribute="top" relation="greaterThanOrEqual" secondItem="fOB-OL-HXc" secondAttribute="bottom" constant="20" id="gVx-Iv-qTW"/>
+                            <constraint firstItem="iCk-FR-V1g" firstAttribute="top" relation="greaterThanOrEqual" secondItem="fOB-OL-HXc" secondAttribute="bottom" constant="28" id="gVx-Iv-qTW"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="iCk-FR-V1g" secondAttribute="bottom" constant="17" id="tzG-ZW-CLN"/>
                         </constraints>
                     </view>
