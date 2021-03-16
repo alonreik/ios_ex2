@@ -15,12 +15,10 @@ class ViewController: UIViewController {
     @IBOutlet var openCardsButtons: [UIButton]!
     
     
-    
-    
-    
     // Methods
     override func viewDidLoad() {
         super.viewDidLoad()
+        setViewForGameBeginning()
         // Do any additional setup after loading the view.
     }
     
@@ -39,9 +37,19 @@ class ViewController: UIViewController {
         // TODO
     }
     
+    private func setViewForGameBeginning() {
+        for openCard in openCardsButtons {
+            if let title = openCard.currentTitle {
+                print(title)
+            } else {
+                print("got to an empty card")
+            }
+        }
+    }
 }
 
 enum SetShapes {
+    // ▲, ●, ■
     case circle
     case triangle
     case square
