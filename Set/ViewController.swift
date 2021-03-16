@@ -12,6 +12,8 @@ class ViewController: UIViewController {
     // Properties
     let game = SetGame()
     
+    @IBOutlet var openCardsButtons: [UIButton]!
+    
     
     
     
@@ -22,7 +24,12 @@ class ViewController: UIViewController {
         // Do any additional setup after loading the view.
     }
     
+    @IBAction func dealButtonPressed(_ sender: UIButton) {
+        // TODO
+    }
     
-
+    @IBAction func newGamePressed(_ sender: UIButton) {
+    }
+    
 }
 

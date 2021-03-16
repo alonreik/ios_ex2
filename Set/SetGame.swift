@@ -15,7 +15,7 @@ struct SetGame
         Returns true iff (if and only if) the 3 provided setCards satisfy all conditions for a "set"
         (the method uses the funcionality of mathematical-sets to check if the cards are exactly the same or entirely different in each parameter).
      */
-    static func isMatch(c1: SetCard, c2: SetCard, c3: SetCard) -> Bool {
+    static func areMatching(c1: SetCard, c2: SetCard, c3: SetCard) -> Bool {
 
         let shapesTypes: Set<Int> = [c1.shapeType, c2.shapeType, c3.shapeType]
         let shapesNumber: Set<Int> = [c1.shapesNum, c2.shapesNum, c3.shapesNum]
@@ -62,7 +62,7 @@ struct SetGame
         
         // if the current card is the 3rd card selected
         if selectedCards.count == 3 { // after picking 3 cards
-            if SetGame.isMatch(c1: selectedCards[0], c2: selectedCards[1], c3: selectedCards[2]) {
+            if SetGame.areMatching(c1: selectedCards[0], c2: selectedCards[1], c3: selectedCards[2]) {
                 score += 1 // TODO - update score correctly
                 
                 // mark selected cards as matched
