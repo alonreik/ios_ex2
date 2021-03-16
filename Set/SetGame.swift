@@ -28,11 +28,11 @@ struct SetGame
     
     // Properties
     
-    private var deck: [SetCard] = [] // todo - should be optional?
+    var deck: [SetCard] = [] // todo - should be optional?
     
-    private var openCards: [SetCard] = [] // todo should be optional?
+    var openCards: [SetCard] = [] // todo should be optional?
     
-    private var score = 0
+    var score = 0
     
     var selectedCards: [SetCard] = []
     
