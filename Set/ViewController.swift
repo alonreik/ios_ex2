@@ -10,15 +10,14 @@ import UIKit
 class ViewController: UIViewController {
     
     // Properties
-    
+
     let shapesDict = [1: "▲", 2: "●", 3: "■"]
     let colorDict = [1: #colorLiteral(red: 0.9098039269, green: 0.4784313738, blue: 0.6431372762, alpha: 1), 2: #colorLiteral(red: 0.3647058904, green: 0.06666667014, blue: 0.9686274529, alpha: 1), 3: #colorLiteral(red: 0.4666666687, green: 0.7647058964, blue: 0.2666666806, alpha: 1)]
-    let game = SetGame()
-    
-    @IBOutlet var cardsButtons: [UIButton]!
-    
+    var game = SetGame()
+    @IBOutlet var cardButtons: [UIButton]!
     @IBOutlet weak var scoreLabel: UILabel!
-    
+
+    // each index of this array represents a cardButton, and each value is the SetCard instance (or nil) linked to it
     var gameCardsOnView = [SetCard?](repeating: nil, count: 24)
     
     
@@ -35,10 +34,14 @@ class ViewController: UIViewController {
     @IBAction func newGamePressed(_ sender: UIButton) {
     }
     
-    
     @IBAction func touchCard(_ sender: UIButton) {
+        if let index = cardButtons.firstIndex(of: sender){
+            game.chooseCard(at: index)
+            updateViewFromModel()
+        } else {
+            
+        }
     }
-    
     
     // Private Methods
     
@@ -50,19 +53,20 @@ class ViewController: UIViewController {
                 addGameCardToView(gameCard: game.openCards[index])
             }
         }
-        
         // Go over all cardButtons and update the info that they present
         for index in gameCardsOnView.indices {
             if let card = gameCardsOnView[index] {
                 // if the current element in gameCardsOnView isn't nil
-                cardsButtons[index].backgroundColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
-                cardsButtons[index].setAttributedTitle(attriubtedStringForCard(card: card), for: UIControl.State.normal)
+                cardButtons[index].backgroundColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
+                cardButtons[index].setAttributedTitle(attriubtedStringForCard(card: card), for: UIControl.State.normal)
             } else {
-                cardsButtons[index].setAttributedTitle(nil, for: UIControl.State.normal)
-                cardsButtons[index].setTitle(nil, for: UIControl.State.normal)
-                cardsButtons[index].backgroundColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 0)
+                cardButtons[index].setAttributedTitle(nil, for: UIControl.State.normal)
+                cardButtons[index].setTitle(nil, for: UIControl.State.normal)
+                cardButtons[index].backgroundColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 0)
             }
         }
+        // Mark selected cards
+        // todo 
     }
         
     // TODO
