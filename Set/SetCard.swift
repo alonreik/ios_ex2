@@ -11,7 +11,9 @@ import Foundation
 class SetCard: Equatable
 {
     
-    // Static Methods
+    /* ------------
+     Static Methods
+     ------------- */
 
     /*
         Returns true iff both SetCard instances has equal values in every property. 
@@ -20,7 +22,9 @@ class SetCard: Equatable
         return lhs.shapeType == rhs.shapeType && lhs.shapesNum == rhs.shapesNum && lhs.filling == rhs.filling && lhs.color == rhs.color
     }
     
-    // Properties
+    /* -------
+     Properties
+     -------- */
     
     let shapeType: Int
     let shapesNum: Int
@@ -30,7 +34,9 @@ class SetCard: Equatable
     // TODO 
     static let legalValues = 1...3
     
-    // Initiators
+    /* -------
+     Initiators
+     -------- */
     init (shapeType: Int, shapesNum: Int, filling: Int, color: Int) {
         
         // assert that all given values are valid.
@@ -41,10 +47,4 @@ class SetCard: Equatable
         self.filling = filling
         self.color = color
     }
-    
-    
-    // Methods
-    
-    
-    
 }

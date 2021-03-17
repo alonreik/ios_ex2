@@ -9,36 +9,44 @@ import UIKit
 
 class ViewController: UIViewController {
     
-    /* Properties */
+    /* -------
+     Properties
+     -------- */
 
+    @IBOutlet weak var scoreLabel: UILabel!
+
+    @IBOutlet var cardButtons: [UIButton]!
+
+    /* An array mapping between cardButtons (buttons in the UI; every index represents a button) to SetCard objects.
+     (A nil value means that the button should be "empty") */
+    lazy var cardButtonsMapper = [SetCard?](repeating: nil, count: cardButtons.count)
+    // (I used lazy only so I could use the count of cardButtons)
+    
     var boardIsFull: Bool {
         get {
-            return cardButtonsMapper.filter({$0 != nil}).count == cardButtons.count // closure
+            // is cardButtonsMapper "nil-free"?
+            return cardButtonsMapper.filter({$0 != nil}).count == cardButtons.count
         }
     }
-    
     
     let shapesDict = [1: "▲", 2: "●", 3: "■"]
     let colorDict = [1: #colorLiteral(red: 0.9098039269, green: 0.4784313738, blue: 0.6431372762, alpha: 1), 2: #colorLiteral(red: 0.3647058904, green: 0.06666667014, blue: 0.9686274529, alpha: 1), 3: #colorLiteral(red: 0.4666666687, green: 0.7647058964, blue: 0.2666666806, alpha: 1)]
     // filling dict: [1: full, 2: outline, 3: striped]
     
     var game: SetGame = SetGame()
+    
+    // A "helper variable" used to check if a new match is presented on the view
     var matchesCounter = 0
-
+    
     var aMatchIsMarked: Bool {
         get {
             return matchesCounter < game.matches.count
         }
     }
     
-    @IBOutlet var cardButtons: [UIButton]!
-    @IBOutlet weak var scoreLabel: UILabel!
-
-    // each index of this array represents a cardButton, and each value is a reference to a SetCard instance (or nil) linked to it
-    lazy var cardButtonsMapper = [SetCard?](repeating: nil, count: cardButtons.count)
-    
-
-    /* Methods */
+    /* -------
+     Methods
+     -------- */
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -83,7 +91,10 @@ class ViewController: UIViewController {
         
     }
     
-    /* Private Methods */
+    
+    /* -------
+     Private Methods
+     -------- */
     
     private func addNewOpenCardsToMapper() {
         for index in game.openCards.indices {

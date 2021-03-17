@@ -9,8 +9,11 @@ import Foundation
 
 struct SetGame
 {
-    /* Static Methods: */
     
+    /* ------------
+     Static Methods
+     -------------- */
+        
     /*
         Returns true iff (if and only if) the 3 provided setCards satisfy all conditions for a "set"
         (the method uses the funcionality of mathematical-sets to check if the cards are exactly the same or entirely different in each parameter).
@@ -24,8 +27,9 @@ struct SetGame
         return shapesTypes.count != 2 && shapesNumber.count != 2 && shapesFill.count != 2 && shapesColor.count != 2
     }
         
-
-    /* Properties */
+    /* -------
+     Properties
+     -------- */
     
     var score = 0
     var scoreUpdate: Int {
@@ -42,8 +46,9 @@ struct SetGame
     var matches: [[SetCard]] = []
     
     
-    /* Methods */
-    
+    /* -------
+     Methods
+     -------- */
     
     /*
         If the provided card is already selected: it is diselected or ignored.
@@ -106,8 +111,9 @@ struct SetGame
     }
          
     
-    /* Private Methods */
-    
+    /* ------------
+     Private Methods
+     ------------- */
     
     // Returns an initial shuffled Deck of 81 unique SetCard instances.
     private func getInitialDeck() -> [SetCard] {
