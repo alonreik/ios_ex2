@@ -57,7 +57,7 @@ class ViewController: UIViewController {
         if let index = cardButtons.firstIndex(of: sender){
             if let openCard = cardButtonsMapper[index] {
                 game.chooseCard(chosenCard: openCard)
-                updateViewAfterTurn()
+//                updateViewAfterTurn()
 //                updateViewFromModel()
             } else {
                 print("The mapping between game.openCards and the UI cardButton is wrong.")
@@ -67,9 +67,9 @@ class ViewController: UIViewController {
         }
     }
     
-    // Private Methods
+    /* Private Methods */
     
-    private func updateMapperWithOpenCards() {
+    private func addNewOpenCardsToMapper() {
         for index in game.openCards.indices {
             if !cardButtonsMapper.contains(game.openCards[index]) {
                 addGameCardToView(gameCard: game.openCards[index])
@@ -77,33 +77,8 @@ class ViewController: UIViewController {
         }
     }
     
-    
-    // update mapper from open cards
-    private func initialViewSetUp() {
-        
-        updateMapperWithOpenCards()
-        updateViewFromModel()
-        // make sure the view recognize all open cards from the model.
-//        for index in game.openCards.indices {
-//            if !cardButtonsMapper.contains(game.openCards[index]) {
-//                addGameCardToView(gameCard: game.openCards[index])
-//            }
-//        }
-//        // Go over all cardButtons and update the info that they present
-//        for index in cardButtonsMapper.indices {
-//            if let card = cardButtonsMapper[index] {
-//                // if the current element in gameCardsOnView isn't nil
-//                cardButtons[index].backgroundColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
-//                cardButtons[index].setAttributedTitle(attriubtedStringForCard(card: card), for: UIControl.State.normal)
-//            } else {
-//                cardButtons[index].setAttributedTitle(nil, for: UIControl.State.normal)
-//                cardButtons[index].setTitle(nil, for: UIControl.State.normal)
-//                cardButtons[index].backgroundColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 0)
-//            }
-//        }
-    }
-    
-    private func updateViewAfterTurn() {
+    /* Makes sure that mapper only hold references to open cards in the game (model)  */
+    private func removeMatchedCardsFromMapper() {
         // if SetCards mapped by cardButtonsMapper are no longer in the game(model) - mark their spot as free (nil)
         for index in cardButtonsMapper.indices {
             if let card = cardButtonsMapper[index] {
@@ -113,14 +88,13 @@ class ViewController: UIViewController {
                 }
             }// else: gameCardsOnView[index] was already nil
         }
-        
-        // make sure the view recognize all open cards from the model.
-        for index in game.openCards.indices {
-            if !cardButtonsMapper.contains(game.openCards[index]) {
-                addGameCardToView(gameCard: game.openCards[index])
-            }
-        }
     }
+    
+    private func initialViewSetUp() {
+        addNewOpenCardsToMapper()
+        updateViewFromModel()
+    }
+
 
     private func updateViewAfterDeal() {
     
