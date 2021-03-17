@@ -50,13 +50,9 @@ class ViewController: UIViewController {
         if !boardIsFull {
             game.drawThreeCards()
             if !aMatchIsMarked {
-                removeMatchedCardsFromMapper()
-                
                 initialViewSetUp()
-                
             } else {
-                // todo - deal later
-                print("i am here")
+                removeMatchedCardsFromMapper()
             }
         }
     }
@@ -69,7 +65,7 @@ class ViewController: UIViewController {
             if let chosenCard = cardButtonsMapper[index] {
                 if aMatchIsMarked {
                     matchesCounter += 1
-                
+                    
                 }
                 game.chooseCard(chosenCard: chosenCard)
                 updateViewFromModel()
@@ -91,6 +87,15 @@ class ViewController: UIViewController {
         }
     }
     
+    private func findOpenCardNotInMapper() -> SetCard? {
+        for index in game.openCards.indices {
+            if !cardButtonsMapper.contains(game.openCards[index]) {
+                return game.openCards[index]
+            }
+        }
+        return nil
+    }
+    
     /* Makes sure that mapper only hold references to open cards in the game (model)  */
     private func removeMatchedCardsFromMapper() {
         // if SetCards mapped by cardButtonsMapper are no longer in the game(model) - mark their spot as free (nil)
@@ -98,8 +103,7 @@ class ViewController: UIViewController {
             if let card = cardButtonsMapper[index] {
                 if !game.openCards.contains(card) {
                     // if this card is no longer in the game then we don't need a reference to it
-                    
-                    cardButtonsMapper[index] = nil
+                    cardButtonsMapper[index] = findOpenCardNotInMapper()
                 }
             }// else: gameCardsOnView[index] was already nil
         }
@@ -174,14 +178,4 @@ class ViewController: UIViewController {
             }
         }
     }
-    
-    
-    private func addGameCardToSpecificButton(gameCard: SetCard, buttonIndex: Int) {
-        
-    }
-}
-
-enum SetGameState {
-    case aMatchIsMarked
-    case noMatchIsMarked
 }
