@@ -72,16 +72,24 @@ struct SetGame
             }
         }
         else if selectedCards.count == 4 {
-            // removes the matched cards (first 3 selected cards) from the openCards array.
-            openCards.removeAll(where: {value in return selectedCards[0..<3].contains(value)}) // closure
+            if SetGame.areCardsMatching(c1: selectedCards[0], c2: selectedCards[1], c3: selectedCards[2]) {
+                openCards.removeAll(where: {value in return selectedCards[0..<3].contains(value)}) // closure
+                drawThreeCards()
+            }
             selectedCards.removeFirst(3)
-            drawThreeCards()
 
-        } // else selected cards contains 0/1/2 cards
+        } // else selected cards contains 0/1/2 cards, nothing to do there
     }
     
     // Removes 3 cards from the deck and places them in the array of openCards.
     mutating func drawThreeCards() {
+        if let lastMatch = matches.last {
+            if lastMatch == selectedCards {
+                openCards.removeAll(where: {value in return selectedCards[0..<3].contains(value)}) // closure
+                selectedCards.removeAll()
+            }
+        }
+        
         if deck.count > 2 {
             openCards.append(contentsOf: deck.prefix(3))
             deck.removeFirst(3)
@@ -124,7 +132,7 @@ struct SetGame
     }
 }
 
-// One of the exercise tasks was to implement an extension:
+// One of the exercise tasks was to implement and use an extension:
 extension Array where Element: Equatable {
     // Remove first collection element that is equal to the given `object`:
     mutating func remove(object: Element) {

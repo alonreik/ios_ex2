@@ -31,7 +31,6 @@ class ViewController: UIViewController {
         }
     }
     
-    
     @IBOutlet var cardButtons: [UIButton]!
     @IBOutlet weak var scoreLabel: UILabel!
 
@@ -47,14 +46,16 @@ class ViewController: UIViewController {
     }
     
     @IBAction func dealButtonPressed(_ sender: UIButton) {
-        if !boardIsFull {
+        if aMatchIsMarked {
+            matchesCounter += 1
             game.drawThreeCards()
-            if !aMatchIsMarked {
-                initialViewSetUp()
-            } else {
-                removeMatchedCardsFromMapper()
-            }
+            replaceMatchedCardsOnMapper() //
         }
+        else if !boardIsFull {
+            game.drawThreeCards()
+            addNewOpenCardsToMapper()
+        }
+        updateViewFromMapper()
     }
     
     @IBAction func newGamePressed(_ sender: UIButton) {
@@ -62,19 +63,24 @@ class ViewController: UIViewController {
     
     @IBAction func touchCard(_ sender: UIButton) {
         if let index = cardButtons.firstIndex(of: sender){
+    
             if let chosenCard = cardButtonsMapper[index] {
-                if aMatchIsMarked {
+                
+                if aMatchIsMarked { // then this is the 4th card selected after a match
                     matchesCounter += 1
-                    
+                    game.chooseCard(chosenCard: chosenCard)
+                    replaceMatchedCardsOnMapper()
+                } else {
+                    game.chooseCard(chosenCard: chosenCard)
                 }
-                game.chooseCard(chosenCard: chosenCard)
-                updateViewFromModel()
+                updateViewFromMapper()
             } else {
-                print("The mapping between game.openCards and the UI cardButton is wrong.")
+                print("Something is wrong with the mapping between game.openCards and the UI cardButton.")
             }
-        } else { // shouldn't be reached, in case the cardButtons weren't configured correclty
-            return
+        } else {
+            print("Encountered an error. The UI included a button which isn't on cardButtons.")
         }
+        
     }
     
     /* Private Methods */
@@ -87,7 +93,12 @@ class ViewController: UIViewController {
         }
     }
     
-    private func findOpenCardNotInMapper() -> SetCard? {
+    
+    /*
+        Returns the first SetCard object that is in game.OpenCards but has yet appeared on the view.
+        If all game.OpenCards are already on the view, Returns nil.
+     */
+    private func findMatchedCardReplacement() -> SetCard? {
         for index in game.openCards.indices {
             if !cardButtonsMapper.contains(game.openCards[index]) {
                 return game.openCards[index]
@@ -97,21 +108,21 @@ class ViewController: UIViewController {
     }
     
     /* Makes sure that mapper only hold references to open cards in the game (model)  */
-    private func removeMatchedCardsFromMapper() {
+    private func replaceMatchedCardsOnMapper() {
         // if SetCards mapped by cardButtonsMapper are no longer in the game(model) - mark their spot as free (nil)
         for index in cardButtonsMapper.indices {
             if let card = cardButtonsMapper[index] {
                 if !game.openCards.contains(card) {
-                    // if this card is no longer in the game then we don't need a reference to it
-                    cardButtonsMapper[index] = findOpenCardNotInMapper()
-                }
+                    // if this card is no longer in the game then we don't need a reference to it:
+                    cardButtonsMapper[index] = findMatchedCardReplacement()
+                } 
             }// else: gameCardsOnView[index] was already nil
         }
     }
     
     private func initialViewSetUp() {
         addNewOpenCardsToMapper()
-        updateViewFromModel()
+        updateViewFromMapper()
     }
 
 
@@ -119,24 +130,25 @@ class ViewController: UIViewController {
     
     }
     
-    private func updateViewFromModel() {
+    private func updateViewFromMapper() {
         
-        // Go over all cardButtons and update the info that they present
+        // Go over all cardButtons (using the careButtonsMapper) and update the info that they present
         for index in cardButtonsMapper.indices {
-            if let card = cardButtonsMapper[index] {
-                cardButtons[index].backgroundColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
-                cardButtons[index].setAttributedTitle(attriubtedStringForCard(card: card), for: UIControl.State.normal)
-                cardButtons[index].layer.borderColor = game.selectedCards.contains(card) ? #colorLiteral(red: 0.9607843161, green: 0.7058823705, blue: 0.200000003, alpha: 1): #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
-                cardButtons[index].layer.borderWidth = game.selectedCards.contains(card) ? 3.0: 0.0
+            let button = cardButtons[index]
+            if let card = cardButtonsMapper[index] { // if a card is in that index
+                button.backgroundColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
+                button.setAttributedTitle(attriubtedStringForCard(card: card), for: UIControl.State.normal)
+                button.layer.borderColor = game.selectedCards.contains(card) ? #colorLiteral(red: 0.9607843161, green: 0.7058823705, blue: 0.200000003, alpha: 1): #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
+                button.layer.borderWidth = game.selectedCards.contains(card) ? 3.0: 0.0
                 
-                if let lastMatch = game.matches.last {
-                    cardButtons[index].layer.borderColor = lastMatch.contains(card) ?#colorLiteral(red: 0.3411764801, green: 0.6235294342, blue: 0.1686274558, alpha: 1): #colorLiteral(red: 0.9607843161, green: 0.7058823705, blue: 0.200000003, alpha: 1)
+                if let lastMatch = game.matches.last { // if a matched card is in that index
+                    button.layer.borderColor = lastMatch.contains(card) ?#colorLiteral(red: 0.3411764801, green: 0.6235294342, blue: 0.1686274558, alpha: 1): #colorLiteral(red: 0.9607843161, green: 0.7058823705, blue: 0.200000003, alpha: 1)
                 } // if lastMatch is nil then there weren't any matches in the game (so no border coloring is needed).
                 
-            } else { // cardButtonsMapper[index] is nil (the button should be covered).
-                cardButtons[index].setAttributedTitle(nil, for: UIControl.State.normal)
-                cardButtons[index].setTitle(nil, for: UIControl.State.normal)
-                cardButtons[index].backgroundColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 0)
+            } else { // if nil is in that index (the button should be covered).
+                button.setAttributedTitle(nil, for: UIControl.State.normal)
+                button.setTitle(nil, for: UIControl.State.normal)
+                button.backgroundColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 0)
             }
         }
         
