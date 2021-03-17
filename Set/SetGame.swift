@@ -36,7 +36,7 @@ struct SetGame
     
     var selectedCards: [SetCard] = []
     
-    var matches: [[SetCard]] = [] // every item in this array is of the form [SetCard, SetCard, SetCard]
+    var matches: [[SetCard]] = []// every item in this array is of the form [SetCard, SetCard, SetCard]
     
     // Initiators
     init () {
@@ -72,21 +72,20 @@ struct SetGame
             }
         }
         else if selectedCards.count == 4 {
-            // removes the first 3 selected cards from the openCards array.
-            openCards.removeAll(where: {value in return selectedCards[0..<3].contains(value)})
+            // removes the matched cards (first 3 selected cards) from the openCards array.
+            openCards.removeAll(where: {value in return selectedCards[0..<3].contains(value)}) // closure
             selectedCards.removeFirst(3)
-            
-//            if deck.count > 2 {
-//                drawThreeCards()
-//            }
+            drawThreeCards()
+
         } // else selected cards contains 0/1/2 cards
     }
     
     // Removes 3 cards from the deck and places them in the array of openCards.
     mutating func drawThreeCards() {
-        assert(deck.count > 2, "SetGame.drawThreeCards(): Tried to draw cards from a deck with less than 3 cards. ")
-        openCards.append(contentsOf: deck.prefix(3))
-        deck.removeFirst(3)
+        if deck.count > 2 {
+            openCards.append(contentsOf: deck.prefix(3))
+            deck.removeFirst(3)
+        } // else - do nothing
     }
          
     
