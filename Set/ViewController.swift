@@ -37,11 +37,10 @@ class ViewController: UIViewController {
     @IBAction func newGamePressed(_ sender: UIButton) {
     }
     
-    @IBAction func touchCard(_ sender: UIButton) { // todo = start here on wednesday.
+    @IBAction func touchCard(_ sender: UIButton) {
         if let index = cardButtons.firstIndex(of: sender){
             if let openCard = cardButtonsMapper[index] {
-                print("the color is: \(openCard.color), and the filling is: \(openCard.filling), and the shapeType is: \(openCard.shapeType).")
-                game.chooseCard(currentCard: openCard)
+                game.chooseCard(chosenCard: openCard)
                 updateViewFromModel()
             } else {
                 print("The mapping between game.openCards and the UI cardButton is wrong.")

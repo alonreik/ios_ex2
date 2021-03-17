@@ -15,7 +15,7 @@ struct SetGame
         Returns true iff (if and only if) the 3 provided setCards satisfy all conditions for a "set"
         (the method uses the funcionality of mathematical-sets to check if the cards are exactly the same or entirely different in each parameter).
      */
-    static func areMatching(c1: SetCard, c2: SetCard, c3: SetCard) -> Bool {
+    static func areCardsMatching(c1: SetCard, c2: SetCard, c3: SetCard) -> Bool {
 
         let shapesTypes: Set<Int> = [c1.shapeType, c2.shapeType, c3.shapeType]
         let shapesNumber: Set<Int> = [c1.shapesNum, c2.shapesNum, c3.shapesNum]
@@ -48,26 +48,35 @@ struct SetGame
     /*
     
     */
-    mutating func chooseCard(currentCard: SetCard) {
-        assert(openCards.contains(currentCard), "Set.chooseCard(currentCard): Provided this function with a reference to a card which isn't in the openCards array.")
+    mutating func chooseCard(chosenCard: SetCard) {
+        // assert that the provided SetCard is currently in the game.
+        assert(openCards.contains(chosenCard), "Set.chooseCard(currentCard): Provided this function with a reference to a card which isn't in the openCards array.")
         
-        if selectedCards.contains(currentCard){// if a selected card was picked again, ignore.
-            return}
-        
-        if selectedCards.count == 3 { // if there were already 3 selected cards
-            if matches.contains(selectedCards) { // if the 3 selected cards are a match
-                openCards = openCards.filter({!selectedCards.contains($0)}) // remove selected cards from open cards
+        // if chosenCard in the selected cards, remove it from selectedCards or ignore (depends of number of selectedCards):
+        if selectedCards.contains(chosenCard) {
+            if selectedCards.count == 3 {return} // ignore
+            else { // selectedCards.count < 3
+                selectedCards.remove(object: chosenCard)
             }
-            selectedCards.removeAll() // in any case, reset selected cards
         }
-        selectedCards.append(currentCard)
+        // if the chosen card wasn't already in selectedCards, just add it:
+        else if !selectedCards.contains(chosenCard) {
+            selectedCards.append(chosenCard)
+        }
         
-        if selectedCards.count == 3 { // if the current card is the third selected card
-            if SetGame.areMatching(c1: selectedCards[0], c2: selectedCards[1], c3: selectedCards[2]) {
+        //
+        if selectedCards.count == 3 {
+            if SetGame.areCardsMatching(c1: selectedCards[0], c2: selectedCards[1], c3: selectedCards[2]) {
                 score += 1 // TODO - update score correctly
                 matches.append(selectedCards)
             }
         }
+        else if selectedCards.count == 4 {
+            // removes the first 3 selected cards from the openCards array.
+            openCards.removeAll(where: {value in return selectedCards[0..<3].contains(value)})
+            
+            selectedCards.removeFirst(3)
+        } // else selected cards contains 0/1/2 cards
     }
     
     // Removes 3 cards from the deck and places them in the array of openCards.
@@ -112,5 +121,14 @@ struct SetGame
         openCards = []
         openCards.append(contentsOf: deck.prefix(12))
         deck.removeFirst(12)
+    }
+}
+
+// One of the exercise tasks was to implement an extension:
+extension Array where Element: Equatable {
+    // Remove first collection element that is equal to the given `object`:
+    mutating func remove(object: Element) {
+        guard let index = firstIndex(of: object) else {return}
+        remove(at: index)
     }
 }
