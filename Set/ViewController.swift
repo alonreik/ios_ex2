@@ -101,7 +101,7 @@ class ViewController: UIViewController {
     private func addNewOpenCardsToMapper() {
         for index in game.openCards.indices {
             if !cardButtonsMapper.contains(game.openCards[index]) {
-                addGameCardToButtonsArray(gameCard: game.openCards[index])
+                addGameCardToButtonsMapper(gameCard: game.openCards[index])
             }
         }
     }
@@ -172,7 +172,8 @@ class ViewController: UIViewController {
         
         if let color = colorDict[card.color] {
             let attributes: [NSAttributedString.Key: Any] = [
-                // .strokeWidth should be positive only for outlined shapes (filling == 2), otherwise should be negative
+                // .strokeWidth should be positive only for outlined shapes (filling == 2),
+                // otherwise ([1,3].contains(filling)) it should be negative
                 .strokeWidth: 5.0 * pow(-1, card.filling),
                 .strokeColor: color,
                 .foregroundColor:  color.withAlphaComponent(alpha)
@@ -190,9 +191,8 @@ class ViewController: UIViewController {
         return NSAttributedString(string: "")
     }
     
-    // TODO
-    private func addGameCardToButtonsArray(gameCard: SetCard) {
-        
+    // Inserts the given SetCard object to the first index of cardButtonsMapper that its value is nil.
+    private func addGameCardToButtonsMapper(gameCard: SetCard) {
         for index in cardButtonsMapper.indices {
             if cardButtonsMapper[index] == nil {
                 cardButtonsMapper[index] = gameCard
