@@ -11,11 +11,19 @@ class ViewController: UIViewController {
     
     /* Properties */
 
+    var boardIsFull: Bool {
+        get {
+            return cardButtonsMapper.filter({$0 != nil}).count == cardButtons.count
+        }
+    }
+    
     let shapesDict = [1: "▲", 2: "●", 3: "■"]
     let colorDict = [1: #colorLiteral(red: 0.9098039269, green: 0.4784313738, blue: 0.6431372762, alpha: 1), 2: #colorLiteral(red: 0.3647058904, green: 0.06666667014, blue: 0.9686274529, alpha: 1), 3: #colorLiteral(red: 0.4666666687, green: 0.7647058964, blue: 0.2666666806, alpha: 1)]
     // filling dict: [1: full, 2: outline, 3: striped]
     
     var game: SetGame = SetGame()
+    var gameState = SetGameState.noMatchIsMarked
+    
     @IBOutlet var cardButtons: [UIButton]!
     @IBOutlet weak var scoreLabel: UILabel!
 
@@ -27,11 +35,19 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        updateViewFromModel()
+        initialViewSetUp()
     }
     
     @IBAction func dealButtonPressed(_ sender: UIButton) {
-        // TODO
+        if !boardIsFull {
+            game.drawThreeCards()
+            if gameState == SetGameState.noMatchIsMarked {
+                print("deal button pressed")
+                initialViewSetUp()
+            } else {
+                print("i am here")
+            }
+        }
     }
     
     @IBAction func newGamePressed(_ sender: UIButton) {
@@ -41,29 +57,71 @@ class ViewController: UIViewController {
         if let index = cardButtons.firstIndex(of: sender){
             if let openCard = cardButtonsMapper[index] {
                 game.chooseCard(chosenCard: openCard)
-                updateViewFromModel()
+                updateViewAfterTurn()
+//                updateViewFromModel()
             } else {
                 print("The mapping between game.openCards and the UI cardButton is wrong.")
             }
-        } else {
+        } else { // shouldn't be reached, in case the cardButtons weren't configured correclty
             return
         }
     }
     
     // Private Methods
     
-    private func updateViewFromModel() {
-        
-        // Make sure that the view only holds the game's open cards.
+    // update mapper from open cards
+    private func initialViewSetUp() {
+        // make sure the view recognize all open cards from the model.
+        for index in game.openCards.indices {
+            if !cardButtonsMapper.contains(game.openCards[index]) {
+                addGameCardToView(gameCard: game.openCards[index])
+            }
+        }
+        // Go over all cardButtons and update the info that they present
+        for index in cardButtonsMapper.indices {
+            if let card = cardButtonsMapper[index] {
+                // if the current element in gameCardsOnView isn't nil
+                cardButtons[index].backgroundColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
+                cardButtons[index].setAttributedTitle(attriubtedStringForCard(card: card), for: UIControl.State.normal)
+            } else {
+                cardButtons[index].setAttributedTitle(nil, for: UIControl.State.normal)
+                cardButtons[index].setTitle(nil, for: UIControl.State.normal)
+                cardButtons[index].backgroundColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 0)
+            }
+        }
+    }
+    
+    private func updateViewAfterTurn() {
+        // if SetCards mapped by cardButtonsMapper are no longer in the game(model) - mark their spot as free (nil)
         for index in cardButtonsMapper.indices {
             if let card = cardButtonsMapper[index] {
                 if !game.openCards.contains(card) {
                     // if this card is no longer in the game then we don't need a reference to it
                     cardButtonsMapper[index] = nil
                 }
-            }// else: gameCardsOnView[index] = nil
+            }// else: gameCardsOnView[index] was already nil
         }
         
+        // make sure the view recognize all open cards from the model.
+        for index in game.openCards.indices {
+            if !cardButtonsMapper.contains(game.openCards[index]) {
+                addGameCardToView(gameCard: game.openCards[index])
+            }
+        }
+        
+        
+        
+        
+    
+        
+    }
+
+    private func updateViewAfterDeal() {
+    
+    }
+    
+    private func updateViewFromModel() {
+
         // make sure the view recognize all open cards from the model.
         for index in game.openCards.indices {
             if !cardButtonsMapper.contains(game.openCards[index]) {
@@ -121,4 +179,9 @@ class ViewController: UIViewController {
             }
         }
     }
+}
+
+enum SetGameState {
+    case aMatchIsMarked
+    case noMatchIsMarked
 }
