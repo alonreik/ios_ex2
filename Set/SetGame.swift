@@ -16,7 +16,6 @@ struct SetGame
         (the method uses the funcionality of mathematical-sets to check if the cards are exactly the same or entirely different in each parameter).
      */
     static func areCardsMatching(c1: SetCard, c2: SetCard, c3: SetCard) -> Bool {
-
         let shapesTypes: Set<Int> = [c1.shapeType, c2.shapeType, c3.shapeType]
         let shapesNumber: Set<Int> = [c1.shapesNum, c2.shapesNum, c3.shapesNum]
         let shapesFill: Set<Int> = [c1.filling, c2.filling, c3.filling]
