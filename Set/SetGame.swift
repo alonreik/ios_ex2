@@ -28,7 +28,7 @@ struct SetGame
     
     // Properties
     
-    var deck: [SetCard] = [] // todo - should be optional?
+    var deck: [SetCard] = []// todo - should be optional?
     
     var openCards: [SetCard] = [] // todo should be optional?
     
@@ -48,10 +48,9 @@ struct SetGame
     /*
     
     */
-    mutating func chooseCard(at index: Int) {
-        assert(openCards.indices.contains(index), "Set.chooseCard(at: \(index)): chosen index is not in the open cards")
+    mutating func chooseCard(currentCard: SetCard) {
+        assert(openCards.contains(currentCard), "Set.chooseCard(currentCard): Provided this function with a reference to a card which isn't in the openCards array.")
         
-        let currentCard = openCards[index]
         if selectedCards.contains(currentCard){// if a selected card was picked again, ignore.
             return}
         
