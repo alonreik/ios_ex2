@@ -27,6 +27,7 @@ class SetCard: Equatable
     let filling: Int
     let color: Int
         
+    // TODO 
     static let legalValues = 1...3
     
     // Initiators
