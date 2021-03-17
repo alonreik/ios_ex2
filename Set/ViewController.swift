@@ -125,12 +125,8 @@ class ViewController: UIViewController {
         updateViewFromMapper()
     }
 
-
-    private func updateViewAfterDeal() {
-    
-    }
-    
     private func updateViewFromMapper() {
+        scoreLabel.text = "Score: \(game.score)"
         
         // Go over all cardButtons (using the careButtonsMapper) and update the info that they present
         for index in cardButtonsMapper.indices {
@@ -151,9 +147,6 @@ class ViewController: UIViewController {
                 button.backgroundColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 0)
             }
         }
-        
-        // Mark selected cards
-        // todo 
     }
         
     // TODO

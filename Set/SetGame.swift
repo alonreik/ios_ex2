@@ -9,7 +9,7 @@ import Foundation
 
 struct SetGame
 {
-    // Static Methods:
+    /* Static Methods: */
     
     /*
         Returns true iff (if and only if) the 3 provided setCards satisfy all conditions for a "set"
@@ -24,31 +24,33 @@ struct SetGame
         return shapesTypes.count != 2 && shapesNumber.count != 2 && shapesFill.count != 2 && shapesColor.count != 2
     }
         
-    
-    // Properties
-    
-    var deck: [SetCard] = []// todo - should be optional?
-    
-    var openCards: [SetCard] = [] // todo should be optional?
+
+    /* Properties */
     
     var score = 0
+    var scoreUpdate: Int {
+        // every time a match is found, the scoring update depends on the
+        // number of open cards. (more open card = less score)
+        get {
+            return 48 / openCards.count
+        } // (48 is just an arbirtrary number)
+    }
     
+    var deck: [SetCard] = []
+    var openCards: [SetCard] = []
     var selectedCards: [SetCard] = []
+    var matches: [[SetCard]] = []
     
-    var matches: [[SetCard]] = []// every item in this array is of the form [SetCard, SetCard, SetCard]
     
-    // Initiators
-    init () {
-        startGame()
-    }    
+    /* Methods */
     
-    // Methods
     
     /*
-    
+        If the provided card is already selected: it is diselected or ignored.
+        otherwise, the provided card is added to the selected cards, and the necessary updates are preformed.
     */
     mutating func chooseCard(chosenCard: SetCard) {
-        // assert that the provided SetCard is currently in the game.
+        // assert that the provided SetCard is currently in the game (in openCards).
         assert(openCards.contains(chosenCard), "Set.chooseCard(currentCard): Provided this function with a reference to a card which isn't in the openCards array.")
         
         // if chosenCard in the selected cards, remove it from selectedCards or ignore (depends of number of selectedCards):
@@ -63,24 +65,33 @@ struct SetGame
             selectedCards.append(chosenCard)
         }
         
-        //
+        // if chosen card is the 3rd selected card
         if selectedCards.count == 3 {
             if SetGame.areCardsMatching(c1: selectedCards[0], c2: selectedCards[1], c3: selectedCards[2]) {
-                score += 1 // TODO - update score correctly
+                score += scoreUpdate
                 matches.append(selectedCards)
+            } else {
+                score -= 5
             }
         }
+        // if the current card was chosen when 3 cards were already selected
         else if selectedCards.count == 4 {
             if SetGame.areCardsMatching(c1: selectedCards[0], c2: selectedCards[1], c3: selectedCards[2]) {
-                openCards.removeAll(where: {value in return selectedCards[0..<3].contains(value)}) // closure
+                // remove 3 already selected cards from the game (from open cards):
+                openCards.removeAll(where: {value in return selectedCards[0..<3].contains(value)})
+                
                 drawThreeCards()
             }
-            selectedCards.removeFirst(3)
+            selectedCards.removeFirst(3) // diselect 3 already selected cards
 
         } // else selected cards contains 0/1/2 cards, nothing to do there
     }
     
-    // Removes 3 cards from the deck and places them in the array of openCards.
+    /*
+        If called after a match is found, the function removes the matched cards from openCards.
+        Regardless, if the deck has at least 3 cards, the function pops 3 cards from the deck to openCards.
+        (and does nothing otherwise).
+    */
     mutating func drawThreeCards() {
         if let lastMatch = matches.last {
             if lastMatch == selectedCards {
@@ -88,7 +99,6 @@ struct SetGame
                 selectedCards.removeAll()
             }
         }
-        
         if deck.count > 2 {
             openCards.append(contentsOf: deck.prefix(3))
             deck.removeFirst(3)
@@ -96,10 +106,10 @@ struct SetGame
     }
          
     
-    // Private Methods
+    /* Private Methods */
     
     
-    // Returns an initial shuffled Deck of 81 SetCard unique instances.
+    // Returns an initial shuffled Deck of 81 unique SetCard instances.
     private func getInitialDeck() -> [SetCard] {
         
         var resultDeck = [SetCard]()
