@@ -17,8 +17,13 @@ class ViewController: UIViewController {
 
     @IBOutlet var cardButtons: [UIButton]!
 
-    /* An array mapping between cardButtons (buttons in the UI; every index represents a button) to SetCard objects.
-     (A nil value means that the button should be "empty") */
+    var game: SetGame = SetGame()
+    let shapesDict = [1: "▲", 2: "●", 3: "■"]
+    let colorDict = [1: #colorLiteral(red: 0.9098039269, green: 0.4784313738, blue: 0.6431372762, alpha: 1), 2: #colorLiteral(red: 0.3647058904, green: 0.06666667014, blue: 0.9686274529, alpha: 1), 3: #colorLiteral(red: 0.4666666687, green: 0.7647058964, blue: 0.2666666806, alpha: 1)]
+    // filling dict: [1: full, 2: outline, 3: striped]
+    
+    /* An array mapping between cardButtons (buttons in the UI; every index represents a button)
+     to SetCard objects. (A nil value means that the button should be "empty") */
     lazy var cardButtonsMapper = [SetCard?](repeating: nil, count: cardButtons.count)
     // (I used lazy only so I could use the count of cardButtons)
     
@@ -29,15 +34,8 @@ class ViewController: UIViewController {
         }
     }
     
-    let shapesDict = [1: "▲", 2: "●", 3: "■"]
-    let colorDict = [1: #colorLiteral(red: 0.9098039269, green: 0.4784313738, blue: 0.6431372762, alpha: 1), 2: #colorLiteral(red: 0.3647058904, green: 0.06666667014, blue: 0.9686274529, alpha: 1), 3: #colorLiteral(red: 0.4666666687, green: 0.7647058964, blue: 0.2666666806, alpha: 1)]
-    // filling dict: [1: full, 2: outline, 3: striped]
-    
-    var game: SetGame = SetGame()
-    
     // A "helper variable" used to check if a new match is presented on the view
     var matchesCounter = 0
-    
     var aMatchIsMarked: Bool {
         get {
             return matchesCounter < game.matches.count
@@ -50,10 +48,17 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        initialViewSetUp()
+        addNewOpenCardsToMapper()
+        updateViewFromMapperAndModel()
     }
     
-    // 
+    @IBAction func newGamePressed(_ sender: UIButton) {
+        cardButtonsMapper = [SetCard?](repeating: nil, count: cardButtons.count)
+        game = SetGame()
+        addNewOpenCardsToMapper()
+        updateViewFromMapperAndModel()
+    }
+    
     @IBAction func dealButtonPressed(_ sender: UIButton) {
         if aMatchIsMarked {
             matchesCounter += 1
@@ -64,17 +69,9 @@ class ViewController: UIViewController {
             game.drawThreeCards()
             addNewOpenCardsToMapper()
         }
-        updateViewFromMapper()
+        updateViewFromMapperAndModel()
     }
     
-    //
-    @IBAction func newGamePressed(_ sender: UIButton) {
-        cardButtonsMapper = [SetCard?](repeating: nil, count: cardButtons.count)
-        game = SetGame()
-        initialViewSetUp()
-    }
-    
-    //
     @IBAction func touchCard(_ sender: UIButton) {
         if let index = cardButtons.firstIndex(of: sender){
     
@@ -87,22 +84,20 @@ class ViewController: UIViewController {
                 } else {
                     game.chooseCard(chosenCard: chosenCard)
                 }
-                updateViewFromMapper()
+                updateViewFromMapperAndModel()
             } else { // cardButtonsMapper[index] = nil
                 print("Pressed on a 'hidden' card.")
             }
         } else {
             print("Encountered an error. The UI included a button which isn't on cardButtons.")
         }
-        
     }
-    
     
     /* -------
      Private Methods
      -------- */
     
-    //
+    // Makes sure cardButtonsMapper is famliar with every open card in the game (Model)
     private func addNewOpenCardsToMapper() {
         for index in game.openCards.indices {
             if !cardButtonsMapper.contains(game.openCards[index]) {
@@ -111,6 +106,21 @@ class ViewController: UIViewController {
         }
     }
     
+    /*
+     Makes sure that mapper only hold references to current open cards in the game (model)
+        [and not cards that were matched and removed]
+     */
+    private func replaceMatchedCardsOnMapper() {
+        // if SetCards mapped by cardButtonsMapper are no longer in the game(model) - mark their spot as free (nil)
+        for index in cardButtonsMapper.indices {
+            if let card = cardButtonsMapper[index] {
+                if !game.openCards.contains(card) {
+                    // if this card is no longer in the game then we don't need a reference to it:
+                    cardButtonsMapper[index] = findMatchedCardReplacement()
+                }
+            }// else: gameCardsOnView[index] was already nil
+        }
+    }
     
     /*
         Returns the first SetCard object that is in game.OpenCards but has yet appeared on the view.
@@ -124,28 +134,12 @@ class ViewController: UIViewController {
         }
         return nil
     }
-    
-    /* Makes sure that mapper only hold references to open cards in the game (model)  */
-    private func replaceMatchedCardsOnMapper() {
-        // if SetCards mapped by cardButtonsMapper are no longer in the game(model) - mark their spot as free (nil)
-        for index in cardButtonsMapper.indices {
-            if let card = cardButtonsMapper[index] {
-                if !game.openCards.contains(card) {
-                    // if this card is no longer in the game then we don't need a reference to it:
-                    cardButtonsMapper[index] = findMatchedCardReplacement()
-                } 
-            }// else: gameCardsOnView[index] was already nil
-        }
-    }
-    
-    // TODO
-    private func initialViewSetUp() {
-        addNewOpenCardsToMapper()
-        updateViewFromMapper()
-    }
 
-    // TODO
-    private func updateViewFromMapper() {
+    /*
+        Presents game.score, then iterates over all cardButtons (using the cardButtonsMapper) and
+        sets their appearance (with the relevant card or as a "covered card")
+     */
+    private func updateViewFromMapperAndModel() {
         scoreLabel.text = "Score: \(game.score)"
         
         // Go over all cardButtons (using the careButtonsMapper) and update the info that they present
@@ -157,7 +151,8 @@ class ViewController: UIViewController {
                 button.layer.borderColor = game.selectedCards.contains(card) ? #colorLiteral(red: 0.9607843161, green: 0.7058823705, blue: 0.200000003, alpha: 1): #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
                 button.layer.borderWidth = game.selectedCards.contains(card) ? 3.0: 0.0
                 
-                if let lastMatch = game.matches.last { // if a matched card is in that index
+                if let lastMatch = game.matches.last { // take last found match (3 cards)
+                    // and if needed, mark the current card as a part of that match
                     button.layer.borderColor = lastMatch.contains(card) ?#colorLiteral(red: 0.3411764801, green: 0.6235294342, blue: 0.1686274558, alpha: 1): #colorLiteral(red: 0.9607843161, green: 0.7058823705, blue: 0.200000003, alpha: 1)
                 } // if lastMatch is nil then there weren't any matches in the game (so no border coloring is needed).
                 
@@ -170,9 +165,8 @@ class ViewController: UIViewController {
         }
     }
         
-    // TODO
-    private func attriubtedStringForCard(card: SetCard) -> NSAttributedString {
-        
+    // Maps a SetCard object to the NSAttributedString representing it (in this implementation).
+    private func attriubtedStringForCard(card: SetCard) -> NSAttributedString? {
         // alpha is 0.15 for striped shapes (filling == 3), 1.0 for other fillings
         let alpha: CGFloat = card.filling == 3 ? 0.15: 1.0
         
@@ -191,7 +185,8 @@ class ViewController: UIViewController {
                 return NSAttributedString(string: string, attributes: attributes)
             }
         }
-        // todo - comment about this.
+        // next line shouldn't be reached because we assert that all cards have valid "color" property.
+        // but it was required by the compiler.
         return NSAttributedString(string: "")
     }
     
