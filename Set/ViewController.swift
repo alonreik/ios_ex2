@@ -53,6 +53,7 @@ class ViewController: UIViewController {
         initialViewSetUp()
     }
     
+    // 
     @IBAction func dealButtonPressed(_ sender: UIButton) {
         if aMatchIsMarked {
             matchesCounter += 1
@@ -66,9 +67,14 @@ class ViewController: UIViewController {
         updateViewFromMapper()
     }
     
+    //
     @IBAction func newGamePressed(_ sender: UIButton) {
+        cardButtonsMapper = [SetCard?](repeating: nil, count: cardButtons.count)
+        game = SetGame()
+        initialViewSetUp()
     }
     
+    //
     @IBAction func touchCard(_ sender: UIButton) {
         if let index = cardButtons.firstIndex(of: sender){
     
@@ -82,8 +88,8 @@ class ViewController: UIViewController {
                     game.chooseCard(chosenCard: chosenCard)
                 }
                 updateViewFromMapper()
-            } else {
-                print("Something is wrong with the mapping between game.openCards and the UI cardButton.")
+            } else { // cardButtonsMapper[index] = nil
+                print("Pressed on a 'hidden' card.")
             }
         } else {
             print("Encountered an error. The UI included a button which isn't on cardButtons.")
@@ -96,6 +102,7 @@ class ViewController: UIViewController {
      Private Methods
      -------- */
     
+    //
     private func addNewOpenCardsToMapper() {
         for index in game.openCards.indices {
             if !cardButtonsMapper.contains(game.openCards[index]) {
@@ -131,11 +138,13 @@ class ViewController: UIViewController {
         }
     }
     
+    // TODO
     private func initialViewSetUp() {
         addNewOpenCardsToMapper()
         updateViewFromMapper()
     }
 
+    // TODO
     private func updateViewFromMapper() {
         scoreLabel.text = "Score: \(game.score)"
         
@@ -156,6 +165,7 @@ class ViewController: UIViewController {
                 button.setAttributedTitle(nil, for: UIControl.State.normal)
                 button.setTitle(nil, for: UIControl.State.normal)
                 button.backgroundColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 0)
+                button.layer.borderWidth = 0.0
             }
         }
     }
@@ -187,6 +197,7 @@ class ViewController: UIViewController {
     
     // TODO
     private func addGameCardToButtonsArray(gameCard: SetCard) {
+        
         for index in cardButtonsMapper.indices {
             if cardButtonsMapper[index] == nil {
                 cardButtonsMapper[index] = gameCard

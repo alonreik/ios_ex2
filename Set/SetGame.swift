@@ -47,6 +47,14 @@ struct SetGame
     
     
     /* -------
+     Initiators
+     -------- */
+    init() {
+        startGame()
+    }
+    
+    
+    /* -------
      Methods
      -------- */
     

@@ -34,6 +34,7 @@ class SetCard: Equatable
     // TODO 
     static let legalValues = 1...3
     
+    
     /* -------
      Initiators
      -------- */
