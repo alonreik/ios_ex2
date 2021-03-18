@@ -5,6 +5,8 @@ definition: "live play" - Every situation in the game where a match\set isn't sp
 Note: If a match\set is specifically marked on the screen, the game is considered to be paused. 
 
 Scoring "mechanism": 
+
+
   -- The user\player is rewarded with points for every match s.he founds.
       -- The less open cards are in the game, the more points the user will get for a match (and vice versa). 
       -- every 10 seconds of "live play" that goes by without the user selecting a match, the reward for a match decreases by a point (approximately). 
