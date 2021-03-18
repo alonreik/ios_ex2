@@ -31,13 +31,16 @@ struct SetGame
      Properties
      -------- */
     
+    // An arbitrary number utilized to provide matches with score based on number of open cards.
+    var BaseForScore = 240
+    
     var score = 0
     private var scoreUpdate: Int {
         // every time a match is found, the scoring update depends on the
         // number of open cards. (more open card = less score)
         get {
-            return 48 / openCards.count
-        } // (48 is just an arbirtrary number)
+            return BaseForScore / openCards.count // (integer division)
+        }
     }
     
     private var deck: [SetCard] = []

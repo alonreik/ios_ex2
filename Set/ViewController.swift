@@ -55,6 +55,7 @@ class ViewController: UIViewController {
         addNewOpenCardsToMapper()
         updateViewFromMapperAndModel()
         
+        // init timer
         gameTimer = Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(updateScoreForTime), userInfo: nil, repeats: true)
     }
     
@@ -64,23 +65,34 @@ class ViewController: UIViewController {
         gameTimer?.invalidate()
     }
     
+    // Resets the timer.
+    private func resetTimer() {
+        gameTimer?.invalidate()
+        gameTimer = Timer.scheduledTimer(timeInterval: 10, target: self, selector: #selector(updateScoreForTime), userInfo: nil, repeats: true)
+        game.BaseForScore = 240
+    }
+    
     @IBAction func newGamePressed(_ sender: UIButton) {
         cardButtonsMapper = [SetCard?](repeating: nil, count: cardButtons.count)
         game = SetGame()
         addNewOpenCardsToMapper()
         updateViewFromMapperAndModel()
+        resetTimer()
     }
     
     @IBAction func dealButtonPressed(_ sender: UIButton) {
         if aMatchIsMarked {
             matchesCounter += 1
             game.drawThreeCards()
-            replaceMatchedCardsOnMapper() //
+            replaceMatchedCardsOnMapper()
+            resetTimer()
         }
         else if !boardIsFull {
             game.drawThreeCards()
             addNewOpenCardsToMapper()
+            resetTimer()
         }
+        // in any case:
         updateViewFromMapperAndModel()
     }
     
@@ -93,6 +105,8 @@ class ViewController: UIViewController {
                     matchesCounter += 1
                     game.chooseCard(chosenCard: chosenCard)
                     replaceMatchedCardsOnMapper()
+                    
+                    resetTimer()
                 } else {
                     game.chooseCard(chosenCard: chosenCard)
                 }
@@ -111,7 +125,7 @@ class ViewController: UIViewController {
     
     //
     @objc func updateScoreForTime() {
-        game.score -= 1
+        game.BaseForScore -= 10
     }
     
     // Makes sure cardButtonsMapper is famliar with every open card in the game (Model)
