@@ -75,6 +75,7 @@ class ViewController: UIViewController {
     @IBAction func newGamePressed(_ sender: UIButton) {
         cardButtonsMapper = [SetCard?](repeating: nil, count: cardButtons.count)
         game = SetGame()
+        matchesCounter = 0
         addNewOpenCardsToMapper()
         updateViewFromMapperAndModel()
         resetTimer()
@@ -90,7 +91,8 @@ class ViewController: UIViewController {
             if game.findMatchInOpenCards() != nil {
                 game.score -= 3 // if the user pressed "deal" but there was a match in openCards
             }
-            // in any case:
+            // even if game.findMatchInOpenCards() is nil:
+            game.resetCardSelection()
             game.drawThreeCards()
             addNewOpenCardsToMapper()
         }

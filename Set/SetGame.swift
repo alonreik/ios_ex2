@@ -190,12 +190,14 @@ struct SetGame
         
         // reset score
         score = 0
+        BaseForScore = 240
         
         // initiate an 81 SetCards deck
         deck = getInitialDeck()
         
-        // reset openCards array, and open first 12 cards from the deck
+        // reset openCards and selectdCards arrays, and open first 12 cards from the deck
         openCards = []
+        selectedCards = []
         
         openCards.append(contentsOf: deck.prefix(12))
         deck.removeFirst(12)
