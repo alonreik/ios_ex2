@@ -13,6 +13,9 @@ class ViewController: UIViewController {
      Properties
      -------- */
 
+    var gameTimer: Timer?
+    
+    
     @IBOutlet weak var scoreLabel: UILabel!
 
     @IBOutlet var cardButtons: [UIButton]!
@@ -52,6 +55,13 @@ class ViewController: UIViewController {
         addNewOpenCardsToMapper()
         updateViewFromMapperAndModel()
         
+        gameTimer = Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(updateScoreForTime), userInfo: nil, repeats: true)
+    }
+    
+    // The sole puprpose of this (overriden) function is to invalidate the timer to prevent reference cycles in memory.
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        gameTimer?.invalidate()
     }
     
     @IBAction func newGamePressed(_ sender: UIButton) {
@@ -98,6 +108,11 @@ class ViewController: UIViewController {
     /* -------
      Private Methods
      -------- */
+    
+    //
+    @objc func updateScoreForTime() {
+        game.score -= 1
+    }
     
     // Makes sure cardButtonsMapper is famliar with every open card in the game (Model)
     private func addNewOpenCardsToMapper() {
