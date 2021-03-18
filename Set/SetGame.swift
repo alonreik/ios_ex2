@@ -32,7 +32,7 @@ struct SetGame
      -------- */
     
     var score = 0
-    var scoreUpdate: Int {
+    private var scoreUpdate: Int {
         // every time a match is found, the scoring update depends on the
         // number of open cards. (more open card = less score)
         get {
@@ -40,10 +40,10 @@ struct SetGame
         } // (48 is just an arbirtrary number)
     }
     
-    var deck: [SetCard] = []
-    var openCards: [SetCard] = []
-    var selectedCards: [SetCard] = []
-    var matches: [[SetCard]] = []
+    private var deck: [SetCard] = []
+    private(set) var openCards: [SetCard] = []
+    private(set) var selectedCards: [SetCard] = []
+    private(set) var matches: [[SetCard]] = []
     
     
     /* -------
@@ -139,7 +139,7 @@ struct SetGame
         return resultDeck.shuffled()
     }
     
-    // Resets the SetGame's instance properties.
+    // Resets the SetGame's instance properties (sets score = 0, resets deck, then open 12 cards).
     private mutating func startGame() {
         
         // reset score
@@ -157,7 +157,7 @@ struct SetGame
 
 // One of the exercise tasks was to implement and use an extension:
 extension Array where Element: Equatable {
-    // Remove first collection element that is equal to the given `object`:
+    // Remove first collection element that is equal to the given object:
     mutating func remove(object: Element) {
         guard let index = firstIndex(of: object) else {return}
         remove(at: index)

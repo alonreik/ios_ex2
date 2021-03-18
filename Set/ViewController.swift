@@ -34,7 +34,7 @@ class ViewController: UIViewController {
         }
     }
     
-    // A "helper variable" used to check if a new match is presented on the view
+    // A "helper variable" used to alert when a match is found
     var matchesCounter = 0
     var aMatchIsMarked: Bool {
         get {

@@ -31,7 +31,7 @@ class SetCard: Equatable
     let filling: Int
     let color: Int
         
-    // TODO 
+    // every property
     static let legalValues = 1...3
     
     
@@ -48,4 +48,4 @@ class SetCard: Equatable
         self.filling = filling
         self.color = color
     }
-}
+} 
