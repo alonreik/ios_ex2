@@ -334,6 +334,7 @@
                     </view>
                     <connections>
                         <outlet property="iphoneScoreLabel" destination="AT2-uM-Z67" id="xN9-jz-gqZ"/>
+                        <outlet property="iphoneStateLabel" destination="878-0n-VpJ" id="4iH-ru-fZn"/>
                         <outlet property="userScoreLabel" destination="mbR-aF-Tpf" id="u8w-YX-kEh"/>
                         <outletCollection property="cardButtons" destination="Hs0-Sm-bBG" collectionClass="NSMutableArray" id="M5w-f6-eoB"/>
                         <outletCollection property="cardButtons" destination="evg-Mj-agF" collectionClass="NSMutableArray" id="uSg-b8-IsS"/>

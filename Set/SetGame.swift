@@ -133,8 +133,13 @@ struct SetGame
     
     // TODO 
     mutating func makeEnemyTurn() {
+    
         if let match = findMatchInOpenCards() {
+            // if openCards include 3 cards that form a match.
             selectedCards = match
+            matches.append(selectedCards)
+            openCards.removeAll(where: {value in return selectedCards[0..<3].contains(value)})
+            enemyScore += 3
         } // else - do nothing
     }
     
