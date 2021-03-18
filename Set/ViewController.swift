@@ -32,7 +32,7 @@ class ViewController: UIViewController {
     
     var boardIsFull: Bool {
         get {
-            // is cardButtonsMapper "nil-free"?
+            // return: cardButtonsMapper is "nil-free"?
             return cardButtonsMapper.filter({$0 != nil}).count == cardButtons.count
         }
     }
@@ -65,7 +65,7 @@ class ViewController: UIViewController {
         gameTimer?.invalidate()
     }
     
-    // Resets the timer.
+    // Resets the timer and the Base for score (which decreases as the timer proceeds).
     private func resetTimer() {
         gameTimer?.invalidate()
         gameTimer = Timer.scheduledTimer(timeInterval: 10, target: self, selector: #selector(updateScoreForTime), userInfo: nil, repeats: true)
@@ -88,6 +88,10 @@ class ViewController: UIViewController {
             resetTimer()
         }
         else if !boardIsFull {
+            if let match = game.findMatchInOpenCards() {
+                game.score -= 3 // if the user pressed "deal" but there was a match in openCards
+            }
+            // in any case:
             game.drawThreeCards()
             addNewOpenCardsToMapper()
             resetTimer()

@@ -31,7 +31,8 @@ struct SetGame
      Properties
      -------- */
     
-    // An arbitrary number utilized to provide matches with score based on number of open cards.
+    // An arbitrary number utilized to score matches (update score based on matches) based on number of open cards.
+    // (The view controller also uses a timer to decreases this value if the player takes a long time to find a match).
     var BaseForScore = 240
     
     var score = 0
@@ -125,12 +126,15 @@ struct SetGame
     /*
         The algorithm I implemented was found here:
         http://pbg.cs.illinois.edu/papers/set.pdf
+        (The OptimumPairCheck algorithm)
      */
     func findMatchInOpenCards() -> [SetCard]? {
         let (leftHalf, rightHalf) = openCards.split()
         
         for first in 0..<leftHalf.count {
             for second in 0..<leftHalf.count {
+                if first == second {continue} // we don't want to send the same card
+                
                 let missingCardForLeft = getMissingCardForMatch(first: leftHalf[first], second: leftHalf[second])
                 let missingCardForRight = getMissingCardForMatch(first: rightHalf[first], second: rightHalf[second])
 
@@ -145,7 +149,8 @@ struct SetGame
         
         if rightHalf.count > leftHalf.count {
             for i in 0..<rightHalf.count {
-                let missingCardForRight = getMissingCardForMatch(first: rightHalf[i], second: leftHalf[rightHalf.count - 1])
+                if i == rightHalf.count - 1 {continue} //
+                let missingCardForRight = getMissingCardForMatch(first: rightHalf[i], second: rightHalf[rightHalf.count - 1])
                 if openCards.contains(missingCardForRight) {
                     return [rightHalf[i], rightHalf[rightHalf.count - 1], missingCardForRight]
                 }
@@ -186,6 +191,7 @@ struct SetGame
         
         // reset openCards array, and open first 12 cards from the deck
         openCards = []
+        
         openCards.append(contentsOf: deck.prefix(12))
         deck.removeFirst(12)
     }
@@ -211,7 +217,7 @@ struct SetGame
         legalValues.remove(object: first.color)
         legalValues.remove(object: second.color)
         let color = (first.color == second.color) ? first.color : legalValues[0]
-
+        
         return SetCard(shapeType: shapeType, shapesNum: shapesNum, filling: filling, color: color)
     }
 }
