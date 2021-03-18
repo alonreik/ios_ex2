@@ -121,9 +121,15 @@ struct SetGame
         } // else - do nothing
     }
     
-    //
+    /*
+        The algorithm I implemented was found here:
+        http://pbg.cs.illinois.edu/papers/set.pdf
+     */
     func findMatchInOpenCards() {
-        
+        let (leftHalf, rightHalf) = openCards.split()
+        print(leftHalf)
+        print(rightHalf)
+        print(leftHalf.count + rightHalf.count == openCards.count)
     }
          
     
@@ -163,11 +169,24 @@ struct SetGame
     }
 }
 
-// One of the exercise tasks was to implement and use an extension:
+/* Extensions :
+ (One of the exercise tasks was to implement and use an extensions)
+ */
+
+// Remove first collection element that is equal to the given object:
 extension Array where Element: Equatable {
-    // Remove first collection element that is equal to the given object:
     mutating func remove(object: Element) {
         guard let index = firstIndex(of: object) else {return}
         remove(at: index)
+    }
+}
+
+// Splits an array in half, in return both parts in a tuple: (leftHalf, rightHalf).
+extension Array {
+    func split() -> (left: [Element], right: [Element]) {
+        let half = self.count / 2
+        let leftSplit = self[0 ..< half]
+        let rightSplit = self[half ..< self.count]
+        return (left: Array(leftSplit), right: Array(rightSplit))
     }
 }
