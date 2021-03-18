@@ -14,10 +14,14 @@ class ViewController: UIViewController {
      -------- */
 
     var gameTimer: Timer?
+//    var enemyTimer: Timer?
     
+    @IBOutlet weak var userScoreLabel: UILabel!
     
-    @IBOutlet weak var scoreLabel: UILabel!
-
+    // iphoneScoreLabel.text = userScore >= iphoneScore? 📱😢 : 📱😂
+    // (if the enemy has higher score, it smiles. otherwise it weeps).
+    @IBOutlet weak var iphoneScoreLabel: UILabel!
+    
     @IBOutlet var cardButtons: [UIButton]!
 
     var game: SetGame = SetGame()
@@ -190,7 +194,7 @@ class ViewController: UIViewController {
         sets their appearance (with the relevant card or as a "covered card")
      */
     private func updateViewFromMapperAndModel() {
-        scoreLabel.text = "Score: \(game.score)"
+        userScoreLabel.text = "Score: \(game.score)"
         
         // Go over all cardButtons (using the careButtonsMapper) and update the info that they present
         for index in cardButtonsMapper.indices {

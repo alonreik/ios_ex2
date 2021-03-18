@@ -298,7 +298,7 @@
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="HYi-Yh-Tzk">
                                 <rect key="frame" x="71" y="792" width="63.5" height="49"/>
                                 <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="751" text="💻" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="878-0n-VpJ">
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="751" text="📱😢" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="878-0n-VpJ">
                                         <rect key="frame" x="0.0" y="0.0" width="63.5" height="20.5"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <nil key="textColor"/>
@@ -333,7 +333,8 @@
                         </constraints>
                     </view>
                     <connections>
-                        <outlet property="scoreLabel" destination="mbR-aF-Tpf" id="u8w-YX-kEh"/>
+                        <outlet property="iphoneScoreLabel" destination="AT2-uM-Z67" id="xN9-jz-gqZ"/>
+                        <outlet property="userScoreLabel" destination="mbR-aF-Tpf" id="u8w-YX-kEh"/>
                         <outletCollection property="cardButtons" destination="Hs0-Sm-bBG" collectionClass="NSMutableArray" id="M5w-f6-eoB"/>
                         <outletCollection property="cardButtons" destination="evg-Mj-agF" collectionClass="NSMutableArray" id="uSg-b8-IsS"/>
                         <outletCollection property="cardButtons" destination="6iG-eZ-ALH" collectionClass="NSMutableArray" id="n4R-8P-FGd"/>

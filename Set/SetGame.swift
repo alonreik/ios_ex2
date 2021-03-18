@@ -36,6 +36,7 @@ struct SetGame
     var BaseForScore = 240
     
     var score = 0
+    var enemyScore = 0
     private var scoreUpdate: Int {
         // every time a match is found, the scoring update depends on the
         // number of open cards. (more open card = less score)
@@ -43,6 +44,7 @@ struct SetGame
             return BaseForScore / openCards.count // (integer division)
         }
     }
+    
     
     private var deck: [SetCard] = []
     private(set) var openCards: [SetCard] = []
@@ -128,6 +130,15 @@ struct SetGame
         } // else - do nothing
     }
     
+    
+    // TODO 
+    mutating func makeEnemyTurn() {
+        if let match = findMatchInOpenCards() {
+            selectedCards = match
+        } // else - do nothing
+    }
+    
+    
     /*
         The algorithm I implemented was found here:
         http://pbg.cs.illinois.edu/papers/set.pdf
@@ -188,7 +199,8 @@ struct SetGame
     // Resets the SetGame's instance properties (sets score = 0, resets deck, then open 12 cards).
     private mutating func startGame() {
         
-        // reset score
+        // reset scores
+        enemyScore = 0
         score = 0
         BaseForScore = 240
         
