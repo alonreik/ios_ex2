@@ -66,22 +66,7 @@ class ViewController: UIViewController {
     // The sole puprpose of this (overriden) function is to invalidate the timers to prevent reference cycles in memory.
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        gameTimer?.invalidate()
-        enemyTimer?.invalidate()
-    }
-    
-    
-    // Resets the timer and the Base for score (which decreases as the timer proceeds).
-    private func stopTimers() {
-        gameTimer?.invalidate()
-        enemyTimer?.invalidate()
-    }
-    
-    private func startTimers() {
-        gameTimer = Timer.scheduledTimer(timeInterval: 10, target: self, selector: #selector(updateUserScoreForTime), userInfo: nil, repeats: true)
-        // todo - update time (also in reset function)
-        enemyTimer = Timer.scheduledTimer(timeInterval: 2, target: self, selector: #selector(makeEnemyTurn), userInfo: nil, repeats: true)
-        game.BaseForScore = 240
+        stopTimers()
     }
     
     @IBAction func newGamePressed(_ sender: UIButton) {
@@ -280,5 +265,19 @@ class ViewController: UIViewController {
                 break
             }
         }
+    }
+    
+    // Invalidate timer instances.
+    private func stopTimers() {
+        gameTimer?.invalidate()
+        enemyTimer?.invalidate()
+    }
+    
+    // Start timers and reset the Base for score (which decreases as the timer proceeds).
+    private func startTimers() {
+        gameTimer = Timer.scheduledTimer(timeInterval: 10, target: self, selector: #selector(updateUserScoreForTime), userInfo: nil, repeats: true)
+        
+        enemyTimer = Timer.scheduledTimer(timeInterval: 15, target: self, selector: #selector(makeEnemyTurn), userInfo: nil, repeats: true)
+        game.BaseForScore = 240
     }
 }
