@@ -85,18 +85,17 @@ class ViewController: UIViewController {
             matchesCounter += 1
             game.drawThreeCards()
             replaceMatchedCardsOnMapper()
-            resetTimer()
         }
         else if !boardIsFull {
-            if let match = game.findMatchInOpenCards() {
+            if game.findMatchInOpenCards() != nil {
                 game.score -= 3 // if the user pressed "deal" but there was a match in openCards
             }
             // in any case:
             game.drawThreeCards()
             addNewOpenCardsToMapper()
-            resetTimer()
         }
         // in any case:
+        resetTimer()
         updateViewFromMapperAndModel()
     }
     
@@ -109,7 +108,6 @@ class ViewController: UIViewController {
                     matchesCounter += 1
                     game.chooseCard(chosenCard: chosenCard)
                     replaceMatchedCardsOnMapper()
-                    
                     resetTimer()
                 } else {
                     game.chooseCard(chosenCard: chosenCard)
@@ -121,6 +119,19 @@ class ViewController: UIViewController {
         } else {
             print("Encountered an error. The UI included a button which isn't on cardButtons.")
         }
+    }
+    
+    // This function currently doesn't penalize with points reduction.
+    @IBAction func cheatButtonPressed(_ sender: UIButton) {
+        game.resetCardSelection()
+        if let match = game.findMatchInOpenCards() {
+            for i in 0..<match.count {
+                game.chooseCard(chosenCard: match[i])
+            }
+        } else {
+            print("There isn't a 'set' in the currently open cards")
+        }
+        updateViewFromMapperAndModel()
     }
     
     /* -------

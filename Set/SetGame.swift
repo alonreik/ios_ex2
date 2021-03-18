@@ -63,6 +63,11 @@ struct SetGame
      Methods
      -------- */
     
+    // as advertized, resets the selectedCards array. 
+    mutating func resetCardSelection() {
+        selectedCards = []
+    }
+    
     /*
         If the provided card is already selected: it is diselected or ignored.
         otherwise, the provided card is added to the selected cards, and the necessary updates are preformed.
@@ -198,21 +203,26 @@ struct SetGame
     
     // Given any two setCards , returns the one and only other card that forms a set with them.
     private func getMissingCardForMatch(first: SetCard, second: SetCard) -> SetCard {
+        
+        // calculate the shape of the missing card
         var legalValues = SetCard.legalValues
         legalValues.remove(object: first.shapeType)
         legalValues.remove(object: second.shapeType)
         let shapeType = (first.shapeType == second.shapeType) ? first.shapeType : legalValues[0]
         
+        // calculate the number of shapes of the missing card
         legalValues = SetCard.legalValues
         legalValues.remove(object: first.shapesNum)
         legalValues.remove(object: second.shapesNum)
         let shapesNum = (first.shapesNum == second.shapesNum) ? first.shapesNum : legalValues[0]
-
+        
+        // calculate the filling type of the missing card
         legalValues = SetCard.legalValues
         legalValues.remove(object: first.filling)
         legalValues.remove(object: second.filling)
         let filling = (first.filling == second.filling) ? first.filling : legalValues[0]
-
+        
+        // calculate the color of the missing card
         legalValues = SetCard.legalValues
         legalValues.remove(object: first.color)
         legalValues.remove(object: second.color)

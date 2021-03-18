@@ -3,6 +3,7 @@
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
+        <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="Stack View standard spacing" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
@@ -281,14 +282,26 @@
                                     </button>
                                 </subviews>
                             </stackView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gJB-zl-sPv">
+                                <rect key="frame" x="271" y="794" width="72" height="43"/>
+                                <color key="tintColor" name="AccentColor"/>
+                                <state key="normal" title="Cheat! 😏"/>
+                                <connections>
+                                    <action selector="cheatButtonPressed:" destination="BYZ-38-t0r" eventType="touchUpInside" id="yuF-JC-GZy"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" systemColor="systemGray5Color"/>
                         <constraints>
+                            <constraint firstItem="gJB-zl-sPv" firstAttribute="top" secondItem="fOB-OL-HXc" secondAttribute="bottom" constant="43.5" id="314-Hs-4QV"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="gJB-zl-sPv" secondAttribute="bottom" constant="25" id="8Ao-XM-xQ3"/>
+                            <constraint firstItem="gJB-zl-sPv" firstAttribute="leading" secondItem="iCk-FR-V1g" secondAttribute="trailing" constant="26.5" id="BE8-lY-wTu"/>
                             <constraint firstItem="iCk-FR-V1g" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="BZJ-wu-DU6"/>
                             <constraint firstItem="fOB-OL-HXc" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="71" id="PS8-Et-ngK"/>
                             <constraint firstItem="fOB-OL-HXc" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="27" id="XkL-fp-Lgm"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="fOB-OL-HXc" secondAttribute="trailing" constant="71" id="YFl-zB-nID"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="gJB-zl-sPv" secondAttribute="trailing" constant="71" id="coJ-94-5o7"/>
                             <constraint firstItem="iCk-FR-V1g" firstAttribute="top" secondItem="fOB-OL-HXc" secondAttribute="bottom" constant="8" symbolic="YES" id="gVx-Iv-qTW"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="iCk-FR-V1g" secondAttribute="bottom" constant="17" id="tzG-ZW-CLN"/>
                         </constraints>
@@ -327,6 +340,9 @@
         </scene>
     </scenes>
     <resources>
+        <namedColor name="AccentColor">
+            <color red="0.0" green="0.46000000000000002" blue="0.89000000000000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
         <systemColor name="systemGray5Color">
             <color red="0.89803921568627454" green="0.89803921568627454" blue="0.91764705882352937" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
