@@ -120,6 +120,11 @@ struct SetGame
             deck.removeFirst(3)
         } // else - do nothing
     }
+    
+    //
+    func findMatchInOpenCards() {
+        
+    }
          
     
     /* ------------

@@ -125,7 +125,9 @@ class ViewController: UIViewController {
     
     //
     @objc func updateScoreForTime() {
-        game.BaseForScore -= 10
+        if game.BaseForScore > 0 {
+            game.BaseForScore -= 10
+        }
     }
     
     // Makes sure cardButtonsMapper is famliar with every open card in the game (Model)
