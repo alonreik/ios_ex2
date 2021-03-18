@@ -32,7 +32,7 @@ class SetCard: Equatable
     let color: Int
         
     // every property
-    static let legalValues = 1...3
+    static let legalValues = [1,2,3]
     
     
     /* -------

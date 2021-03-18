@@ -47,7 +47,8 @@ struct SetGame
     private(set) var openCards: [SetCard] = []
     private(set) var selectedCards: [SetCard] = []
     private(set) var matches: [[SetCard]] = []
-    
+    // The var below is a subset of openCards (it may include 3 cards from openCards that form a match)
+
     
     /* -------
      Initiators
@@ -125,11 +126,32 @@ struct SetGame
         The algorithm I implemented was found here:
         http://pbg.cs.illinois.edu/papers/set.pdf
      */
-    func findMatchInOpenCards() {
+    func findMatchInOpenCards() -> [SetCard]? {
         let (leftHalf, rightHalf) = openCards.split()
-        print(leftHalf)
-        print(rightHalf)
-        print(leftHalf.count + rightHalf.count == openCards.count)
+        
+        for first in 0..<leftHalf.count {
+            for second in 0..<leftHalf.count {
+                let missingCardForLeft = getMissingCardForMatch(first: leftHalf[first], second: leftHalf[second])
+                let missingCardForRight = getMissingCardForMatch(first: rightHalf[first], second: rightHalf[second])
+
+                if openCards.contains(missingCardForLeft) {
+                    return [leftHalf[first], leftHalf[second], missingCardForLeft]
+                }
+                else if openCards.contains(missingCardForRight) {
+                    return [rightHalf[first], rightHalf[second], missingCardForRight]
+                } // else : do nothing
+            }
+        }
+        
+        if rightHalf.count > leftHalf.count {
+            for i in 0..<rightHalf.count {
+                let missingCardForRight = getMissingCardForMatch(first: rightHalf[i], second: leftHalf[rightHalf.count - 1])
+                if openCards.contains(missingCardForRight) {
+                    return [rightHalf[i], rightHalf[rightHalf.count - 1], missingCardForRight]
+                }
+            }
+        }
+        return nil
     }
          
     
@@ -167,6 +189,31 @@ struct SetGame
         openCards.append(contentsOf: deck.prefix(12))
         deck.removeFirst(12)
     }
+    
+    // Given any two setCards , returns the one and only other card that forms a set with them.
+    private func getMissingCardForMatch(first: SetCard, second: SetCard) -> SetCard {
+        var legalValues = SetCard.legalValues
+        legalValues.remove(object: first.shapeType)
+        legalValues.remove(object: second.shapeType)
+        let shapeType = (first.shapeType == second.shapeType) ? first.shapeType : legalValues[0]
+        
+        legalValues = SetCard.legalValues
+        legalValues.remove(object: first.shapesNum)
+        legalValues.remove(object: second.shapesNum)
+        let shapesNum = (first.shapesNum == second.shapesNum) ? first.shapesNum : legalValues[0]
+
+        legalValues = SetCard.legalValues
+        legalValues.remove(object: first.filling)
+        legalValues.remove(object: second.filling)
+        let filling = (first.filling == second.filling) ? first.filling : legalValues[0]
+
+        legalValues = SetCard.legalValues
+        legalValues.remove(object: first.color)
+        legalValues.remove(object: second.color)
+        let color = (first.color == second.color) ? first.color : legalValues[0]
+
+        return SetCard(shapeType: shapeType, shapesNum: shapesNum, filling: filling, color: color)
+    }
 }
 
 /* Extensions :
@@ -181,7 +228,7 @@ extension Array where Element: Equatable {
     }
 }
 
-// Splits an array in half, in return both parts in a tuple: (leftHalf, rightHalf).
+// Splits an array in half, and returns both halves in a tuple: (leftHalf, rightHalf).
 extension Array {
     func split() -> (left: [Element], right: [Element]) {
         let half = self.count / 2
