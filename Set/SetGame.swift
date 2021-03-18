@@ -131,9 +131,8 @@ struct SetGame
     }
     
     
-    // TODO 
+    // Whenever called, this function forms a match (if such exists in openCards) and updates the enemy's score.
     mutating func makeEnemyTurn() {
-    
         if let match = findMatchInOpenCards() {
             // if openCards include 3 cards that form a match.
             selectedCards = match
@@ -141,7 +140,6 @@ struct SetGame
             enemyScore += 3
         } // else - do nothing
     }
-    
     
     /*
         The algorithm I implemented was found here:

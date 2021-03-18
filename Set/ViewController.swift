@@ -51,7 +51,6 @@ class ViewController: UIViewController {
         }
     }
     
-    
     /* -------
      Methods
      -------- */
@@ -68,6 +67,10 @@ class ViewController: UIViewController {
         super.viewWillDisappear(animated)
         stopTimers()
     }
+    
+    /* -------------------
+     Functions for Buttons
+     --------s------------*/
     
     @IBAction func newGamePressed(_ sender: UIButton) {
         cardButtonsMapper = [SetCard?](repeating: nil, count: cardButtons.count)
@@ -125,9 +128,8 @@ class ViewController: UIViewController {
         }
     }
     
-    // This function currently doesn't penalize with points reduction.
+    // This function currently doesn't penalize with points reduction (meaning, it rewards the player for a found match).
     @IBAction func cheatButtonPressed(_ sender: UIButton) {
-        
         if aMatchIsMarked {return} // ignore (if a match is marked, the game is paused).
         
         game.resetCardSelection()
@@ -275,9 +277,10 @@ class ViewController: UIViewController {
     
     // Start timers and reset the Base for score (which decreases as the timer proceeds).
     private func startTimers() {
-        gameTimer = Timer.scheduledTimer(timeInterval: 10, target: self, selector: #selector(updateUserScoreForTime), userInfo: nil, repeats: true)
+        gameTimer = Timer.scheduledTimer(timeInterval: 10.0, target: self, selector: #selector(updateUserScoreForTime), userInfo: nil, repeats: true)
         
-        enemyTimer = Timer.scheduledTimer(timeInterval: 15, target: self, selector: #selector(makeEnemyTurn), userInfo: nil, repeats: true)
+        let enemyTime = Double.random(in: 5.0..<20.0)
+        enemyTimer = Timer.scheduledTimer(timeInterval: enemyTime, target: self, selector: #selector(makeEnemyTurn), userInfo: nil, repeats: true)
         game.BaseForScore = 240
     }
 }
