@@ -14,7 +14,7 @@ class ViewController: UIViewController {
      -------- */
 
     var gameTimer: Timer?
-//    var enemyTimer: Timer?
+    var enemyTimer: Timer?
     
     @IBOutlet weak var userScoreLabel: UILabel!
     
@@ -60,28 +60,27 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         addNewOpenCardsToMapper()
         updateViewFromMapperAndModel()
-        
-        // init timers
-        gameTimer = Timer.scheduledTimer(timeInterval: 10, target: self, selector: #selector(updateUserScoreForTime), userInfo: nil, repeats: true)
-//        enemyTimer = Timer.scheduledTimer(timeInterval: 2, target: self, selector: #selector(makeEnemyTurn), userInfo: nil, repeats: true)
+        startTimers()
     }
     
     // The sole puprpose of this (overriden) function is to invalidate the timers to prevent reference cycles in memory.
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         gameTimer?.invalidate()
-//        enemyTimer?.invalidate()
+        enemyTimer?.invalidate()
     }
     
+    
     // Resets the timer and the Base for score (which decreases as the timer proceeds).
-    private func resetTimers() {
+    private func stopTimers() {
         gameTimer?.invalidate()
-//        enemyTimer?.invalidate()
-        
+        enemyTimer?.invalidate()
+    }
+    
+    private func startTimers() {
         gameTimer = Timer.scheduledTimer(timeInterval: 10, target: self, selector: #selector(updateUserScoreForTime), userInfo: nil, repeats: true)
         // todo - update time (also in reset function)
-//        enemyTimer = Timer.scheduledTimer(timeInterval: 2, target: self, selector: #selector(makeEnemyTurn), userInfo: nil, repeats: true)
-        
+        enemyTimer = Timer.scheduledTimer(timeInterval: 2, target: self, selector: #selector(makeEnemyTurn), userInfo: nil, repeats: true)
         game.BaseForScore = 240
     }
     
@@ -91,7 +90,8 @@ class ViewController: UIViewController {
         matchesCounter = 0
         addNewOpenCardsToMapper()
         updateViewFromMapperAndModel()
-        resetTimers()
+        stopTimers()
+        startTimers()
     }
     
     @IBAction func dealButtonPressed(_ sender: UIButton) {
@@ -99,7 +99,8 @@ class ViewController: UIViewController {
             matchesCounter += 1
             game.drawThreeCards()
             replaceMatchedCardsOnMapper()
-            resetTimers()
+            stopTimers()
+            startTimers()
         }
         else if !boardIsFull {
             if game.findMatchInOpenCards() != nil {
@@ -109,7 +110,8 @@ class ViewController: UIViewController {
             game.resetCardSelection()
             game.drawThreeCards()
             addNewOpenCardsToMapper()
-            resetTimers()
+            stopTimers()
+            startTimers()
         }
         // in any case:
         updateViewFromMapperAndModel()
@@ -124,7 +126,8 @@ class ViewController: UIViewController {
                     matchesCounter += 1
                     game.chooseCard(chosenCard: chosenCard)
                     replaceMatchedCardsOnMapper()
-                    resetTimers()
+                    stopTimers()
+                    startTimers()
                 } else {
                     game.chooseCard(chosenCard: chosenCard)
                 }
@@ -139,6 +142,9 @@ class ViewController: UIViewController {
     
     // This function currently doesn't penalize with points reduction.
     @IBAction func cheatButtonPressed(_ sender: UIButton) {
+        
+        if aMatchIsMarked {return} // ignore (if a match is marked, the game is paused).
+        
         game.resetCardSelection()
         if let match = game.findMatchInOpenCards() {
             for i in 0..<match.count {
@@ -161,16 +167,14 @@ class ViewController: UIViewController {
         }
     }
     
-//    // Every time the enemyTimer run out of time, the computer marks a match.
-//    @objc private func makeEnemyTurn() {
-//        if let lastMatch = game.matches.last {
-//            if game.selectedCards == lastMatch {
-//                print("here")
-//                game.makeEnemyTurn()
-//                updateViewFromMapperAndModel()
-//            }
-//        }
-//    }
+    // Every time the enemyTimer run out of time, the computer marks a match.
+    @objc private func makeEnemyTurn() {
+        if aMatchIsMarked {return} // ignore (if a match is marked, the game is paused).
+        
+        game.makeEnemyTurn()
+        updateViewFromMapperAndModel()
+        stopTimers()
+    }
     
     // Makes sure cardButtonsMapper is famliar with every open card in the game (Model)
     private func addNewOpenCardsToMapper() {
@@ -216,8 +220,8 @@ class ViewController: UIViewController {
      */
     private func updateViewFromMapperAndModel() {
         userScoreLabel.text = "Score: \(game.score)"
-//        iphoneScoreLabel.text = "Score: \(game.enemyScore)"
-//        iphoneStateLabel.text = game.score >= game.enemyScore ? "📱😢" : "📱😂"
+        iphoneScoreLabel.text = "Score: \(game.enemyScore)"
+        iphoneStateLabel.text = game.score >= game.enemyScore ? "📱😢" : "📱😂"
         
         // Go over all cardButtons (using the careButtonsMapper) and update the info that they present
         for index in cardButtonsMapper.indices {
