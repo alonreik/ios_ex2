@@ -42,6 +42,7 @@ class ViewController: UIViewController {
         }
     }
     
+    
     /* -------
      Methods
      -------- */
@@ -50,6 +51,7 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         addNewOpenCardsToMapper()
         updateViewFromMapperAndModel()
+        
     }
     
     @IBAction func newGamePressed(_ sender: UIButton) {
