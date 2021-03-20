@@ -70,7 +70,7 @@ class ViewController: UIViewController {
     
     /* -------------------
      Functions for Buttons
-     --------s------------*/
+     ---------------------*/
     
     @IBAction func newGamePressed(_ sender: UIButton) {
         cardButtonsMapper = [SetCard?](repeating: nil, count: cardButtons.count)
@@ -87,6 +87,8 @@ class ViewController: UIViewController {
             matchesCounter += 1
             game.drawThreeCards()
             replaceMatchedCardsOnMapper()
+            
+            // reset timers
             stopTimers()
             startTimers()
         }
@@ -98,10 +100,13 @@ class ViewController: UIViewController {
             game.resetCardSelection()
             game.drawThreeCards()
             addNewOpenCardsToMapper()
+            
+            // reset timers
             stopTimers()
             startTimers()
         }
-        // in any case:
+        // in any case :
+        // note: timers shouldn't be reset if deal was pressed but board is full
         updateViewFromMapperAndModel()
     }
     

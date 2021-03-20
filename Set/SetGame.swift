@@ -18,14 +18,14 @@ struct SetGame
         Returns true iff (if and only if) the 3 provided setCards satisfy all conditions for a "set"
         (the method uses the funcionality of mathematical-sets to check if the cards are exactly the same or entirely different in each parameter).
      */
-    static func areCardsMatching(c1: SetCard, c2: SetCard, c3: SetCard) -> Bool {
-        let shapesTypes: Set<Int> = [c1.shapeType, c2.shapeType, c3.shapeType]
-        let shapesNumber: Set<Int> = [c1.shapesNum, c2.shapesNum, c3.shapesNum]
-        let shapesFill: Set<Int> = [c1.filling, c2.filling, c3.filling]
-        let shapesColor: Set<Int> = [c1.color, c2.color, c3.color]
-        
-        return shapesTypes.count != 2 && shapesNumber.count != 2 && shapesFill.count != 2 && shapesColor.count != 2
-    }
+//    static func areCardsMatching(c1: SetCard, c2: SetCard, c3: SetCard) -> Bool {
+//        let shapesTypes: Set<Int> = [c1.shapeType, c2.shapeType, c3.shapeType]
+//        let shapesNumber: Set<Int> = [c1.shapesNum, c2.shapesNum, c3.shapesNum]
+//        let shapesFill: Set<Int> = [c1.filling, c2.filling, c3.filling]
+//        let shapesColor: Set<Int> = [c1.color, c2.color, c3.color]
+//
+//        return shapesTypes.count != 2 && shapesNumber.count != 2 && shapesFill.count != 2 && shapesColor.count != 2
+//    }
         
     /* -------
      Properties
@@ -44,7 +44,6 @@ struct SetGame
             return BaseForScore / openCards.count // (integer division)
         }
     }
-    
     
     private var deck: [SetCard] = []
     private(set) var openCards: [SetCard] = []
@@ -67,7 +66,7 @@ struct SetGame
     
     // as advertized, resets the selectedCards array. 
     mutating func resetCardSelection() {
-        selectedCards = []
+        selectedCards.removeAll()
     }
     
     /*
@@ -92,24 +91,29 @@ struct SetGame
         
         // if chosen card is the 3rd selected card
         if selectedCards.count == 3 {
-            if SetGame.areCardsMatching(c1: selectedCards[0], c2: selectedCards[1], c3: selectedCards[2]) {
+            // check for match:
+            if chosenCard == getMissingCardForMatch(first: selectedCards[0], second: selectedCards[1]) {
                 score += scoreUpdate
                 matches.append(selectedCards)
-            } else {
+                // todo - choose if to use this method and to delete static function below
+            }
+            else {
+                // if the user chose a 3rd card which doesn't form a set
                 score -= 5
             }
         }
         // if the current card was chosen when 3 cards were already selected
         else if selectedCards.count == 4 {
-            if SetGame.areCardsMatching(c1: selectedCards[0], c2: selectedCards[1], c3: selectedCards[2]) {
-                // remove 3 already selected cards from the game (from open cards):
-                openCards.removeAll(where: {value in return selectedCards[0..<3].contains(value)})
+            if let lastMatch = matches.last {
+                if selectedCards.contains(other: lastMatch) {
+                    openCards.removeAll(where: {value in return selectedCards[0..<3].contains(value)})
+                    drawThreeCards()
+                } // if the last match is not in selectedCards - do nothing
                 
-                drawThreeCards()
-            }
+            } // in any case:
             selectedCards.removeFirst(3) // diselect 3 already selected cards
 
-        } // else selected cards contains 0/1/2 cards, nothing to do there
+        } // else: selected cards contains 0/1/2 cards, nothing to do there
     }
     
     /*
@@ -142,9 +146,9 @@ struct SetGame
     }
     
     /*
+        todo - document
         The algorithm I implemented was found here:
-        http://pbg.cs.illinois.edu/papers/set.pdf
-        (The OptimumPairCheck algorithm)
+        http://pbg.cs.illinois.edu/papers/set.pdf (The OptimumPairCheck algorithm)
      */
     func findMatchInOpenCards() -> [SetCard]? {
         let (leftHalf, rightHalf) = openCards.split()
@@ -221,32 +225,25 @@ struct SetGame
     private func getMissingCardForMatch(first: SetCard, second: SetCard) -> SetCard {
         
         // calculate the shape of the missing card
-        var legalValues = SetCard.legalValues
-        legalValues.remove(object: first.shapeType)
-        legalValues.remove(object: second.shapeType)
-        let shapeType = (first.shapeType == second.shapeType) ? first.shapeType : legalValues[0]
         
-        // calculate the number of shapes of the missing card
-        legalValues = SetCard.legalValues
-        legalValues.remove(object: first.shapesNum)
-        legalValues.remove(object: second.shapesNum)
-        let shapesNum = (first.shapesNum == second.shapesNum) ? first.shapesNum : legalValues[0]
-        
-        // calculate the filling type of the missing card
-        legalValues = SetCard.legalValues
-        legalValues.remove(object: first.filling)
-        legalValues.remove(object: second.filling)
-        let filling = (first.filling == second.filling) ? first.filling : legalValues[0]
-        
-        // calculate the color of the missing card
-        legalValues = SetCard.legalValues
-        legalValues.remove(object: first.color)
-        legalValues.remove(object: second.color)
-        let color = (first.color == second.color) ? first.color : legalValues[0]
+        let shapeType = getMissingAttrbuteForMatch(firstAttribute: first.shapeType, secondAttribute: second.shapeType)
+        let shapesNum = getMissingAttrbuteForMatch(firstAttribute: first.shapesNum, secondAttribute: second.shapesNum)
+        let filling = getMissingAttrbuteForMatch(firstAttribute: first.filling, secondAttribute: second.filling)
+        let color = getMissingAttrbuteForMatch(firstAttribute: first.color, secondAttribute: second.color)
         
         return SetCard(shapeType: shapeType, shapesNum: shapesNum, filling: filling, color: color)
     }
+    
+    
+    // todo - document
+    private func getMissingAttrbuteForMatch(firstAttribute: Int, secondAttribute: Int) -> Int {
+        var legalValues = SetCard.legalValues
+        legalValues.remove(object: firstAttribute)
+        legalValues.remove(object: secondAttribute)
+        return firstAttribute == secondAttribute ? firstAttribute : legalValues[0]
+    }
 }
+
 
 /* Extensions :
  (One of the exercise tasks was to implement and use an extensions)
@@ -267,5 +264,17 @@ extension Array {
         let leftSplit = self[0 ..< half]
         let rightSplit = self[half ..< self.count]
         return (left: Array(leftSplit), right: Array(rightSplit))
+    }
+}
+
+// todo - document
+extension Array where Element: Equatable {
+    mutating func contains(other: Array) -> Bool {
+        for item in other {
+            if !self.contains(item) {
+                return false
+            }
+        }
+        return true
     }
 }
