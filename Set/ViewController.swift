@@ -77,6 +77,11 @@ class ViewController: UIViewController {
     @IBAction func newGamePressed(_ sender: UIButton) {
         cardButtonsMapper = [SetCard?](repeating: nil, count: cardButtons.count)
         game = SetGame()
+        
+        for index in cardButtons.indices {
+            cardButtons[index].isHidden = false
+        }
+        gameOverLabel.isHidden = true
         matchesCounter = 0
         addNewOpenCardsToMapper()
         updateViewFromMapperAndModel()
@@ -242,12 +247,12 @@ class ViewController: UIViewController {
             }
         }
         
-//        if game.gameIsOver {
-//            for index in cardButtons.indices {
-//                cardButtons[index].isHidden = true
-//            }
-//            gameOverLabel.isHidden = false
-//        }
+        if game.gameIsOver {
+            for index in cardButtons.indices {
+                cardButtons[index].isHidden = true
+            }
+            gameOverLabel.isHidden = false
+        }
     }
         
     // Maps a SetCard object to the NSAttributedString representing it (in this implementation).
