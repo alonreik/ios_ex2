@@ -238,6 +238,9 @@ class ViewController: UIViewController {
                 button.layer.borderWidth = 0.0
             }
         }
+        if game.findMatchInOpenCards() == nil {
+            
+        }
     }
         
     // Maps a SetCard object to the NSAttributedString representing it (in this implementation).
