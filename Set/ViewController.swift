@@ -144,8 +144,7 @@ class ViewController: UIViewController {
     
     // This function currently doesn't penalize with points reduction (meaning, it rewards the player for a found match).
     @IBAction func cheatButtonPressed(_ sender: UIButton) {
-        guard isAMatchMarked else {return} // ignore (if a match is marked, the game is paused).
-        
+        guard !isAMatchMarked else {return} // if a match is marked, the game is paused, and we can ignore the pressing.
         game.resetCardSelection()
         if let match = game.findMatchInOpenCards() {
             for i in 0..<match.count {
