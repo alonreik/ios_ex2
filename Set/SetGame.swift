@@ -10,23 +10,6 @@ import Foundation
 struct SetGame
 {
     
-    /* ------------
-     Static Methods
-     -------------- */
-        
-    /*
-        Returns true iff (if and only if) the 3 provided setCards satisfy all conditions for a "set"
-        (the method uses the funcionality of mathematical-sets to check if the cards are exactly the same or entirely different in each parameter).
-     */
-//    static func areCardsMatching(c1: SetCard, c2: SetCard, c3: SetCard) -> Bool {
-//        let shapesTypes: Set<Int> = [c1.shapeType, c2.shapeType, c3.shapeType]
-//        let shapesNumber: Set<Int> = [c1.shapesNum, c2.shapesNum, c3.shapesNum]
-//        let shapesFill: Set<Int> = [c1.filling, c2.filling, c3.filling]
-//        let shapesColor: Set<Int> = [c1.color, c2.color, c3.color]
-//
-//        return shapesTypes.count != 2 && shapesNumber.count != 2 && shapesFill.count != 2 && shapesColor.count != 2
-//    }
-        
     /* -------
      Properties
      -------- */
@@ -49,7 +32,6 @@ struct SetGame
     private(set) var openCards: [SetCard] = []
     private(set) var selectedCards: [SetCard] = []
     private(set) var matches: [[SetCard]] = []
-    // The var below is a subset of openCards (it may include 3 cards from openCards that form a match)
 
     
     /* -------
@@ -64,7 +46,7 @@ struct SetGame
      Methods
      -------- */
     
-    // as advertized, resets the selectedCards array. 
+    // Resets the selectedCards array.
     mutating func resetCardSelection() {
         selectedCards.removeAll()
     }
@@ -95,11 +77,10 @@ struct SetGame
             if chosenCard == getMissingCardForMatch(first: selectedCards[0], second: selectedCards[1]) {
                 score += scoreUpdate
                 matches.append(selectedCards)
-                // todo - choose if to use this method and to delete static function below
             }
             else {
                 // if the user chose a 3rd card which doesn't form a set
-                score -= 5
+                score -= 5 // the user is penalized with 5 points for unsuccessful matches.
             }
         }
         // if the current card was chosen when 3 cards were already selected
@@ -146,7 +127,7 @@ struct SetGame
     }
     
     /*
-        todo - document
+        This function returns an array of 3 SetCards (subset of openCards) that form a match. Otherwise, it returns nil.
         The algorithm I implemented was found here:
         http://pbg.cs.illinois.edu/papers/set.pdf (The OptimumPairCheck algorithm)
      */
@@ -202,7 +183,7 @@ struct SetGame
         return resultDeck.shuffled()
     }
     
-    // Resets the SetGame's instance properties (sets score = 0, resets deck, then open 12 cards).
+    // Resets the SetGame's instance properties (sets scores = 0, resets deck and openCards, then open 12 cards).
     private mutating func startGame() {
         
         // reset scores
@@ -223,9 +204,7 @@ struct SetGame
     
     // Given any two setCards , returns the one and only other card that forms a set with them.
     private func getMissingCardForMatch(first: SetCard, second: SetCard) -> SetCard {
-        
-        // calculate the shape of the missing card
-        
+                
         let shapeType = getMissingAttrbuteForMatch(firstAttribute: first.shapeType, secondAttribute: second.shapeType)
         let shapesNum = getMissingAttrbuteForMatch(firstAttribute: first.shapesNum, secondAttribute: second.shapesNum)
         let filling = getMissingAttrbuteForMatch(firstAttribute: first.filling, secondAttribute: second.filling)
@@ -234,31 +213,32 @@ struct SetGame
         return SetCard(shapeType: shapeType, shapesNum: shapesNum, filling: filling, color: color)
     }
     
-    
-    // todo - document
+    // Given any two setCards' properties, returns the one and only other property that may form a set with them.
     private func getMissingAttrbuteForMatch(firstAttribute: Int, secondAttribute: Int) -> Int {
         var legalValues = SetCard.legalValues
         legalValues.remove(object: firstAttribute)
         legalValues.remove(object: secondAttribute)
+        
+        // if the given attributes are equal - return one of them. otherwise, return the 3rd remaining property.
         return firstAttribute == secondAttribute ? firstAttribute : legalValues[0]
     }
 }
-
 
 /* Extensions :
  (One of the exercise tasks was to implement and use an extensions)
  */
 
-// Remove first collection element that is equal to the given object:
 extension Array where Element: Equatable {
+    // Remove first collection element that is equal to the given object:
     mutating func remove(object: Element) {
         guard let index = firstIndex(of: object) else {return}
         remove(at: index)
     }
 }
 
-// Splits an array in half, and returns both halves in a tuple: (leftHalf, rightHalf).
 extension Array {
+    
+    // Splits an array in half, and returns both halves in a tuple: (leftHalf, rightHalf).
     func split() -> (left: [Element], right: [Element]) {
         let half = self.count / 2
         let leftSplit = self[0 ..< half]
@@ -267,8 +247,9 @@ extension Array {
     }
 }
 
-// todo - document
 extension Array where Element: Equatable {
+    
+    // Returns true iff the given array is a subset of "self".
     mutating func contains(other: Array) -> Bool {
         for item in other {
             if !self.contains(item) {
