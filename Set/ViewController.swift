@@ -252,6 +252,7 @@ class ViewController: UIViewController {
                 cardButtons[index].isHidden = true
             }
             gameOverLabel.isHidden = false
+            stopTimers()
         }
     }
         

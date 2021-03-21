@@ -19,7 +19,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" spacingType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="fOB-OL-HXc">
-                                <rect key="frame" x="20" y="44" width="374" height="220"/>
+                                <rect key="frame" x="20" y="64" width="374" height="220"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacingType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="8p5-XO-bsH">
                                         <rect key="frame" x="0.0" y="0.0" width="374" height="30"/>
@@ -305,7 +305,7 @@
                             <constraint firstItem="Z8l-28-Slw" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="10" id="U1N-Gf-SFF"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="dxm-f4-KUh" secondAttribute="bottom" constant="13" id="a7J-NQ-ngW"/>
                             <constraint firstItem="Z8l-28-Slw" firstAttribute="firstBaseline" relation="greaterThanOrEqual" secondItem="fOB-OL-HXc" secondAttribute="baseline" constant="28" symbolType="layoutAnchor" id="tDN-Ng-8wT"/>
-                            <constraint firstItem="fOB-OL-HXc" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="ybp-eC-MOH"/>
+                            <constraint firstItem="fOB-OL-HXc" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="20" id="ybp-eC-MOH"/>
                         </constraints>
                     </view>
                     <connections>
