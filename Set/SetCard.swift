@@ -48,4 +48,4 @@ class SetCard: Equatable
         self.filling = filling
         self.color = color
     }
-} 
+}

@@ -16,7 +16,7 @@ struct SetGame
     
     // An arbitrary number utilized to score matches (update score based on matches) based on number of open cards.
     // (The view controller also uses a timer to decreases this value if the player takes a long time to find a match).
-    var BaseForScore = 240
+    var baseScoreFactor = 240
     
     var score = 0
     var enemyScore = 0
@@ -24,14 +24,12 @@ struct SetGame
         // every time a match is found, the scoring update depends on the
         // number of open cards. (more open card = less score)
         get {
-            return BaseForScore / openCards.count // (integer division)
+            return baseScoreFactor / openCards.count // (integer division)
         }
     }
     
-    var gameIsOver: Bool {
-        get {
-            return deck.isEmpty && findMatchInOpenCards() == nil
-        }
+    var isGameOver: Bool {
+        return deck.isEmpty && findMatchInOpenCards() == nil
     }
     
     private var deck: [SetCard] = []
@@ -39,7 +37,6 @@ struct SetGame
     private(set) var selectedCards: [SetCard] = []
     private(set) var matches: [[SetCard]] = []
     
-
 
     
     /* -------
@@ -96,7 +93,7 @@ struct SetGame
             if let lastMatch = matches.last {
                 if selectedCards.contains(other: lastMatch) {
                     openCards.removeAll(where: {value in return selectedCards[0..<3].contains(value)})
-                    drawThreeCards()
+                    popThreeCardsFromDeck()
                 } // if the last match is not in selectedCards - do nothing
                 
             } // in any case:
@@ -110,7 +107,7 @@ struct SetGame
         Regardless, if the deck has at least 3 cards, the function pops 3 cards from the deck to openCards.
         (and does nothing otherwise).
     */
-    mutating func drawThreeCards() {
+    mutating func popThreeCardsFromDeck() {
         if let lastMatch = matches.last {
             if lastMatch == selectedCards {
                 openCards.removeAll(where: {value in return selectedCards[0..<3].contains(value)}) // closure
@@ -126,21 +123,23 @@ struct SetGame
     
     // Whenever called, this function forms a match (if such exists in openCards) and updates the enemy's score.
     mutating func makeEnemyTurn() {
-        if let match = findMatchInOpenCards() {
-            // if openCards include 3 cards that form a match.
-            selectedCards = match
-            matches.append(selectedCards)
-            enemyScore += 3
-        } // else - do nothing
+        guard let match = findMatchInOpenCards() else {
+            return
+        }
+        // if openCards include 3 cards that form a match.
+        selectedCards = match
+        matches.append(selectedCards)
+        enemyScore += 3
     }
     
     /*
-        This function returns an array of 3 SetCards (subset of openCards) that form a match. Otherwise, it returns nil.
+        This function returns an array of 3 SetCards (subset of openCards) that form a match.
+        Otherwise (if no match is found), it returns nil.
         The algorithm I implemented was found here:
         http://pbg.cs.illinois.edu/papers/set.pdf (The OptimumPairCheck algorithm)
      */
     func findMatchInOpenCards() -> [SetCard]? {
-        let (leftHalf, rightHalf) = openCards.split()
+        let (leftHalf, rightHalf) = openCards.splitToTwo()
         
         for first in 0..<leftHalf.count {
             for second in 0..<leftHalf.count {
@@ -160,7 +159,7 @@ struct SetGame
         
         if rightHalf.count > leftHalf.count {
             for i in 0..<rightHalf.count {
-                if i == rightHalf.count - 1 {continue} //
+                if i == rightHalf.count - 1 {continue}
                 let missingCardForRight = getMissingCardForMatch(first: rightHalf[i], second: rightHalf[rightHalf.count - 1])
                 if openCards.contains(missingCardForRight) {
                     return [rightHalf[i], rightHalf[rightHalf.count - 1], missingCardForRight]
@@ -197,7 +196,7 @@ struct SetGame
         // reset scores
         enemyScore = 0
         score = 0
-        BaseForScore = 240
+        baseScoreFactor = 240
         
         // initiate an 81 SetCards deck
         deck = getInitialDeck()
@@ -247,7 +246,7 @@ extension Array where Element: Equatable {
 extension Array {
     
     // Splits an array in half, and returns both halves in a tuple: (leftHalf, rightHalf).
-    func split() -> (left: [Element], right: [Element]) {
+    func splitToTwo() -> (left: [Element], right: [Element]) {
         let half = self.count / 2
         let leftSplit = self[0 ..< half]
         let rightSplit = self[half ..< self.count]

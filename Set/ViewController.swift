@@ -38,7 +38,7 @@ class ViewController: UIViewController {
     lazy var cardButtonsMapper = [SetCard?](repeating: nil, count: cardButtons.count)
     // (I used lazy only so I could use the count of cardButtons)
     
-    var boardIsFull: Bool {
+    var isBoardFull: Bool {
         get {
             // return: cardButtonsMapper is "nil-free"?
             return cardButtonsMapper.filter({$0 != nil}).count == cardButtons.count
@@ -47,7 +47,7 @@ class ViewController: UIViewController {
     
     // A "helper variable" used to alert when a match is found
     var matchesCounter = 0
-    var aMatchIsMarked: Bool {
+    var isAMatchMarked: Bool {
         get {
             return matchesCounter < game.matches.count
         }
@@ -90,22 +90,22 @@ class ViewController: UIViewController {
     }
     
     @IBAction func dealButtonPressed(_ sender: UIButton) {
-        if aMatchIsMarked {
+        if isAMatchMarked {
             matchesCounter += 1
-            game.drawThreeCards()
+            game.popThreeCardsFromDeck()
             replaceMatchedCardsOnMapper()
             
             // reset timers
             stopTimers()
             startTimers()
         }
-        else if !boardIsFull {
+        else if !isBoardFull {
             if game.findMatchInOpenCards() != nil {
                 game.score -= 3 // if the user pressed "deal" but there was a match in openCards
             }
             // even if game.findMatchInOpenCards() is nil:
             game.resetCardSelection()
-            game.drawThreeCards()
+            game.popThreeCardsFromDeck()
             addNewOpenCardsToMapper()
             
             // reset timers
@@ -120,7 +120,7 @@ class ViewController: UIViewController {
     @IBAction func touchCard(_ sender: UIButton) {
         if let index = cardButtons.firstIndex(of: sender){
             if let chosenCard = cardButtonsMapper[index] {
-                if aMatchIsMarked { // then this is the 4th card selected after a match
+                if isAMatchMarked { // then this is the 4th card selected after a match
                     // if one of the matched card was clicked again, ignore:
                     if game.selectedCards.contains(chosenCard) {return}
                     else {
@@ -144,7 +144,7 @@ class ViewController: UIViewController {
     
     // This function currently doesn't penalize with points reduction (meaning, it rewards the player for a found match).
     @IBAction func cheatButtonPressed(_ sender: UIButton) {
-        if aMatchIsMarked {return} // ignore (if a match is marked, the game is paused).
+        guard isAMatchMarked else {return} // ignore (if a match is marked, the game is paused).
         
         game.resetCardSelection()
         if let match = game.findMatchInOpenCards() {
@@ -163,14 +163,14 @@ class ViewController: UIViewController {
     
     // Every time the gameTimer run out of time, the potential score for a match decreases.
     @objc private func updateUserScoreForTime() {
-        if game.BaseForScore > 0 {
-            game.BaseForScore -= 10
+        if game.baseScoreFactor > 0 {
+            game.baseScoreFactor -= 10
         }
     }
     
     // Every time the enemyTimer run out of time, the computer marks a match.
     @objc private func makeEnemyTurn() {
-        if aMatchIsMarked {return} // ignore (if a match is marked, the game is paused).
+        if isAMatchMarked {return} // ignore (if a match is marked, the game is paused).
         
         game.makeEnemyTurn()
         updateViewFromMapperAndModel()
@@ -247,7 +247,7 @@ class ViewController: UIViewController {
             }
         }
         
-        if game.gameIsOver {
+        if game.isGameOver {
             for index in cardButtons.indices {
                 cardButtons[index].isHidden = true
             }
@@ -304,6 +304,6 @@ class ViewController: UIViewController {
         
         let enemyTime = Double.random(in: 5.0..<20.0)
         enemyTimer = Timer.scheduledTimer(timeInterval: enemyTime, target: self, selector: #selector(makeEnemyTurn), userInfo: nil, repeats: true)
-        game.BaseForScore = 240
+        game.baseScoreFactor = 240
     }
 }
