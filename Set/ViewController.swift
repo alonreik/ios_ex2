@@ -20,6 +20,8 @@ class ViewController: UIViewController {
     
     @IBOutlet weak var iphoneScoreLabel: UILabel!
     
+    @IBOutlet weak var gameOverLabel: UILabel!
+    
     // iphoneStateLabel.text = userScore >= iphoneScore? 📱😢 : 📱😂
     // (if the enemy has higher score, it smiles. otherwise it weeps).
     @IBOutlet weak var iphoneStateLabel: UILabel!
@@ -213,6 +215,7 @@ class ViewController: UIViewController {
         sets their appearance (with the relevant card or as a "covered card")
      */
     private func updateViewFromMapperAndModel() {
+        
         userScoreLabel.text = "Score: \(game.score)"
         iphoneScoreLabel.text = "Score: \(game.enemyScore)"
         iphoneStateLabel.text = game.score >= game.enemyScore ? "📱😢" : "📱😂"
@@ -238,9 +241,13 @@ class ViewController: UIViewController {
                 button.layer.borderWidth = 0.0
             }
         }
-        if game.findMatchInOpenCards() == nil {
-            
-        }
+        
+//        if game.gameIsOver {
+//            for index in cardButtons.indices {
+//                cardButtons[index].isHidden = true
+//            }
+//            gameOverLabel.isHidden = false
+//        }
     }
         
     // Maps a SetCard object to the NSAttributedString representing it (in this implementation).

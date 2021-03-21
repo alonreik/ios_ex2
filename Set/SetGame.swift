@@ -28,10 +28,18 @@ struct SetGame
         }
     }
     
+    var gameIsOver: Bool {
+        get {
+            return deck.isEmpty && findMatchInOpenCards() == nil
+        }
+    }
+    
     private var deck: [SetCard] = []
     private(set) var openCards: [SetCard] = []
     private(set) var selectedCards: [SetCard] = []
     private(set) var matches: [[SetCard]] = []
+    
+
 
     
     /* -------
