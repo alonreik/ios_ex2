@@ -112,15 +112,17 @@ class ViewController: UIViewController {
     
     @IBAction func touchCard(_ sender: UIButton) {
         if let index = cardButtons.firstIndex(of: sender){
-    
             if let chosenCard = cardButtonsMapper[index] {
-                
                 if aMatchIsMarked { // then this is the 4th card selected after a match
-                    matchesCounter += 1
-                    game.chooseCard(chosenCard: chosenCard)
-                    replaceMatchedCardsOnMapper()
-                    stopTimers()
-                    startTimers()
+                    // if one of the matched card was clicked again, ignore:
+                    if game.selectedCards.contains(chosenCard) {return}
+                    else {
+                        matchesCounter += 1
+                        game.chooseCard(chosenCard: chosenCard)
+                        replaceMatchedCardsOnMapper()
+                        stopTimers()
+                        startTimers()
+                    }
                 } else {
                     game.chooseCard(chosenCard: chosenCard)
                 }
