@@ -30,9 +30,6 @@ class SetCard: Equatable
     let shapesNum: NumberOfShapes
     let filling: Filling
     let color: Color
-        
-    // every property may take any value in the following constant array
-//    static let legalValues = [1,2,3] // todo
     
     /* -------
      Initiators
