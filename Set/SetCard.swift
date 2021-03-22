@@ -26,26 +26,46 @@ class SetCard: Equatable
      Properties
      -------- */
     
-    let shapeType: Int
-    let shapesNum: Int
-    let filling: Int
-    let color: Int
+    let shapeType: Shape
+    let shapesNum: NumberOfShapes
+    let filling: Filling
+    let color: Color
         
-    // every property
-    static let legalValues = [1,2,3]
-    
+    // every property may take any value in the following constant array
+//    static let legalValues = [1,2,3] // todo
     
     /* -------
      Initiators
      -------- */
-    init (shapeType: Int, shapesNum: Int, filling: Int, color: Int) {
-        
-        // assert that all given values are valid.
-        assert(SetCard.legalValues.contains(shapeType) && SetCard.legalValues.contains(shapesNum) && SetCard.legalValues.contains(filling) && SetCard.legalValues.contains(color), "SetCard.init(\(shapeType), \(shapesNum), \(filling)): One of the provided values is not in the range 1..3")
-        
+    
+    init (shapeType: Shape, shapesNum: NumberOfShapes, filling: Filling, color: Color) {
         self.shapeType = shapeType
         self.shapesNum = shapesNum
         self.filling = filling
         self.color = color
+    }
+    
+    enum Shape: CaseIterable {
+        case typeOne
+        case typeTwo
+        case typeThree
+    }
+
+    enum Filling: CaseIterable {
+        case typeOne
+        case typeTwo
+        case typeThree
+    }
+    
+    enum Color: CaseIterable {
+        case typeOne
+        case typeTwo
+        case typeThree
+    }
+    
+    enum NumberOfShapes: Int, CaseIterable {
+        case one = 1
+        case two = 2
+        case three = 3
     }
 }

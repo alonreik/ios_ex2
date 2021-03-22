@@ -7,16 +7,25 @@
 
 import Foundation
 
+
+/* -------
+ Constants
+ -------- */
+
+let initialBaseScoreFactor = 240
+let initialNumberOfOpenCards = 12
+
+// ------------------------------
+
 struct SetGame
 {
-    
     /* -------
      Properties
      -------- */
     
     // An arbitrary number utilized to score matches (update score based on matches) based on number of open cards.
     // (The view controller also uses a timer to decreases this value if the player takes a long time to find a match).
-    var baseScoreFactor = 240
+    var baseScoreFactor = initialBaseScoreFactor
     
     var score = 0
     var enemyScore = 0
@@ -29,14 +38,15 @@ struct SetGame
     }
     
     var isGameOver: Bool {
-        return deck.isEmpty && findMatchInOpenCards() == nil
+        get {
+            return deck.isEmpty && findMatchInOpenCards() == nil
+        }
     }
     
     private var deck: [SetCard] = []
     private(set) var openCards: [SetCard] = []
     private(set) var selectedCards: [SetCard] = []
     private(set) var matches: [[SetCard]] = []
-    
 
     
     /* -------
@@ -178,10 +188,11 @@ struct SetGame
     private func getInitialDeck() -> [SetCard] {
         
         var resultDeck = [SetCard]()
-        for shape in SetCard.legalValues {
-            for numShapes in SetCard.legalValues {
-                for filling in SetCard.legalValues {
-                    for color in SetCard.legalValues {
+        
+        for shape in SetCard.Shape.allCases {
+            for numShapes in SetCard.NumberOfShapes.allCases {
+                for filling in SetCard.Filling.allCases {
+                    for color in SetCard.Color.allCases {
                         resultDeck.append(SetCard(shapeType: shape, shapesNum: numShapes, filling: filling, color: color))
                     }
                 }
@@ -196,7 +207,7 @@ struct SetGame
         // reset scores
         enemyScore = 0
         score = 0
-        baseScoreFactor = 240
+        baseScoreFactor = initialBaseScoreFactor
         
         // initiate an 81 SetCards deck
         deck = getInitialDeck()
@@ -205,29 +216,38 @@ struct SetGame
         openCards = []
         selectedCards = []
         
-        openCards.append(contentsOf: deck.prefix(12))
-        deck.removeFirst(12)
+        openCards.append(contentsOf: deck.prefix(initialNumberOfOpenCards))
+        deck.removeFirst(initialNumberOfOpenCards)
     }
     
     // Given any two setCards , returns the one and only other card that forms a set with them.
     private func getMissingCardForMatch(first: SetCard, second: SetCard) -> SetCard {
                 
-        let shapeType = getMissingAttrbuteForMatch(firstAttribute: first.shapeType, secondAttribute: second.shapeType)
-        let shapesNum = getMissingAttrbuteForMatch(firstAttribute: first.shapesNum, secondAttribute: second.shapesNum)
-        let filling = getMissingAttrbuteForMatch(firstAttribute: first.filling, secondAttribute: second.filling)
-        let color = getMissingAttrbuteForMatch(firstAttribute: first.color, secondAttribute: second.color)
+        var allColors = SetCard.Color.allCases
+        allColors.remove(object: first.color)
+        allColors.remove(object: second.color)
+        // if the given cards' color are equal - return one of them. otherwise, return the 3rd remaining color.
+        let color = first.color == second.color ? first.color : allColors[0]
+        
+        var allShapes = SetCard.Shape.allCases
+        allShapes.remove(object: first.shapeType)
+        allShapes.remove(object: second.shapeType)
+        // if the given cards' shapes are equal - return one of them. otherwise, return the 3rd remaining shape.
+        let shapeType = first.shapeType == second.shapeType ? first.shapeType : allShapes[0]
+
+        var allFilling = SetCard.Filling.allCases
+        allFilling.remove(object: first.filling)
+        allFilling.remove(object: second.filling)
+        // if the given cards' filling are equal - return one of them. otherwise, return the 3rd remaining filling.
+        let filling = first.filling == second.filling ? first.filling : allFilling[0]
+        
+        var allPossibleNumbersOfShapes = SetCard.NumberOfShapes.allCases
+        allPossibleNumbersOfShapes.remove(object: first.shapesNum)
+        allPossibleNumbersOfShapes.remove(object: second.shapesNum)
+        // if the given cards show same number - return one that number. otherwise, return the 3rd remaining number.
+        let shapesNum = first.shapesNum == second.shapesNum ? first.shapesNum : allPossibleNumbersOfShapes[0]
         
         return SetCard(shapeType: shapeType, shapesNum: shapesNum, filling: filling, color: color)
-    }
-    
-    // Given any two setCards' properties, returns the one and only other property that may form a set with them.
-    private func getMissingAttrbuteForMatch(firstAttribute: Int, secondAttribute: Int) -> Int {
-        var legalValues = SetCard.legalValues
-        legalValues.remove(object: firstAttribute)
-        legalValues.remove(object: secondAttribute)
-        
-        // if the given attributes are equal - return one of them. otherwise, return the 3rd remaining property.
-        return firstAttribute == secondAttribute ? firstAttribute : legalValues[0]
     }
 }
 
@@ -244,7 +264,6 @@ extension Array where Element: Equatable {
 }
 
 extension Array {
-    
     // Splits an array in half, and returns both halves in a tuple: (leftHalf, rightHalf).
     func splitToTwo() -> (left: [Element], right: [Element]) {
         let half = self.count / 2
@@ -255,7 +274,6 @@ extension Array {
 }
 
 extension Array where Element: Equatable {
-    
     // Returns true iff the given array is a subset of "self".
     mutating func contains(other: Array) -> Bool {
         for item in other {

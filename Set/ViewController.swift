@@ -29,8 +29,9 @@ class ViewController: UIViewController {
     @IBOutlet var cardButtons: [UIButton]!
 
     var game: SetGame = SetGame()
-    let shapesDict = [1: "▲", 2: "●", 3: "■"]
-    let colorDict = [1: #colorLiteral(red: 0.9098039269, green: 0.4784313738, blue: 0.6431372762, alpha: 1), 2: #colorLiteral(red: 0.3647058904, green: 0.06666667014, blue: 0.9686274529, alpha: 1), 3: #colorLiteral(red: 0.4666666687, green: 0.7647058964, blue: 0.2666666806, alpha: 1)]
+    
+    let shapesDict = [SetCard.Shape.typeOne: "▲", SetCard.Shape.typeTwo: "●", SetCard.Shape.typeThree: "■"]
+    let colorDict = [SetCard.Color.typeOne: #colorLiteral(red: 0.9098039269, green: 0.4784313738, blue: 0.6431372762, alpha: 1), SetCard.Color.typeTwo: #colorLiteral(red: 0.3647058904, green: 0.06666667014, blue: 0.9686274529, alpha: 1), SetCard.Color.typeThree: #colorLiteral(red: 0.4666666687, green: 0.7647058964, blue: 0.2666666806, alpha: 1)]
     // filling dict: [1: full, 2: outline, 3: striped]
     
     /* An array mapping between cardButtons (buttons in the UI; every index represents a button)
@@ -258,19 +259,19 @@ class ViewController: UIViewController {
     // Maps a SetCard object to the NSAttributedString representing it (in this implementation).
     private func attriubtedStringForCard(card: SetCard) -> NSAttributedString? {
         // alpha is 0.15 for striped shapes (filling == 3), 1.0 for other fillings
-        let alpha: CGFloat = card.filling == 3 ? 0.15: 1.0
+        let alpha: CGFloat = card.filling == SetCard.Filling.typeThree ? 0.15: 1.0
         
         if let color = colorDict[card.color] {
             let attributes: [NSAttributedString.Key: Any] = [
                 // .strokeWidth should be positive only for outlined shapes (filling == 2),
                 // otherwise ([1,3].contains(filling)) it should be negative
-                .strokeWidth: 5.0 * pow(-1, card.filling),
+                .strokeWidth: card.filling == SetCard.Filling.typeTwo ? 5.0 : -5.0,
                 .strokeColor: color,
                 .foregroundColor:  color.withAlphaComponent(alpha)
                 ]
             if let shape = shapesDict[card.shapeType] {
                 var string = ""
-                for _ in 0..<card.shapesNum {
+                for _ in 0..<card.shapesNum.rawValue {
                     string += shape + " "
                 }
                 return NSAttributedString(string: string, attributes: attributes)
