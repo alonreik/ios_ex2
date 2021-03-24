@@ -141,28 +141,28 @@ class ViewController: UIViewController {
     }
     
     @IBAction func touchCard(_ sender: UIButton) {
-        if let index = cardButtons.firstIndex(of: sender){
-            if let chosenCard = cardButtonsMapper[index] {
-                if isAMatchMarked { // then this is the 4th card selected after a match
-                    // if one of the matched card was clicked again, ignore:
-                    if game.selectedCards.contains(chosenCard) {return}
-                    else {
-                        matchesCounter += 1
-                        game.chooseCard(chosenCard: chosenCard)
-                        replaceMatchedCardsOnMapper()
-                        stopTimers()
-                        startTimers()
-                    }
-                } else {
-                    game.chooseCard(chosenCard: chosenCard)
-                }
-                updateViewFromMapperAndModel()
-            } else { // cardButtonsMapper[index] = nil
-                print("Pressed on a 'hidden' card.")
+        guard let index = cardButtons.firstIndex(of: sender) else {
+            print("Encountered an error. The UI included a button which isn't on cardButtons.")
+            return
+        }
+        guard let chosenCard = cardButtonsMapper[index] else {
+            print("Pressed on a 'hidden' card.")
+            return
+        }
+        if isAMatchMarked { // then this is the 4th card selected after a match
+            // if one of the matched card was clicked again, ignore:
+            if game.selectedCards.contains(chosenCard) {return}
+            else {
+                matchesCounter += 1
+                game.chooseCard(chosenCard: chosenCard)
+                replaceMatchedCardsOnMapper()
+                stopTimers()
+                startTimers()
             }
         } else {
-            print("Encountered an error. The UI included a button which isn't on cardButtons.")
+            game.chooseCard(chosenCard: chosenCard)
         }
+        updateViewFromMapperAndModel()
     }
     
     // This function currently doesn't penalize with points reduction (meaning, it rewards the player for a found match).
