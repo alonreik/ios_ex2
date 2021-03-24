@@ -9,6 +9,10 @@ import UIKit
 
 class ViewController: UIViewController {
     
+    /* -------
+     Constants
+     -------- */
+    
     // The enemy turns' durations will be a generated randomly between the values below:
     let minWaitingDurationForEnemyTurn = 5.0
     let maxWaitingDurationForEnemyTurn = 20.0
@@ -21,8 +25,8 @@ class ViewController: UIViewController {
     let strokeWidthForFilledShapes = -5.0
     
     // Cards with filling of type 3 (striped shapes) get different alpha values (for coloring) than other cards.
-    let alphaForStripedShapes = 0.15
-    let alphaForFullShapes = 1.0
+    let alphaForStripedShapes: CGFloat = 0.15
+    let alphaForFullShapes: CGFloat = 1.0
     
     // When the time for a player to find a match elapses, his\her score is updated with the value below.
     let scoreTimePenalty = 10
@@ -31,9 +35,16 @@ class ViewController: UIViewController {
     let enemyLosingTitle = "📱😢" // presented if the enemy's score >= user's score.
     let enemyWinningTitle = "📱😂" // presented otherwise.
     
-    /* -------
-     Properties
-     -------- */
+    let shapesDict = [SetCard.Shape.typeOne: "▲", SetCard.Shape.typeTwo: "●", SetCard.Shape.typeThree: "■"]
+    let colorDict = [SetCard.Color.typeOne: #colorLiteral(red: 0.9098039269, green: 0.4784313738, blue: 0.6431372762, alpha: 1), SetCard.Color.typeTwo: #colorLiteral(red: 0.3647058904, green: 0.06666667014, blue: 0.9686274529, alpha: 1), SetCard.Color.typeThree: #colorLiteral(red: 0.4666666687, green: 0.7647058964, blue: 0.2666666806, alpha: 1)]
+    // filling dict: [1: full, 2: outline, 3: striped]
+    
+    // Selected cards in the game are highlighted on the screen by having a border.
+    let borderWidthForSelectedCards: CGFloat = 3.0
+    
+    /* --------------------
+     Properties (variables)
+     -----------------------*/
 
     var gameTimer: Timer?
     var enemyTimer: Timer?
@@ -51,10 +62,6 @@ class ViewController: UIViewController {
     @IBOutlet var cardButtons: [UIButton]!
 
     var game: SetGame = SetGame()
-    
-    let shapesDict = [SetCard.Shape.typeOne: "▲", SetCard.Shape.typeTwo: "●", SetCard.Shape.typeThree: "■"]
-    let colorDict = [SetCard.Color.typeOne: #colorLiteral(red: 0.9098039269, green: 0.4784313738, blue: 0.6431372762, alpha: 1), SetCard.Color.typeTwo: #colorLiteral(red: 0.3647058904, green: 0.06666667014, blue: 0.9686274529, alpha: 1), SetCard.Color.typeThree: #colorLiteral(red: 0.4666666687, green: 0.7647058964, blue: 0.2666666806, alpha: 1)]
-    // filling dict: [1: full, 2: outline, 3: striped]
     
     /* An array mapping between cardButtons (buttons in the UI; every index represents a button)
      to SetCard objects. (A nil value means that the button should be "empty") */
@@ -186,7 +193,7 @@ class ViewController: UIViewController {
     // Every time the gameTimer run out of time, the potential score for a match decreases.
     @objc private func updateUserScoreForTime() {
         if game.baseScoreFactor > 0 {
-            game.baseScoreFactor -= 10
+            game.baseScoreFactor -= scoreTimePenalty
         }
     }
     
@@ -254,7 +261,7 @@ class ViewController: UIViewController {
                 button.backgroundColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
                 button.setAttributedTitle(attriubtedStringForCard(card: card), for: UIControl.State.normal)
                 button.layer.borderColor = game.selectedCards.contains(card) ? #colorLiteral(red: 0.9607843161, green: 0.7058823705, blue: 0.200000003, alpha: 1): #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
-                button.layer.borderWidth = game.selectedCards.contains(card) ? 3.0: 0.0
+                button.layer.borderWidth = game.selectedCards.contains(card) ? borderWidthForSelectedCards : 0.0
                 
                 if let lastMatch = game.matches.last { // take last found match (3 cards)
                     // and if needed, mark the current card as a part of that match
@@ -288,7 +295,7 @@ class ViewController: UIViewController {
                 // different filling types for cards get different .strokeWidth values.
                 .strokeWidth: (card.filling == SetCard.Filling.typeTwo) ? strokeWidthForOutlineShapes : strokeWidthForFilledShapes,
                 .strokeColor: color,
-                .foregroundColor: color.withAlphaComponent(CGFloat(alpha))
+                .foregroundColor: color.withAlphaComponent(alpha)
                 ]
             if let shape = shapesDict[card.shapeType] {
                 var string = ""
