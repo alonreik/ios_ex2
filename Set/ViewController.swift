@@ -245,7 +245,7 @@ class ViewController: UIViewController {
         
         userScoreLabel.text = "Score: \(game.score)"
         iphoneScoreLabel.text = "Score: \(game.enemyScore)"
-        iphoneStateLabel.text = game.score >= game.enemyScore ? "📱😢" : "📱😂"
+        iphoneStateLabel.text = (game.score >= game.enemyScore) ? enemyLosingTitle : enemyWinningTitle
         
         // Go over all cardButtons (using the careButtonsMapper) and update the info that they present
         for index in cardButtonsMapper.indices {
@@ -280,16 +280,15 @@ class ViewController: UIViewController {
         
     // Maps a SetCard object to the NSAttributedString representing it (in this implementation).
     private func attriubtedStringForCard(card: SetCard) -> NSAttributedString? {
-        // alpha is 0.15 for striped shapes (filling == 3), 1.0 for other fillings
-        let alpha: CGFloat = card.filling == SetCard.Filling.typeThree ? 0.15: 1.0
+        // Different filling types for cards get different alpha value for coloring.
+        let alpha = (card.filling == SetCard.Filling.typeThree) ? alphaForStripedShapes: alphaForFullShapes
         
         if let color = colorDict[card.color] {
             let attributes: [NSAttributedString.Key: Any] = [
-                // .strokeWidth should be positive only for outlined shapes (filling == 2),
-                // otherwise ([1,3].contains(filling)) it should be negative
-                .strokeWidth: card.filling == SetCard.Filling.typeTwo ? 5.0 : -5.0,
+                // different filling types for cards get different .strokeWidth values.
+                .strokeWidth: (card.filling == SetCard.Filling.typeTwo) ? strokeWidthForOutlineShapes : strokeWidthForFilledShapes,
                 .strokeColor: color,
-                .foregroundColor:  color.withAlphaComponent(alpha)
+                .foregroundColor: color.withAlphaComponent(CGFloat(alpha))
                 ]
             if let shape = shapesDict[card.shapeType] {
                 var string = ""
