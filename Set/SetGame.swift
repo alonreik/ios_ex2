@@ -8,31 +8,30 @@
 import Foundation
 
 
-/* -------
- Constants
- -------- */
-
-let initialBaseScoreFactor = 240
-let initialNumberOfOpenCards = 12
-
-// ------------------------------
-
 struct SetGame
 {
+    /* -------
+     Constants
+     -------- */
+
+    let initialBaseScoreFactor = 240
+    let initialNumberOfOpenCards = 12
+    let falseMatchPenalty = 3
+    
     /* -------
      Properties
      -------- */
     
     // An arbitrary number utilized to score matches (update score based on matches) based on number of open cards.
     // (The view controller also uses a timer to decreases this value if the player takes a long time to find a match).
-    var baseScoreFactor = initialBaseScoreFactor
+    lazy var baseScoreFactor = initialBaseScoreFactor
     
     var score = 0
     var enemyScore = 0
     private var scoreUpdate: Int {
         // every time a match is found, the scoring update depends on the
         // number of open cards. (more open card = less score)
-        get {
+        mutating get {
             return baseScoreFactor / openCards.count // (integer division)
         }
     }

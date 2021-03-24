@@ -9,6 +9,28 @@ import UIKit
 
 class ViewController: UIViewController {
     
+    // The enemy turns' durations will be a generated randomly between the values below:
+    let minWaitingDurationForEnemyTurn = 5.0
+    let maxWaitingDurationForEnemyTurn = 20.0
+    
+    // The player will have the number of seconds listed below to find a match\set before his\her score will be damaged.
+    let timeForPlayerToFindSet = 10.0
+
+    // Shapes' "strokeWidth" should be positive only for outlined shapes.
+    let strokeWidthForOutlineShapes = 5.0
+    let strokeWidthForFilledShapes = -5.0
+    
+    // Cards with filling of type 3 (striped shapes) get different alpha values (for coloring) than other cards.
+    let alphaForStripedShapes = 0.15
+    let alphaForFullShapes = 1.0
+    
+    // When the time for a player to find a match elapses, his\her score is updated with the value below.
+    let scoreTimePenalty = 10
+    
+    // The strings below are presented on the screen as the enemy's status according to the current score.
+    let enemyLosingTitle = "📱😢" // presented if the enemy's score >= user's score.
+    let enemyWinningTitle = "📱😂" // presented otherwise.
+    
     /* -------
      Properties
      -------- */
@@ -300,10 +322,10 @@ class ViewController: UIViewController {
     
     // Start timers and reset the Base for score (which decreases as the timer proceeds).
     private func startTimers() {
-        gameTimer = Timer.scheduledTimer(timeInterval: 10.0, target: self, selector: #selector(updateUserScoreForTime), userInfo: nil, repeats: true)
+        gameTimer = Timer.scheduledTimer(timeInterval: timeForPlayerToFindSet, target: self, selector: #selector(updateUserScoreForTime), userInfo: nil, repeats: true)
         
-        let enemyTime = Double.random(in: 5.0..<20.0)
+        let enemyTime = Double.random(in: minWaitingDurationForEnemyTurn..<maxWaitingDurationForEnemyTurn)
         enemyTimer = Timer.scheduledTimer(timeInterval: enemyTime, target: self, selector: #selector(makeEnemyTurn), userInfo: nil, repeats: true)
-        game.baseScoreFactor = 240
+        game.baseScoreFactor = game.initialBaseScoreFactor
     }
 }
