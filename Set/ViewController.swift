@@ -52,9 +52,7 @@ class ViewController: UIViewController {
     @IBOutlet weak var userScoreLabel: UILabel!
     
     @IBOutlet weak var iphoneScoreLabel: UILabel!
-    
-    @IBOutlet weak var gameOverLabel: UILabel!
-    
+        
     // iphoneStateLabel.text = userScore >= iphoneScore? 📱😢 : 📱😂
     // (if the enemy has higher score, it smiles. otherwise it weeps).
     @IBOutlet weak var iphoneStateLabel: UILabel!
@@ -111,7 +109,6 @@ class ViewController: UIViewController {
         for index in cardButtons.indices {
             cardButtons[index].isHidden = false
         }
-        gameOverLabel.isHidden = true
         matchesCounter = 0
         addNewOpenCardsToMapper()
         updateViewFromMapperAndModel()
@@ -280,7 +277,6 @@ class ViewController: UIViewController {
             for index in cardButtons.indices {
                 cardButtons[index].isHidden = true
             }
-            gameOverLabel.isHidden = false
             stopTimers()
         }
     }

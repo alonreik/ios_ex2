@@ -280,19 +280,6 @@
                                     </stackView>
                                 </subviews>
                             </stackView>
-                            <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="NVv-ij-0bN">
-                                <rect key="frame" x="53" y="440" width="308.5" height="26.5"/>
-                                <attributedString key="attributedText">
-                                    <fragment content="Game is over!  Press New Game!">
-                                        <attributes>
-                                            <color key="NSColor" name="textColor" catalog="System" colorSpace="catalog"/>
-                                            <font key="NSFont" metaFont="system" size="22"/>
-                                            <paragraphStyle key="NSParagraphStyle" alignment="center" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
-                                        </attributes>
-                                    </fragment>
-                                </attributedString>
-                                <nil key="highlightedColor"/>
-                            </label>
                             <view contentMode="scaleToFill" id="1GT-Z3-4gi">
                                 <rect key="frame" x="131" y="485" width="152" height="128"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -303,8 +290,6 @@
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" systemColor="systemGray5Color"/>
                         <constraints>
-                            <constraint firstItem="NVv-ij-0bN" firstAttribute="centerY" secondItem="6Tk-OE-BBY" secondAttribute="centerY" id="0Vb-10-8ul"/>
-                            <constraint firstItem="NVv-ij-0bN" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="0xh-Fk-eMz"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="fOB-OL-HXc" secondAttribute="trailing" constant="20" id="FhY-Zu-hQ8"/>
                             <constraint firstItem="fOB-OL-HXc" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="20" id="JHy-cR-gGV"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="Z8l-28-Slw" secondAttribute="trailing" constant="10" id="Qfd-fR-eB3"/>
@@ -315,7 +300,6 @@
                         </constraints>
                     </view>
                     <connections>
-                        <outlet property="gameOverLabel" destination="NVv-ij-0bN" id="myL-SO-d90"/>
                         <outlet property="iphoneScoreLabel" destination="AT2-uM-Z67" id="xN9-jz-gqZ"/>
                         <outlet property="iphoneStateLabel" destination="878-0n-VpJ" id="4iH-ru-fZn"/>
                         <outlet property="userScoreLabel" destination="mbR-aF-Tpf" id="u8w-YX-kEh"/>
