@@ -280,8 +280,8 @@
                                     </stackView>
                                 </subviews>
                             </stackView>
-                            <view contentMode="scaleToFill" id="1GT-Z3-4gi">
-                                <rect key="frame" x="131" y="485" width="152" height="128"/>
+                            <view contentMode="scaleToFill" id="1GT-Z3-4gi" customClass="SetCardView" customModule="Set" customModuleProvider="target">
+                                <rect key="frame" x="131" y="352" width="92" height="146"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <viewLayoutGuide key="safeArea" id="MwX-cz-kxt"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
