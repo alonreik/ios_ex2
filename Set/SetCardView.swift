@@ -39,11 +39,11 @@ class SetCardView: UIView
     }
     
     //
-    private func attriubtedStringForCard(fontSize: CGFloat) -> NSAttributedString? {
+    private func attriubtedStringForCard() -> NSAttributedString? {
 //        private func attriubtedStringForCard(fontSize: CGFloat) -> NSAttributedString? {
 
         // create a preffered font with the given size.
-        var font = UIFont.preferredFont(forTextStyle: .body).withSize(fontSize)
+        var font = UIFont.preferredFont(forTextStyle: .body)
 
         // The line below makes the font size adjust to people changing display settings on Iphone.
         font = UIFontMetrics(forTextStyle: .body).scaledFont(for: font)
@@ -77,14 +77,17 @@ class SetCardView: UIView
     // Only override draw() if you perform custom drawing.
     // An empty implementation adversely affects performance during animation.
     override func draw(_ rect: CGRect) {
-        // todo - figure out font size
-        guard let attributedString = attriubtedStringForCard(fontSize: CGFloat(10.0)) else {
-            print("failed the let")
+        guard let attributedString = attriubtedStringForCard() else {
             return
         }
 
-        // todo - figure out inset by
-        let cardRect = bounds.insetBy(dx: 0, dy: 20)
+        //
+        let cardRect = CGRect(x: bounds.midX - (attributedString.size().width / 2),
+                              y: bounds.midY - (attributedString.size().height / 2),
+                              width: attributedString.size().width,
+                              height: attributedString.size().height)
+        
+        //
         attributedString.draw(in: cardRect)
     }
 }

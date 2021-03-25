@@ -49,6 +49,8 @@ class ViewController: UIViewController {
     var gameTimer: Timer?
     var enemyTimer: Timer?
     
+    @IBOutlet weak var openCardsCanvas: UIView!
+    
     @IBOutlet weak var userScoreLabel: UILabel!
     
     @IBOutlet weak var iphoneScoreLabel: UILabel!

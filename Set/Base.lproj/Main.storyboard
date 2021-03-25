@@ -18,7 +18,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" spacingType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="fOB-OL-HXc">
+                            <stackView hidden="YES" opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" spacingType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="fOB-OL-HXc">
                                 <rect key="frame" x="20" y="64" width="374" height="220"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacingType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="8p5-XO-bsH">
@@ -280,21 +280,23 @@
                                     </stackView>
                                 </subviews>
                             </stackView>
-                            <view contentMode="scaleToFill" id="1GT-Z3-4gi" customClass="SetCardView" customModule="Set" customModuleProvider="target">
-                                <rect key="frame" x="131" y="352" width="92" height="146"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <viewLayoutGuide key="safeArea" id="MwX-cz-kxt"/>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="TMH-ES-Haf" customClass="SetCardView" customModule="Set" customModuleProvider="target">
+                                <rect key="frame" x="20" y="64" width="374" height="676.5"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                             </view>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" systemColor="systemGray5Color"/>
                         <constraints>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="TMH-ES-Haf" secondAttribute="trailing" constant="20" id="3v3-RL-KVA"/>
+                            <constraint firstItem="TMH-ES-Haf" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="20" id="8uz-9D-Uar"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="fOB-OL-HXc" secondAttribute="trailing" constant="20" id="FhY-Zu-hQ8"/>
                             <constraint firstItem="fOB-OL-HXc" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="20" id="JHy-cR-gGV"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="Z8l-28-Slw" secondAttribute="trailing" constant="10" id="Qfd-fR-eB3"/>
                             <constraint firstItem="Z8l-28-Slw" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="10" id="U1N-Gf-SFF"/>
+                            <constraint firstItem="TMH-ES-Haf" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="20" id="Xdb-Td-iP1"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="dxm-f4-KUh" secondAttribute="bottom" constant="13" id="a7J-NQ-ngW"/>
+                            <constraint firstItem="Z8l-28-Slw" firstAttribute="firstBaseline" secondItem="TMH-ES-Haf" secondAttribute="baseline" constant="30.5" symbolType="layoutAnchor" id="muh-hZ-Tvz"/>
                             <constraint firstItem="Z8l-28-Slw" firstAttribute="firstBaseline" relation="greaterThanOrEqual" secondItem="fOB-OL-HXc" secondAttribute="baseline" constant="28" symbolType="layoutAnchor" id="tDN-Ng-8wT"/>
                             <constraint firstItem="fOB-OL-HXc" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="20" id="ybp-eC-MOH"/>
                         </constraints>
@@ -302,6 +304,7 @@
                     <connections>
                         <outlet property="iphoneScoreLabel" destination="AT2-uM-Z67" id="xN9-jz-gqZ"/>
                         <outlet property="iphoneStateLabel" destination="878-0n-VpJ" id="4iH-ru-fZn"/>
+                        <outlet property="openCardsCanvas" destination="TMH-ES-Haf" id="5jk-jf-Q7a"/>
                         <outlet property="userScoreLabel" destination="mbR-aF-Tpf" id="u8w-YX-kEh"/>
                         <outletCollection property="cardButtons" destination="Hs0-Sm-bBG" collectionClass="NSMutableArray" id="M5w-f6-eoB"/>
                         <outletCollection property="cardButtons" destination="evg-Mj-agF" collectionClass="NSMutableArray" id="uSg-b8-IsS"/>
