@@ -42,7 +42,7 @@ struct SetGame
         }
     }
     
-    private var deck: [SetCard] = []
+    private(set) var deck: [SetCard] = []
     private(set) var openCards: [SetCard] = []
     private(set) var selectedCards: [SetCard] = []
     private(set) var matches: [[SetCard]] = []

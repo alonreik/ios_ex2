@@ -49,7 +49,12 @@ class ViewController: UIViewController {
     var gameTimer: Timer?
     var enemyTimer: Timer?
     
+    // A view that displays the SetCardViews of the setCards included in openCards.
     @IBOutlet weak var openCardsCanvas: UIView!
+    // A mapper between setCard objects (part of the model) and setCardViews (part of the view)
+    var cardsModelToView: [SetCard: SetCardView] = [:]
+    
+    // ----------------------------------------- //
     
     @IBOutlet weak var userScoreLabel: UILabel!
     
@@ -82,18 +87,23 @@ class ViewController: UIViewController {
             return matchesCounter < game.matches.count
         }
     }
-    
+        
     /* -------
      Methods
      -------- */
     
+//    let shapesDict = [SetCard.Shape.typeOne: "▲", SetCard.Shape.typeTwo: "●", SetCard.Shape.typeThree: "■"]
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        addNewOpenCardsToMapper()
-        updateViewFromMapperAndModel()
+        
+        createCardsToCardsViewsMapper()
+    
+//        addNewOpenCardsToMapper()
+//        updateViewFromMapperAndModel()
         startTimers()
     }
-    
+        
     // The sole puprpose of this (overriden) function is to invalidate the timers to prevent reference cycles in memory.
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
@@ -112,8 +122,8 @@ class ViewController: UIViewController {
             cardButtons[index].isHidden = false
         }
         matchesCounter = 0
-        addNewOpenCardsToMapper()
-        updateViewFromMapperAndModel()
+//        addNewOpenCardsToMapper()
+//        updateViewFromMapperAndModel()
         stopTimers()
         startTimers()
     }
@@ -122,7 +132,7 @@ class ViewController: UIViewController {
         if isAMatchMarked {
             matchesCounter += 1
             game.popThreeCardsFromDeck()
-            replaceMatchedCardsOnMapper()
+//            replaceMatchedCardsOnMapper()
             
             // reset timers
             stopTimers()
@@ -135,7 +145,7 @@ class ViewController: UIViewController {
             // even if game.findMatchInOpenCards() is nil:
             game.resetCardSelection()
             game.popThreeCardsFromDeck()
-            addNewOpenCardsToMapper()
+//            addNewOpenCardsToMapper()
             
             // reset timers
             stopTimers()
@@ -143,7 +153,7 @@ class ViewController: UIViewController {
         }
         // in any case :
         // note: timers shouldn't be reset if deal was pressed but board is full
-        updateViewFromMapperAndModel()
+//        updateViewFromMapperAndModel()
     }
     
     @IBAction func touchCard(_ sender: UIButton) {
@@ -161,14 +171,14 @@ class ViewController: UIViewController {
             else {
                 matchesCounter += 1
                 game.chooseCard(chosenCard: chosenCard)
-                replaceMatchedCardsOnMapper()
+//                replaceMatchedCardsOnMapper()
                 stopTimers()
                 startTimers()
             }
         } else {
             game.chooseCard(chosenCard: chosenCard)
         }
-        updateViewFromMapperAndModel()
+//        updateViewFromMapperAndModel()
     }
     
     // This function currently doesn't penalize with points reduction (meaning, it rewards the player for a found match).
@@ -182,7 +192,7 @@ class ViewController: UIViewController {
         } else {
             print("There isn't a 'set' in the currently open cards")
         }
-        updateViewFromMapperAndModel()
+//        updateViewFromMapperAndModel()
     }
     
     /* -------
@@ -201,7 +211,7 @@ class ViewController: UIViewController {
         if isAMatchMarked {return} // ignore (if a match is marked, the game is paused).
         
         game.makeEnemyTurn()
-        updateViewFromMapperAndModel()
+//        updateViewFromMapperAndModel()
         stopTimers()
     }
     
@@ -248,11 +258,11 @@ class ViewController: UIViewController {
         sets their appearance (with the relevant card or as a "covered card")
      */
     private func updateViewFromMapperAndModel() {
-        
+
         userScoreLabel.text = "Score: \(game.score)"
         iphoneScoreLabel.text = "Score: \(game.enemyScore)"
         iphoneStateLabel.text = (game.score >= game.enemyScore) ? enemyLosingTitle : enemyWinningTitle
-        
+
         // Go over all cardButtons (using the careButtonsMapper) and update the info that they present
         for index in cardButtonsMapper.indices {
             let button = cardButtons[index]
@@ -261,12 +271,12 @@ class ViewController: UIViewController {
                 button.setAttributedTitle(attriubtedStringForCard(card: card), for: UIControl.State.normal)
                 button.layer.borderColor = game.selectedCards.contains(card) ? #colorLiteral(red: 0.9607843161, green: 0.7058823705, blue: 0.200000003, alpha: 1): #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
                 button.layer.borderWidth = game.selectedCards.contains(card) ? borderWidthForSelectedCards : 0.0
-                
+
                 if let lastMatch = game.matches.last { // take last found match (3 cards)
                     // and if needed, mark the current card as a part of that match
                     button.layer.borderColor = lastMatch.contains(card) ?#colorLiteral(red: 0.3411764801, green: 0.6235294342, blue: 0.1686274558, alpha: 1): #colorLiteral(red: 0.9607843161, green: 0.7058823705, blue: 0.200000003, alpha: 1)
                 } // if lastMatch is nil then there weren't any matches in the game (so no border coloring is needed).
-                
+
             } else { // if nil is in that index (the button should be covered).
                 button.setAttributedTitle(nil, for: UIControl.State.normal)
                 button.setTitle(nil, for: UIControl.State.normal)
@@ -274,7 +284,7 @@ class ViewController: UIViewController {
                 button.layer.borderWidth = 0.0
             }
         }
-        
+
         if game.isGameOver {
             for index in cardButtons.indices {
                 cardButtons[index].isHidden = true
@@ -287,7 +297,7 @@ class ViewController: UIViewController {
     private func attriubtedStringForCard(card: SetCard) -> NSAttributedString? {
         // Different filling types for cards get different alpha value for coloring.
         let alpha = (card.filling == SetCard.Filling.typeThree) ? alphaForStripedShapes: alphaForFullShapes
-        
+
         if let color = colorDict[card.color] {
             let attributes: [NSAttributedString.Key: Any] = [
                 // different filling types for cards get different .strokeWidth values.
@@ -331,5 +341,45 @@ class ViewController: UIViewController {
         let enemyTime = Double.random(in: minWaitingDurationForEnemyTurn..<maxWaitingDurationForEnemyTurn)
         enemyTimer = Timer.scheduledTimer(timeInterval: enemyTime, target: self, selector: #selector(makeEnemyTurn), userInfo: nil, repeats: true)
         game.baseScoreFactor = game.initialBaseScoreFactor
+    }
+    
+    // Creates and returns a custom SetCardView for the provided setCard object.
+    private func getCardView(of card: SetCard) -> SetCardView {
+        let viewCard = SetCardView(frame: CGRect())
+        // set SetCardView color
+        switch card.color {
+        case .typeOne: viewCard.color = .pink
+        case .typeTwo: viewCard.color = .purple
+        case .typeThree: viewCard.color = .green
+        }
+        // set SetCardView shapeType
+        switch card.shapeType {
+        case .typeOne: viewCard.shape = .triangle
+        case .typeTwo: viewCard.shape = .circle
+        case .typeThree: viewCard.shape = .square
+        }
+        // set SetCardView numberOfShapes
+        switch card.shapesNum {
+        case .one: viewCard.numberOfShapes = .single
+        case .two: viewCard.numberOfShapes = .double
+        case .three: viewCard.numberOfShapes = .triple
+        }
+        // set setCardView fillings
+        switch card.filling {
+        case .typeOne: viewCard.filling = .full
+        case .typeTwo: viewCard.filling = .outline
+        case .typeThree: viewCard.filling = .striped
+        }
+        return viewCard
+    }
+    
+    // Creates the mapper between the setCard objects and setCardViews
+    private func createCardsToCardsViewsMapper() {
+        for card in game.deck {
+            cardsModelToView[card] = getCardView(of: card)
+        }
+        for card in game.openCards {
+            cardsModelToView[card] = getCardView(of: card)
+        }
     }
 }

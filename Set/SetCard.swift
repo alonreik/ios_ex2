@@ -8,7 +8,7 @@
 import Foundation
 
 // it is a class because i want it to be a reference type
-class SetCard: Equatable
+class SetCard: Equatable, Hashable
 {
     
     /* ------------
@@ -64,5 +64,12 @@ class SetCard: Equatable
         case one = 1
         case two = 2
         case three = 3
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(shapeType)
+        hasher.combine(shapesNum)
+        hasher.combine(filling)
+        hasher.combine(color)
     }
 }
