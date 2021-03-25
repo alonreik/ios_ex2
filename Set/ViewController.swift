@@ -96,7 +96,6 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         createCardsToCardsViewsMapper()
     
 //        addNewOpenCardsToMapper()
@@ -380,6 +379,24 @@ class ViewController: UIViewController {
         }
         for card in game.openCards {
             cardsModelToView[card] = getCardView(of: card)
+        }
+    }
+    
+    //
+    private func updateOpenCardsViews() {
+        clearOpenCardsCanvas()
+        
+        // make sure that the cardView of every open card in the game is a subview of openCardsCanvas
+        for card in game.openCards {
+            guard let currCardView = cardsModelToView[card] else {return}
+            currCardView.addSubview(openCardsCanvas)
+        }
+    }
+    
+    //
+    private func clearOpenCardsCanvas() {
+        for view in openCardsCanvas.subviews {
+            view.removeFromSuperview()
         }
     }
 }
