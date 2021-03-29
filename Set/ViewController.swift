@@ -92,30 +92,25 @@ class ViewController: UIViewController {
     /* -------
      Methods
      -------- */
-        
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
         createCardsToCardsViewsMapper()
-        updateOpenCardsViews() // adds the game's openCards associated views to the openCards canvas.
+        updateOpenCardsViews() // adds the openCards' associated views to the openCards canvas.
         
         let (rows, cols) = getGridDimensions(from: game.openCards.count)
         let grid = Grid(layout: .dimensions(rowCount: rows, columnCount: cols), frame: openCardsCanvas.bounds)
         
         for (index, card) in game.openCards.enumerated() {
             guard let currCardView = cardsModelToView[card], let cardViewFrame = grid[index] else {return}
-            
             // place cardView in grid's cell:
             currCardView.frame = cardViewFrame
-            
+
             // set the cardView's background and border color
             currCardView.backgroundColor = #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
             currCardView.layer.borderWidth = 2.0
             currCardView.layer.borderColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1)
         }
-
-        
-        startTimers()
     }
         
     // The sole puprpose of this (overriden) function is to invalidate the timers to prevent reference cycles in memory.
