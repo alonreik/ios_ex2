@@ -95,9 +95,17 @@ class ViewController: UIViewController {
         
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         createCardsToCardsViewsMapper()
         updateOpenCardsViews() // adds the game's openCards associated views to the openCards canvas.
         
+        let (rows, cols) = getGridDimensions(from: game.openCards.count)
+        let grid = Grid(layout: .dimensions(rowCount: rows, columnCount: cols), frame: openCardsCanvas.bounds)
+        
+        for (index, card) in game.openCards.enumerated() {
+            guard let currCardView = cardsModelToView[card], let cardViewFrame = grid[index] else {return}
+            currCardView.frame = cardViewFrame
+        }
 
         
         startTimers()
@@ -388,18 +396,16 @@ class ViewController: UIViewController {
         }
     }
     
-    //
+    // Makes sure that the cardView of every open card in the game is a subview of openCardsCanvas
     private func updateOpenCardsViews() {
         clearOpenCardsCanvas()
-        
-        // make sure that the cardView of every open card in the game is a subview of openCardsCanvas
         for card in game.openCards {
             guard let currCardView = cardsModelToView[card] else {return}
             openCardsCanvas.addSubview(currCardView)
         }
     }
     
-    //
+    // Removes all subviews (the SetCardViews) from the openCardsCanvas.
     private func clearOpenCardsCanvas() {
         for view in openCardsCanvas.subviews {
             view.removeFromSuperview()
