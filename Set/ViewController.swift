@@ -5,6 +5,8 @@
 //  Created by Alon Reik on 15/03/2021.
 //
 
+
+// todo - should write traitCollectionDidChange() function?
 import UIKit
 
 class ViewController: UIViewController {

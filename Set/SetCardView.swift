@@ -137,4 +137,5 @@ class SetCardView: UIView
         //
         attributedString.draw(in: cardRect)
     }
+    
 }
