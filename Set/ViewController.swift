@@ -104,7 +104,14 @@ class ViewController: UIViewController {
         
         for (index, card) in game.openCards.enumerated() {
             guard let currCardView = cardsModelToView[card], let cardViewFrame = grid[index] else {return}
+            
+            // place cardView in grid's cell:
             currCardView.frame = cardViewFrame
+            
+            // set the cardView's background and border color
+            currCardView.backgroundColor = #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
+            currCardView.layer.borderWidth = 2.0
+            currCardView.layer.borderColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1)
         }
 
         
