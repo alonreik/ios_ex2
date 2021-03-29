@@ -312,6 +312,7 @@ class ViewController: UIViewController {
                 return NSAttributedString(string: string, attributes: attributes)
             }
         }
+        // todo - inspect below:
         // next line shouldn't be reached because we assert that all cards have valid "color" property.
         // but it was required by the compiler.
         return NSAttributedString(string: "")
@@ -374,9 +375,12 @@ class ViewController: UIViewController {
     
     // Creates the mapper between the setCard objects and setCardViews
     private func createCardsToCardsViewsMapper() {
+        
+        // When a SetGame instance is initialized, it has 69 cards in the deck and 12 cards in openCards:
         for card in game.deck {
             cardsModelToView[card] = getCardView(of: card)
         }
+        
         for card in game.openCards {
             cardsModelToView[card] = getCardView(of: card)
         }

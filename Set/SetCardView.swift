@@ -86,7 +86,7 @@ class SetCardView: UIView
         
         // create a preffered font with the given size.
         var font = UIFont.preferredFont(forTextStyle: .body)
-
+        
         // The line below makes the font size adjust to people changing display settings on Iphone.
         font = UIFontMetrics(forTextStyle: .body).scaledFont(for: font)
 
