@@ -112,7 +112,6 @@ class SetCardView: UIView
         return NSAttributedString(string: string, attributes: attributes)
     }
     
-    
     /* ---- */
     
     /* */

@@ -51,6 +51,7 @@ class ViewController: UIViewController {
     
     // A view that displays the SetCardViews of the setCards included in openCards.
     @IBOutlet weak var openCardsCanvas: UIView!
+    
     // A mapper between setCard objects (part of the model) and setCardViews (part of the view)
     var cardsModelToView: [SetCard: SetCardView] = [:]
     
@@ -97,9 +98,10 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         createCardsToCardsViewsMapper()
-    
-//        addNewOpenCardsToMapper()
-//        updateViewFromMapperAndModel()
+        updateOpenCardsViews() // adds the game's openCards associated views to the openCards canvas.
+        
+
+        
         startTimers()
     }
         
@@ -345,20 +347,22 @@ class ViewController: UIViewController {
     
     // Creates and returns a custom SetCardView for the provided setCard object.
     private func getCardView(of card: SetCard) -> SetCardView {
+        // initiate "empty" cardView instance:
         let viewCard = SetCardView(frame: CGRect())
-        // set SetCardView color
+        
+        // set SetCardView color:
         switch card.color {
         case .typeOne: viewCard.color = .pink
         case .typeTwo: viewCard.color = .purple
         case .typeThree: viewCard.color = .green
         }
-        // set SetCardView shapeType
+        // set SetCardView shapeType:
         switch card.shapeType {
         case .typeOne: viewCard.shape = .triangle
         case .typeTwo: viewCard.shape = .circle
         case .typeThree: viewCard.shape = .square
         }
-        // set SetCardView numberOfShapes
+        // set SetCardView numberOfShapes:
         switch card.shapesNum {
         case .one: viewCard.numberOfShapes = .single
         case .two: viewCard.numberOfShapes = .double
@@ -373,7 +377,7 @@ class ViewController: UIViewController {
         return viewCard
     }
     
-    // Creates the mapper between the setCard objects and setCardViews
+    // Creates the mapper between setCard objects and their matching setCardViews
     private func createCardsToCardsViewsMapper() {
         
         // When a SetGame instance is initialized, it has 69 cards in the deck and 12 cards in openCards:
@@ -393,7 +397,7 @@ class ViewController: UIViewController {
         // make sure that the cardView of every open card in the game is a subview of openCardsCanvas
         for card in game.openCards {
             guard let currCardView = cardsModelToView[card] else {return}
-            currCardView.addSubview(openCardsCanvas)
+            openCardsCanvas.addSubview(currCardView)
         }
     }
     
