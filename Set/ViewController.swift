@@ -95,24 +95,32 @@ class ViewController: UIViewController {
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        createCardsToCardsViewsMapper()
-        updateOpenCardsViews() // adds the openCards' associated views to the openCards canvas.
+        createCardsToCardsViewsMapper() // This function creates cardsModelToView (a map: [SetCard: SetCardView])
+        updateViewFromModel()
+    }
+    
+    //
+    private func updateViewFromModel() {
+        updateOpenCardsViews() // asures openCardsCanvas.subviews only include views of cards in openCards
         
         let (rows, cols) = getGridDimensions(from: game.openCards.count)
         let grid = Grid(layout: .dimensions(rowCount: rows, columnCount: cols), frame: openCardsCanvas.bounds)
         
+        // Go over all open cards, place and set their view on the grid.
         for (index, card) in game.openCards.enumerated() {
             guard let currCardView = cardsModelToView[card], let cardViewFrame = grid[index] else {return}
-            // place cardView in grid's cell:
+            // place cardView in a grid's cell:
             currCardView.frame = cardViewFrame
-
-            // set the cardView's background and border color
-            currCardView.backgroundColor = #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
+            
             currCardView.layer.borderWidth = 2.0
-            currCardView.layer.borderColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1)
+            currCardView.layer.borderColor = game.selectedCards.contains(card) ? #colorLiteral(red: 0.9607843161, green: 0.7058823705, blue: 0.200000003, alpha: 1): #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1)
+            
+            if let lastMatch = game.matches.last {
+                currCardView.layer.borderColor = lastMatch.contains(card) ?#colorLiteral(red: 0.3411764801, green: 0.6235294342, blue: 0.1686274558, alpha: 1): #colorLiteral(red: 0.9607843161, green: 0.7058823705, blue: 0.200000003, alpha: 1)
+            }
         }
     }
-        
+    
     // The sole puprpose of this (overriden) function is to invalidate the timers to prevent reference cycles in memory.
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)

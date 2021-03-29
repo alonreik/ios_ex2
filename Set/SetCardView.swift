@@ -52,12 +52,18 @@ class SetCardView: UIView
     /* -- Initializers -- */
     override init(frame: CGRect) {
         super.init(frame: frame)
-        // todo - add
+        initialViewSetup()
     }
     
     required init?(coder: NSCoder) {
         super.init(coder: coder)
-        // todo - add
+        initialViewSetup()
+    }
+    
+    private func initialViewSetup() {
+        backgroundColor = #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
+        layer.borderWidth = 2.0
+        layer.borderColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1)
     }
     
     
