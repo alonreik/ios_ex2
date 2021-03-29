@@ -110,13 +110,13 @@ class ViewController: UIViewController {
         
         // Go over all open cards, place and set their view on the grid.
         for (index, card) in game.openCards.enumerated() {
-            guard let currCardView = cardsModelToView[card], let cardViewFrame = grid[index] else {return}
+            guard let currCardView = cardsModelToView[card], let frameForCardView = grid[index] else {
+                return
+            }
             // place cardView in a grid's cell:
-            currCardView.frame = cardViewFrame
-            
+            currCardView.frame = frameForCardView
             currCardView.layer.borderWidth = 2.0
             currCardView.layer.borderColor = game.selectedCards.contains(card) ? #colorLiteral(red: 0.9607843161, green: 0.7058823705, blue: 0.200000003, alpha: 1): #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1)
-            
             if let lastMatch = game.matches.last {
                 currCardView.layer.borderColor = lastMatch.contains(card) ?#colorLiteral(red: 0.3411764801, green: 0.6235294342, blue: 0.1686274558, alpha: 1): #colorLiteral(red: 0.9607843161, green: 0.7058823705, blue: 0.200000003, alpha: 1)
             }
@@ -173,6 +173,29 @@ class ViewController: UIViewController {
         // in any case :
         // note: timers shouldn't be reset if deal was pressed but board is full
 //        updateViewFromMapperAndModel()
+    }
+    
+    @objc private func selectCard(recognizer: UITapGestureRecognizer) {
+        // todo - document
+        guard recognizer.state == .ended, let cardView = recognizer.view as? SetCardView else {
+            return
+        }
+        if let index = cardsModelToView.values.firstIndex(of: cardView){
+            let card = cardsModelToView.keys[index]
+            if isAMatchMarked {
+                if game.selectedCards.contains(card) {return}
+                else {
+                    matchesCounter += 1
+                    game.chooseCard(chosenCard: card)
+                    stopTimers()
+                    startTimers()
+                }
+            } else {
+                game.chooseCard(chosenCard: card)
+            }
+            game.chooseCard(chosenCard: card)
+        }
+        updateViewFromModel()
     }
     
     @IBAction func touchCard(_ sender: UIButton) {
@@ -363,10 +386,19 @@ class ViewController: UIViewController {
         game.baseScoreFactor = game.initialBaseScoreFactor
     }
     
+    
     // Creates and returns a custom SetCardView for the provided setCard object.
     private func getCardView(of card: SetCard) -> SetCardView {
+        
+        // define custom recognizers and assign them to every SetCardView
+        let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(selectCard(recognizer:)))
+        
         // initiate "empty" cardView instance:
         let viewCard = SetCardView(frame: CGRect())
+        // add custom gesture recognizer to it:
+        viewCard.addGestureRecognizer(tapRecognizer)
+        
+        
         
         // set SetCardView color:
         switch card.color {

@@ -50,6 +50,7 @@ class SetCardView: UIView
     
     
     /* -- Initializers -- */
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         initialViewSetup()
@@ -68,6 +69,9 @@ class SetCardView: UIView
     
     
     /* -- Propeties -- */
+    
+    var isSelected = false
+    
     var numberOfShapes: Quantity = .double {
         didSet {setNeedsDisplay(); setNeedsLayout()}
     } // is needs layout necessary?
@@ -136,6 +140,20 @@ class SetCardView: UIView
         
         //
         attributedString.draw(in: cardRect)
+        
     }
     
+}
+
+// todo - maybe delete
+extension UIView {
+    func findViewController() -> UIViewController? {
+        if let nextResponder = self.next as? UIViewController {
+            return nextResponder
+        } else if let nextResponder = self.next as? UIView {
+            return nextResponder.findViewController()
+        } else {
+            return nil
+        }
+    }
 }
