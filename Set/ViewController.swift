@@ -92,9 +92,7 @@ class ViewController: UIViewController {
     /* -------
      Methods
      -------- */
-    
-//    let shapesDict = [SetCard.Shape.typeOne: "▲", SetCard.Shape.typeTwo: "●", SetCard.Shape.typeThree: "■"]
-    
+        
     override func viewDidLoad() {
         super.viewDidLoad()
         createCardsToCardsViewsMapper()
@@ -406,5 +404,28 @@ class ViewController: UIViewController {
         for view in openCardsCanvas.subviews {
             view.removeFromSuperview()
         }
+    }
+    
+    // Returns a tuple representing the desired dimensions a grid of openCards.count card views.
+    private func getGridDimensions(from openCardsCount: Int) -> (Int,Int) {
+        // We always seek to create a "perfect square" grid (2x2 or 3x3, 4x4..).
+        // When openCardsCount is not a perfect square, we create a square grid with bigger capacity
+        // than openCardsCount (dim*dim > openCardsCount), and if this grid (dim*dim)
+        // is too big for openCardsCount, we "trim" one column from the grid.
+        
+        var rows, cols: Int
+        
+        // number of rows is the integer root of "openCardsCount"
+        rows = Int(sqrt(Double(openCardsCount)))
+        
+        // if the current square grid (rows x rows) isn't big enough, extend it to (rows+1) x (rows+1)
+        if rows * rows < openCardsCount {
+            rows += 1
+        }
+        
+        // if openCardsCount can fit into (rows+1) x (rows), use these dimensions. otherwise, use (rows+1)x(rows+1)
+        cols = (rows * (rows - 1) >= openCardsCount) ? rows - 1: rows
+        
+        return (rows,cols)
     }
 }
