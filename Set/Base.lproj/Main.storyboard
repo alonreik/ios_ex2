@@ -78,7 +78,7 @@
                                 </subviews>
                             </stackView>
                             <view contentMode="redraw" translatesAutoresizingMaskIntoConstraints="NO" id="TMH-ES-Haf">
-                                <rect key="frame" x="20" y="54" width="374" height="686.66666666666663"/>
+                                <rect key="frame" x="20" y="54" width="374" height="687"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                             </view>
                         </subviews>

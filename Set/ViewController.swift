@@ -47,7 +47,10 @@ class ViewController: UIViewController {
     /* --------------------
      Properties (variables)
      -----------------------*/
-
+    
+    //
+    var isJustInitiated = true
+    
     var gameTimer: Timer?
     var enemyTimer: Timer?
     
@@ -97,8 +100,11 @@ class ViewController: UIViewController {
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        createCardsToCardsViewsMapper() // This function creates cardsToViewsMapper (a map: [SetCard: SetCardView])
-        placeOpenCardsViewsOnGrid()
+        if isJustInitiated {
+            createCardsToCardsViewsMapper() // This function creates cardsToViewsMapper (a map: [SetCard: SetCardView])
+            placeOpenCardsViewsOnGrid()
+            isJustInitiated = false
+        }
     }
     
     // Creates a grid for openCardsCanvas and assigns each openCard view with a cell within that grid.
@@ -127,6 +133,33 @@ class ViewController: UIViewController {
 //                currCardView.layer.borderColor = lastMatch.contains(card) ?#colorLiteral(red: 0.3411764801, green: 0.6235294342, blue: 0.1686274558, alpha: 1): #colorLiteral(red: 0.9607843161, green: 0.7058823705, blue: 0.200000003, alpha: 1)
 //            }
 //        }
+    }
+    
+    //
+    private func updateViewFromModel() {
+        
+        // Update labels
+        userScoreLabel.text = "Score: \(game.score)"
+        iphoneScoreLabel.text = "Score: \(game.enemyScore)"
+        iphoneStateLabel.text = (game.score >= game.enemyScore) ? enemyLosingTitle : enemyWinningTitle
+        
+        // go over every subview of openCardsCanvas, and set is border color (orange\green for selected\matched cards)
+        
+        for view in openCardsCanvas.subviews {
+            
+            if let index = cardsToViewsMapper.values.firstIndex(of: view) {
+                let card = cardsToViewsMapper.keys[index]
+                if game.selectedCards.contains(card) {
+                    view.layer.borderColor = #colorLiteral(red: 0.9607843161, green: 0.7058823705, blue: 0.200000003, alpha: 1)
+                } else {
+                    view.layer.borderColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1)
+                }
+                
+                if let lastMatch = game.matches.last {
+                    view.layer.borderColor = lastMatch.contains(card) ? #colorLiteral(red: 0.3411764801, green: 0.6235294342, blue: 0.1686274558, alpha: 1): #colorLiteral(red: 0.9607843161, green: 0.7058823705, blue: 0.200000003, alpha: 1)
+                }
+            }
+        }
     }
     
     // The sole puprpose of this (overriden) function is to invalidate the timers to prevent reference cycles in memory.
@@ -187,7 +220,6 @@ class ViewController: UIViewController {
         guard recognizer.state == .ended, let cardView = recognizer.view as? SetCardView else {
             return
         }
-        
         // get the SetCard instance that its view was tapped on
         if let index = cardsToViewsMapper.values.firstIndex(of: cardView){
             let card = cardsToViewsMapper.keys[index]
@@ -206,6 +238,8 @@ class ViewController: UIViewController {
             }
         }
         placeOpenCardsViewsOnGrid()
+        updateViewFromModel()
+//        updateOpenCardsViews()
     }
     
     @IBAction func touchCard(_ sender: UIButton) {
@@ -453,7 +487,6 @@ class ViewController: UIViewController {
     // Makes sure that the cardView of every open card in the game is a subview of openCardsCanvas
     private func updateOpenCardsViews() {
         
-        
         // remove views of cards that were already matched (and aren't in openCards anymore)
         for view in openCardsCanvas.subviews {
             if let index = cardsToViewsMapper.values.firstIndex(of: view){
@@ -464,19 +497,13 @@ class ViewController: UIViewController {
             }
         }
         
+        // adds views of cards that were recently popped from the deck to openCards
         for card in game.openCards {
             guard let currCardView = cardsToViewsMapper[card] else {
                 print("Couldn't find the view (cardView) for one of the open cards in the game")
                 return
             }
             openCardsCanvas.addSubview(currCardView)
-        }
-    }
-    
-    // Removes all subviews (the SetCardViews) from the openCardsCanvas.
-    private func clearOpenCardsCanvas() {
-        for view in openCardsCanvas.subviews {
-            view.removeFromSuperview()
         }
     }
     
