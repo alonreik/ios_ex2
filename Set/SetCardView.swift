@@ -70,7 +70,11 @@ class SetCardView: UIView
     
     /* -- Propeties -- */
     
-    var isSelected = false
+    var isSelected = false {
+        didSet {
+            
+        }
+    }
     
     var numberOfShapes: Quantity = .double {
         didSet {setNeedsDisplay(); setNeedsLayout()}

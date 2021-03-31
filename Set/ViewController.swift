@@ -55,7 +55,7 @@ class ViewController: UIViewController {
     @IBOutlet weak var openCardsCanvas: UIView!
     
     // A mapper between setCard objects (part of the model) and setCardViews (part of the view)
-    var cardsModelToView: [SetCard: SetCardView] = [:]
+    var cardsToViewsMapper: [SetCard: SetCardView] = [:]
     
     // ----------------------------------------- //
     
@@ -97,30 +97,36 @@ class ViewController: UIViewController {
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        createCardsToCardsViewsMapper() // This function creates cardsModelToView (a map: [SetCard: SetCardView])
-        updateViewFromModel()
+        createCardsToCardsViewsMapper() // This function creates cardsToViewsMapper (a map: [SetCard: SetCardView])
+        placeOpenCardsViewsOnGrid()
     }
     
-    //
-    private func updateViewFromModel() {
+    // Creates a grid for openCardsCanvas and assigns each openCard view with a cell within that grid.
+    private func placeOpenCardsViewsOnGrid() {
         updateOpenCardsViews() // asures openCardsCanvas.subviews only include views of cards in openCards
         
-        let (rows, cols) = getGridDimensions(from: game.openCards.count)
+        let (rows, cols) = getGridDimensions(for: game.openCards.count)
         let grid = Grid(layout: .dimensions(rowCount: rows, columnCount: cols), frame: openCardsCanvas.bounds)
         
         // Go over all open cards, place and set their view on the grid.
-        for (index, card) in game.openCards.enumerated() {
-            guard let currCardView = cardsModelToView[card], let frameForCardView = grid[index] else {
+        for (index, view) in openCardsCanvas.subviews.enumerated() {
+            guard let frameForCardView = grid[index] else {
                 return
             }
-            // place cardView in a grid's cell:
-            currCardView.frame = frameForCardView
-            currCardView.layer.borderWidth = 2.0
-            currCardView.layer.borderColor = game.selectedCards.contains(card) ? #colorLiteral(red: 0.9607843161, green: 0.7058823705, blue: 0.200000003, alpha: 1): #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1)
-            if let lastMatch = game.matches.last {
-                currCardView.layer.borderColor = lastMatch.contains(card) ?#colorLiteral(red: 0.3411764801, green: 0.6235294342, blue: 0.1686274558, alpha: 1): #colorLiteral(red: 0.9607843161, green: 0.7058823705, blue: 0.200000003, alpha: 1)
-            }
+            view.frame = frameForCardView
         }
+//        for (index, card) in game.openCards.enumerated() {
+//            guard let currCardView = cardsToViewsMapper[card], let frameForCardView = grid[index] else {
+//                return
+//            }
+//            // place cardView in a grid's cell:
+//            currCardView.frame = frameForCardView
+//            currCardView.layer.borderWidth = 2.0
+//            currCardView.layer.borderColor = game.selectedCards.contains(card) ? #colorLiteral(red: 0.9607843161, green: 0.7058823705, blue: 0.200000003, alpha: 1): #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1)
+//            if let lastMatch = game.matches.last {
+//                currCardView.layer.borderColor = lastMatch.contains(card) ?#colorLiteral(red: 0.3411764801, green: 0.6235294342, blue: 0.1686274558, alpha: 1): #colorLiteral(red: 0.9607843161, green: 0.7058823705, blue: 0.200000003, alpha: 1)
+//            }
+//        }
     }
     
     // The sole puprpose of this (overriden) function is to invalidate the timers to prevent reference cycles in memory.
@@ -175,13 +181,14 @@ class ViewController: UIViewController {
 //        updateViewFromMapperAndModel()
     }
     
+    //
     @objc private func selectCard(recognizer: UITapGestureRecognizer) {
         // todo - document
         guard recognizer.state == .ended, let cardView = recognizer.view as? SetCardView else {
             return
         }
-        if let index = cardsModelToView.values.firstIndex(of: cardView){
-            let card = cardsModelToView.keys[index]
+        if let index = cardsToViewsMapper.values.firstIndex(of: cardView){
+            let card = cardsToViewsMapper.keys[index]
             if isAMatchMarked {
                 if game.selectedCards.contains(card) {return}
                 else {
@@ -195,7 +202,7 @@ class ViewController: UIViewController {
             }
             game.chooseCard(chosenCard: card)
         }
-        updateViewFromModel()
+        placeOpenCardsViewsOnGrid()
     }
     
     @IBAction func touchCard(_ sender: UIButton) {
@@ -432,11 +439,11 @@ class ViewController: UIViewController {
         
         // When a SetGame instance is initialized, it has 69 cards in the deck and 12 cards in openCards:
         for card in game.deck {
-            cardsModelToView[card] = getCardView(of: card)
+            cardsToViewsMapper[card] = getCardView(of: card)
         }
         
         for card in game.openCards {
-            cardsModelToView[card] = getCardView(of: card)
+            cardsToViewsMapper[card] = getCardView(of: card)
         }
     }
     
@@ -444,7 +451,10 @@ class ViewController: UIViewController {
     private func updateOpenCardsViews() {
         clearOpenCardsCanvas()
         for card in game.openCards {
-            guard let currCardView = cardsModelToView[card] else {return}
+            guard let currCardView = cardsToViewsMapper[card] else {
+                print("Couldn't find the view (cardView) for one of the open cards in the game")
+                return
+            }
             openCardsCanvas.addSubview(currCardView)
         }
     }
@@ -456,10 +466,10 @@ class ViewController: UIViewController {
         }
     }
     
-    // Returns a tuple representing the desired dimensions a grid of openCards.count card views.
-    private func getGridDimensions(from openCardsCount: Int) -> (Int,Int) {
+    // Returns a tuple representing the desired dimensions for a grid of openCards.count card views.
+    private func getGridDimensions(for openCardsCount: Int) -> (Int,Int) {
         // We always seek to create a "perfect square" grid (2x2 or 3x3, 4x4..).
-        // When openCardsCount is not a perfect square, we create a square grid with bigger capacity
+        // When openCardsCount is not a perfect square, we create a perfect square grid with bigger capacity
         // than openCardsCount (dim*dim > openCardsCount), and if this grid (dim*dim)
         // is too big for openCardsCount, we "trim" one column from the grid.
         
