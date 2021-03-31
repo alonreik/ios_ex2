@@ -73,15 +73,13 @@ struct SetGame
         // assert that the provided SetCard is currently in the game (in openCards).
         assert(openCards.contains(chosenCard), "Set.chooseCard(currentCard): Provided this function with a reference to a card which isn't in the openCards array.")
         
-        // if chosenCard in the selected cards, remove it from selectedCards or ignore (depends of number of selectedCards):
+        // if chosenCard is in selectedCards, remove it or ignore (depends of number of selectedCards):
         if selectedCards.contains(chosenCard) {
             if selectedCards.count == 3 {return} // ignore
             else { // selectedCards.count < 3
                 selectedCards.remove(object: chosenCard)
             }
-        }
-        // if the chosen card wasn't already in selectedCards, just add it:
-        else if !selectedCards.contains(chosenCard) {
+        } else { // if the chosen card wasn't already in selectedCards, just add it:
             selectedCards.append(chosenCard)
         }
         
@@ -92,24 +90,40 @@ struct SetGame
                 score += scoreUpdate
                 matches.append(selectedCards)
             }
-            else {
+            else { // todo - magic number
                 // if the user chose a 3rd card which doesn't form a set
                 score -= 5 // the user is penalized with 5 points for unsuccessful matches.
             }
         }
+        
         // if the current card was chosen when 3 cards were already selected
         else if selectedCards.count == 4 {
-            if let lastMatch = matches.last {
-                if selectedCards.contains(other: lastMatch) {
-                    openCards.removeAll(where: {value in return selectedCards[0..<3].contains(value)})
-                    popThreeCardsFromDeck()
+            
+            if let lastMatch = matches.last { // take the last match
+                
+                if selectedCards.contains(other: lastMatch) { // if the last match is marked still in selectedCards
+                    replaceMatchWithCardsFromDeck()
+//                    openCards.removeAll(where: {value in return selectedCards[0..<3].contains(value)})
+//                    popThreeCardsFromDeck()
                 } // if the last match is not in selectedCards - do nothing
                 
             } // in any case:
             selectedCards.removeFirst(3) // diselect 3 already selected cards
-
         } // else: selected cards contains 0/1/2 cards, nothing to do there
     }
+    
+    //
+    mutating func replaceMatchWithCardsFromDeck() {
+        // replace the matched selected card with a new card from deck
+        for card in selectedCards[0..<3] {
+            if let index = openCards.firstIndex(of: card), deck.count > 0 {
+                openCards[index] = deck.removeFirst()
+            } else { // if the deck is empty, just remove the matched card from open cards
+                openCards.remove(object: card)
+            }
+        }
+    }
+    
     
     /*
         If called after a match is found, the function removes the matched cards from openCards.
@@ -117,12 +131,12 @@ struct SetGame
         (and does nothing otherwise).
     */
     mutating func popThreeCardsFromDeck() {
-        if let lastMatch = matches.last {
-            if lastMatch == selectedCards {
-                openCards.removeAll(where: {value in return selectedCards[0..<3].contains(value)}) // closure
-                selectedCards.removeAll()
-            }
-        }
+//        if let lastMatch = matches.last {
+//            if lastMatch == selectedCards {
+//                openCards.removeAll(where: {value in return selectedCards[0..<3].contains(value)}) // closure
+//                selectedCards.removeAll()
+//            }
+//        }
         if deck.count > 2 {
             openCards.append(contentsOf: deck.prefix(3))
             deck.removeFirst(3)

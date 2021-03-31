@@ -55,7 +55,7 @@ class ViewController: UIViewController {
     @IBOutlet weak var openCardsCanvas: UIView!
     
     // A mapper between setCard objects (part of the model) and setCardViews (part of the view)
-    var cardsToViewsMapper: [SetCard: SetCardView] = [:]
+    var cardsToViewsMapper: [SetCard: UIView] = [:]
     
     // ----------------------------------------- //
     
@@ -104,16 +104,16 @@ class ViewController: UIViewController {
     // Creates a grid for openCardsCanvas and assigns each openCard view with a cell within that grid.
     private func placeOpenCardsViewsOnGrid() {
         updateOpenCardsViews() // asures openCardsCanvas.subviews only include views of cards in openCards
-        
+                
         let (rows, cols) = getGridDimensions(for: game.openCards.count)
         let grid = Grid(layout: .dimensions(rowCount: rows, columnCount: cols), frame: openCardsCanvas.bounds)
         
         // Go over all open cards, place and set their view on the grid.
-        for (index, view) in openCardsCanvas.subviews.enumerated() {
-            guard let frameForCardView = grid[index] else {
+        for (index, card) in game.openCards.enumerated() {
+            guard let cardView = cardsToViewsMapper[card], let frameForCardView = grid[index] else {
                 return
             }
-            view.frame = frameForCardView
+            cardView.frame = frameForCardView
         }
 //        for (index, card) in game.openCards.enumerated() {
 //            guard let currCardView = cardsToViewsMapper[card], let frameForCardView = grid[index] else {
@@ -154,9 +154,10 @@ class ViewController: UIViewController {
     }
     
     @IBAction func dealButtonPressed(_ sender: UIButton) {
+        
         if isAMatchMarked {
             matchesCounter += 1
-            game.popThreeCardsFromDeck()
+            game.replaceMatchWithCardsFromDeck()
 //            replaceMatchedCardsOnMapper()
             
             // reset timers
@@ -171,7 +172,6 @@ class ViewController: UIViewController {
             game.resetCardSelection()
             game.popThreeCardsFromDeck()
 //            addNewOpenCardsToMapper()
-            
             // reset timers
             stopTimers()
             startTimers()
@@ -183,13 +183,17 @@ class ViewController: UIViewController {
     
     //
     @objc private func selectCard(recognizer: UITapGestureRecognizer) {
-        // todo - document
+        // todo - document and make sure i know what as? do.
         guard recognizer.state == .ended, let cardView = recognizer.view as? SetCardView else {
             return
         }
+        
+        // get the SetCard instance that its view was tapped on
         if let index = cardsToViewsMapper.values.firstIndex(of: cardView){
             let card = cardsToViewsMapper.keys[index]
+            
             if isAMatchMarked {
+                // if selected card is already selected, ignore.
                 if game.selectedCards.contains(card) {return}
                 else {
                     matchesCounter += 1
@@ -200,7 +204,6 @@ class ViewController: UIViewController {
             } else {
                 game.chooseCard(chosenCard: card)
             }
-            game.chooseCard(chosenCard: card)
         }
         placeOpenCardsViewsOnGrid()
     }
@@ -449,7 +452,18 @@ class ViewController: UIViewController {
     
     // Makes sure that the cardView of every open card in the game is a subview of openCardsCanvas
     private func updateOpenCardsViews() {
-        clearOpenCardsCanvas()
+        
+        
+        // remove views of cards that were already matched (and aren't in openCards anymore)
+        for view in openCardsCanvas.subviews {
+            if let index = cardsToViewsMapper.values.firstIndex(of: view){
+                let card = cardsToViewsMapper.keys[index]
+                if !game.openCards.contains(card) {
+                    view.removeFromSuperview()
+                }
+            }
+        }
+        
         for card in game.openCards {
             guard let currCardView = cardsToViewsMapper[card] else {
                 print("Couldn't find the view (cardView) for one of the open cards in the game")

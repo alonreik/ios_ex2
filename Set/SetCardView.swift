@@ -72,7 +72,7 @@ class SetCardView: UIView
     
     var isSelected = false {
         didSet {
-            
+            layer.borderColor = isSelected ? #colorLiteral(red: 0.9607843161, green: 0.7058823705, blue: 0.200000003, alpha: 1): #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1)
         }
     }
     
