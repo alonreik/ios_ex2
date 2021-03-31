@@ -55,7 +55,6 @@ struct SetGame
         startGame()
     }
     
-    
     /* -------
      Methods
      -------- */
@@ -107,7 +106,9 @@ struct SetGame
         }
     }
     
-    //
+    // When a 4th card is selected after a match is found, new cards from the deck
+    // will replace the 3 matched cards (the new cards will get the position of the
+    // old cards in openCards)
     mutating func replaceMatchWithCardsFromDeck() {
         // replace matched selected cards with new cards from deck
         for card in selectedCards[0..<3] {
@@ -118,7 +119,6 @@ struct SetGame
                     print("tried to draw from an empty deck")
                 }
             } else { // if openCards doesn't include one of the selectedCards.
-                print("shouldn't be here")
                 openCards.remove(object: card)
             }
         }

@@ -121,18 +121,6 @@ class ViewController: UIViewController {
             }
             cardView.frame = frameForCardView
         }
-//        for (index, card) in game.openCards.enumerated() {
-//            guard let currCardView = cardsToViewsMapper[card], let frameForCardView = grid[index] else {
-//                return
-//            }
-//            // place cardView in a grid's cell:
-//            currCardView.frame = frameForCardView
-//            currCardView.layer.borderWidth = 2.0
-//            currCardView.layer.borderColor = game.selectedCards.contains(card) ? #colorLiteral(red: 0.9607843161, green: 0.7058823705, blue: 0.200000003, alpha: 1): #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1)
-//            if let lastMatch = game.matches.last {
-//                currCardView.layer.borderColor = lastMatch.contains(card) ?#colorLiteral(red: 0.3411764801, green: 0.6235294342, blue: 0.1686274558, alpha: 1): #colorLiteral(red: 0.9607843161, green: 0.7058823705, blue: 0.200000003, alpha: 1)
-//            }
-//        }
     }
     
     //
@@ -144,7 +132,6 @@ class ViewController: UIViewController {
         iphoneStateLabel.text = (game.score >= game.enemyScore) ? enemyLosingTitle : enemyWinningTitle
         
         // go over every subview of openCardsCanvas, and set is border color (orange\green for selected\matched cards)
-                
         for view in openCardsCanvas.subviews {
             if let index = cardsToViewsMapper.values.firstIndex(of: view) {
                 let card = cardsToViewsMapper.keys[index]
@@ -240,31 +227,6 @@ class ViewController: UIViewController {
         }
         updateViewFromModel()
         placeOpenCardsViewsOnGrid()
-    }
-    
-    @IBAction func touchCard(_ sender: UIButton) {
-        guard let index = cardButtons.firstIndex(of: sender) else {
-            print("Encountered an error. The UI included a button which isn't on cardButtons.")
-            return
-        }
-        guard let chosenCard = cardButtonsMapper[index] else {
-            print("Pressed on a 'hidden' card.")
-            return
-        }
-        if isAMatchMarked { // then this is the 4th card selected after a match
-            // if one of the matched card was clicked again, ignore:
-            if game.selectedCards.contains(chosenCard) {return}
-            else {
-                matchesCounter += 1
-                game.chooseCard(chosenCard: chosenCard)
-//                replaceMatchedCardsOnMapper()
-//                stopTimers()
-//                startTimers()
-            }
-        } else {
-            game.chooseCard(chosenCard: chosenCard)
-        }
-//        updateViewFromMapperAndModel()
     }
     
     // This function currently doesn't penalize with points reduction (meaning, it rewards the player for a found match).
