@@ -99,6 +99,7 @@ class ViewController: UIViewController {
      Methods
      -------- */
     
+    //
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         // The following snippet will run only once after the initial view and its subviews will be laid out.
@@ -106,13 +107,22 @@ class ViewController: UIViewController {
             createCardsToCardsViewsMapper() // This function creates cardsToViewsMapper (a map: [SetCard: SetCardView])
             placeOpenCardsViewsOnGrid()
             
-            // Adding a swipe down gesture recognizer for both the
-            let swipeRecognizer = UISwipeGestureRecognizer(target: self, action: #selector(swipeDownHandler(recognizer:)))
-            swipeRecognizer.direction = [.down]
-            openCardsCanvas.superview?.addGestureRecognizer(swipeRecognizer)
-            
+            addGesturesRecognizers()
+        
             isJustInitiated = false
         }
+    }
+    
+    //
+    private func addGesturesRecognizers() {
+        // Adding a swipe down gesture recognizer (to the entire screen)
+        let swipeRecognizer = UISwipeGestureRecognizer(target: self, action: #selector(swipeDownHandler(recognizer:)))
+        swipeRecognizer.direction = [.down]
+        openCardsCanvas.superview?.addGestureRecognizer(swipeRecognizer)
+        
+        // Adding a rotation gesture recognizer (to the entire screen)
+        let rotationRecognizer = UIRotationGestureRecognizer(target: self, action: #selector(rotationHandler(recognizer: )))
+        openCardsCanvas.superview?.addGestureRecognizer(rotationRecognizer)
     }
     
     // Creates a grid for openCardsCanvas and assigns each openCard view with a cell within that grid.
@@ -176,6 +186,26 @@ class ViewController: UIViewController {
     @IBAction func dealButtonPressed(_ sender: UIButton) {
         preformThreeCardsDealing()
     }
+
+    
+    
+    // This function currently doesn't penalize with points reduction (meaning, it rewards the player for a found match).
+    @IBAction func cheatButtonPressed(_ sender: UIButton) {
+        guard !isAMatchMarked else {return} // if a match is marked, the game is paused, and we can ignore the pressing.
+        game.resetCardSelection()
+        if let match = game.findMatchInOpenCards() {
+            for i in 0..<match.count {
+                game.chooseCard(chosenCard: match[i])
+            }
+        } else {
+            print("There isn't a 'set' in the currently open cards")
+        }
+//        updateViewFromMapperAndModel()
+    }
+    
+    /* -------
+     Private Methods
+     -------- */
     
     //
     @objc private func swipeDownHandler(recognizer: UISwipeGestureRecognizer){
@@ -214,23 +244,15 @@ class ViewController: UIViewController {
         placeOpenCardsViewsOnGrid()
     }
     
-    // This function currently doesn't penalize with points reduction (meaning, it rewards the player for a found match).
-    @IBAction func cheatButtonPressed(_ sender: UIButton) {
-        guard !isAMatchMarked else {return} // if a match is marked, the game is paused, and we can ignore the pressing.
-        game.resetCardSelection()
-        if let match = game.findMatchInOpenCards() {
-            for i in 0..<match.count {
-                game.chooseCard(chosenCard: match[i])
-            }
-        } else {
-            print("There isn't a 'set' in the currently open cards")
+    @objc private func rotationHandler(recognizer: UIRotationGestureRecognizer) {
+        guard recognizer.state == .ended else {
+            return
         }
-//        updateViewFromMapperAndModel()
+        game.openCards.shuffle()
+        updateViewFromModel()
+        placeOpenCardsViewsOnGrid()
     }
     
-    /* -------
-     Private Methods
-     -------- */
     
     // Every time the gameTimer run out of time, the potential score for a match decreases.
     @objc private func updateUserScoreForTime() {
@@ -388,8 +410,6 @@ class ViewController: UIViewController {
         let viewCard = SetCardView(frame: CGRect())
         // add custom gesture recognizer to it:
         viewCard.addGestureRecognizer(tapRecognizer)
-        
-        
         
         // set SetCardView color:
         switch card.color {
