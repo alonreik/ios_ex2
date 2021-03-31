@@ -77,14 +77,15 @@ class ViewController: UIViewController {
     /* An array mapping between cardButtons (buttons in the UI; every index represents a button)
      to SetCard objects. (A nil value means that the button should be "empty") */
     lazy var cardButtonsMapper = [SetCard?](repeating: nil, count: cardButtons.count)
+    
     // (I used lazy only so I could use the count of cardButtons)
     
-    var isBoardFull: Bool {
-        get {
-            // return: cardButtonsMapper is "nil-free"?
-            return cardButtonsMapper.filter({$0 != nil}).count == cardButtons.count
-        }
-    }
+//    var isBoardFull: Bool {
+//        get {
+//            // return: cardButtonsMapper is "nil-free"?
+//            return cardButtonsMapper.filter({$0 != nil}).count == cardButtons.count
+//        }
+//    }
     
     // A "helper variable" used to alert when a match is found
     var matchesCounter = 0
@@ -100,9 +101,16 @@ class ViewController: UIViewController {
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
+        // The following snippet will run only once after the initial view and its subviews will be laid out.
         if isJustInitiated {
             createCardsToCardsViewsMapper() // This function creates cardsToViewsMapper (a map: [SetCard: SetCardView])
             placeOpenCardsViewsOnGrid()
+            
+            // Adding a swipe down gesture recognizer for both the
+            let swipeRecognizer = UISwipeGestureRecognizer(target: self, action: #selector(swipeDownHandler(recognizer:)))
+            swipeRecognizer.direction = [.down]
+            openCardsCanvas.superview?.addGestureRecognizer(swipeRecognizer)
+            
             isJustInitiated = false
         }
     }
@@ -163,45 +171,24 @@ class ViewController: UIViewController {
             cardButtons[index].isHidden = false
         }
         matchesCounter = 0
-//        addNewOpenCardsToMapper()
-//        updateViewFromMapperAndModel()
-//        stopTimers()
-//        startTimers()
     }
     
     @IBAction func dealButtonPressed(_ sender: UIButton) {
-        
-        if isAMatchMarked {
-            matchesCounter += 1
-            game.replaceMatchWithCardsFromDeck()
-//            replaceMatchedCardsOnMapper()
-            
-            // reset timers
-//            stopTimers()
-//            startTimers()
-        }
-        else if !isBoardFull {
-            if game.findMatchInOpenCards() != nil {
-                game.score -= 3 // if the user pressed "deal" but there was a match in openCards
-            }
-            // even if game.findMatchInOpenCards() is nil:
-            game.resetCardSelection()
-            game.popThreeCardsFromDeck()
-//            addNewOpenCardsToMapper()
-            // reset timers
-//            stopTimers()
-//            startTimers()
-        }
-        // in any case :
-        // note: timers shouldn't be reset if deal was pressed but board is full
-//        updateViewFromMapperAndModel()
+        preformThreeCardsDealing()
     }
     
+    //
+    @objc private func swipeDownHandler(recognizer: UISwipeGestureRecognizer){
+        guard recognizer.direction == [.down] else {
+            return
+        }
+        preformThreeCardsDealing()
+    }
     
     /*
         This function is called every time a user taps on a setCardView.
     */
-    @objc private func selectCard(recognizer: UITapGestureRecognizer) {
+    @objc private func cardTapHandler(recognizer: UITapGestureRecognizer) {
         
         // todo - document and make sure i know what as? do.
         guard recognizer.state == .ended, let cardView = recognizer.view as? SetCardView else {
@@ -218,8 +205,6 @@ class ViewController: UIViewController {
                 else {
                     matchesCounter += 1
                     game.chooseCard(chosenCard: card)
-//                    stopTimers()
-//                    startTimers()
                 }
             } else {
                 game.chooseCard(chosenCard: card)
@@ -397,7 +382,7 @@ class ViewController: UIViewController {
     private func getCardView(of card: SetCard) -> SetCardView {
         
         // define custom recognizers and assign them to every SetCardView
-        let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(selectCard(recognizer:)))
+        let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(cardTapHandler(recognizer:)))
         
         // initiate "empty" cardView instance:
         let viewCard = SetCardView(frame: CGRect())
@@ -494,5 +479,22 @@ class ViewController: UIViewController {
         cols = (rows * (rows - 1) >= openCardsCount) ? rows - 1: rows
         
         return (rows,cols)
+    }
+    
+    //
+    private func preformThreeCardsDealing() {
+        if isAMatchMarked {
+            matchesCounter += 1
+            game.replaceMatchWithCardsFromDeck()
+        }
+        else {
+            if game.findMatchInOpenCards() != nil {
+                game.score -= 3 // if the user pressed "deal" but there was a match in openCards
+            }
+            game.resetCardSelection()
+            game.popThreeCardsFromDeck()
+        }
+        updateViewFromModel()
+        placeOpenCardsViewsOnGrid()
     }
 }
