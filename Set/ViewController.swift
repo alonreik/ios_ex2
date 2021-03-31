@@ -51,8 +51,8 @@ class ViewController: UIViewController {
     //
     var isJustInitiated = true
     
-    var gameTimer: Timer?
-    var enemyTimer: Timer?
+//    var gameTimer: Timer?
+//    var enemyTimer: Timer?
     
     // A view that displays the SetCardViews of the setCards included in openCards.
     @IBOutlet weak var openCardsCanvas: UIView!
@@ -144,19 +144,15 @@ class ViewController: UIViewController {
         iphoneStateLabel.text = (game.score >= game.enemyScore) ? enemyLosingTitle : enemyWinningTitle
         
         // go over every subview of openCardsCanvas, and set is border color (orange\green for selected\matched cards)
-        
+                
         for view in openCardsCanvas.subviews {
-            
             if let index = cardsToViewsMapper.values.firstIndex(of: view) {
                 let card = cardsToViewsMapper.keys[index]
-                if game.selectedCards.contains(card) {
-                    view.layer.borderColor = #colorLiteral(red: 0.9607843161, green: 0.7058823705, blue: 0.200000003, alpha: 1)
-                } else {
-                    view.layer.borderColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1)
-                }
-                
+                view.layer.borderColor = game.selectedCards.contains(card) ? #colorLiteral(red: 0.9607843161, green: 0.7058823705, blue: 0.200000003, alpha: 1): #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1)
                 if let lastMatch = game.matches.last {
-                    view.layer.borderColor = lastMatch.contains(card) ? #colorLiteral(red: 0.3411764801, green: 0.6235294342, blue: 0.1686274558, alpha: 1): #colorLiteral(red: 0.9607843161, green: 0.7058823705, blue: 0.200000003, alpha: 1)
+                    if lastMatch.contains(card) {
+                        view.layer.borderColor = #colorLiteral(red: 0.3411764801, green: 0.6235294342, blue: 0.1686274558, alpha: 1)
+                    }
                 }
             }
         }
@@ -165,7 +161,7 @@ class ViewController: UIViewController {
     // The sole puprpose of this (overriden) function is to invalidate the timers to prevent reference cycles in memory.
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        stopTimers()
+//        stopTimers()
     }
     
     /* -------------------
@@ -182,8 +178,8 @@ class ViewController: UIViewController {
         matchesCounter = 0
 //        addNewOpenCardsToMapper()
 //        updateViewFromMapperAndModel()
-        stopTimers()
-        startTimers()
+//        stopTimers()
+//        startTimers()
     }
     
     @IBAction func dealButtonPressed(_ sender: UIButton) {
@@ -194,8 +190,8 @@ class ViewController: UIViewController {
 //            replaceMatchedCardsOnMapper()
             
             // reset timers
-            stopTimers()
-            startTimers()
+//            stopTimers()
+//            startTimers()
         }
         else if !isBoardFull {
             if game.findMatchInOpenCards() != nil {
@@ -206,20 +202,25 @@ class ViewController: UIViewController {
             game.popThreeCardsFromDeck()
 //            addNewOpenCardsToMapper()
             // reset timers
-            stopTimers()
-            startTimers()
+//            stopTimers()
+//            startTimers()
         }
         // in any case :
         // note: timers shouldn't be reset if deal was pressed but board is full
 //        updateViewFromMapperAndModel()
     }
     
-    //
+    
+    /*
+        This function is called every time a user taps on a setCardView.
+    */
     @objc private func selectCard(recognizer: UITapGestureRecognizer) {
+        
         // todo - document and make sure i know what as? do.
         guard recognizer.state == .ended, let cardView = recognizer.view as? SetCardView else {
             return
         }
+        
         // get the SetCard instance that its view was tapped on
         if let index = cardsToViewsMapper.values.firstIndex(of: cardView){
             let card = cardsToViewsMapper.keys[index]
@@ -230,16 +231,15 @@ class ViewController: UIViewController {
                 else {
                     matchesCounter += 1
                     game.chooseCard(chosenCard: card)
-                    stopTimers()
-                    startTimers()
+//                    stopTimers()
+//                    startTimers()
                 }
             } else {
                 game.chooseCard(chosenCard: card)
             }
         }
-        placeOpenCardsViewsOnGrid()
         updateViewFromModel()
-//        updateOpenCardsViews()
+        placeOpenCardsViewsOnGrid()
     }
     
     @IBAction func touchCard(_ sender: UIButton) {
@@ -258,8 +258,8 @@ class ViewController: UIViewController {
                 matchesCounter += 1
                 game.chooseCard(chosenCard: chosenCard)
 //                replaceMatchedCardsOnMapper()
-                stopTimers()
-                startTimers()
+//                stopTimers()
+//                startTimers()
             }
         } else {
             game.chooseCard(chosenCard: chosenCard)
@@ -298,7 +298,7 @@ class ViewController: UIViewController {
         
         game.makeEnemyTurn()
 //        updateViewFromMapperAndModel()
-        stopTimers()
+//        stopTimers()
     }
     
     // Makes sure cardButtonsMapper is famliar with every open card in the game (Model)
@@ -375,7 +375,7 @@ class ViewController: UIViewController {
             for index in cardButtons.indices {
                 cardButtons[index].isHidden = true
             }
-            stopTimers()
+//            stopTimers()
         }
     }
         
@@ -415,20 +415,20 @@ class ViewController: UIViewController {
         }
     }
     
-    // Invalidate timer instances.
-    private func stopTimers() {
-        gameTimer?.invalidate()
-        enemyTimer?.invalidate()
-    }
-    
+//    // Invalidate timer instances.
+//    private func stopTimers() {
+//        gameTimer?.invalidate()
+//        enemyTimer?.invalidate()
+//    }
+//
     // Start timers and reset the Base for score (which decreases as the timer proceeds).
-    private func startTimers() {
-        gameTimer = Timer.scheduledTimer(timeInterval: timeForPlayerToFindSet, target: self, selector: #selector(updateUserScoreForTime), userInfo: nil, repeats: true)
-        
-        let enemyTime = Double.random(in: minWaitingDurationForEnemyTurn..<maxWaitingDurationForEnemyTurn)
-        enemyTimer = Timer.scheduledTimer(timeInterval: enemyTime, target: self, selector: #selector(makeEnemyTurn), userInfo: nil, repeats: true)
-        game.baseScoreFactor = game.initialBaseScoreFactor
-    }
+//    private func startTimers() {
+//        gameTimer = Timer.scheduledTimer(timeInterval: timeForPlayerToFindSet, target: self, selector: #selector(updateUserScoreForTime), userInfo: nil, repeats: true)
+//
+//        let enemyTime = Double.random(in: minWaitingDurationForEnemyTurn..<maxWaitingDurationForEnemyTurn)
+//        enemyTimer = Timer.scheduledTimer(timeInterval: enemyTime, target: self, selector: #selector(makeEnemyTurn), userInfo: nil, repeats: true)
+//        game.baseScoreFactor = game.initialBaseScoreFactor
+//    }
     
     
     // Creates and returns a custom SetCardView for the provided setCard object.
@@ -489,21 +489,25 @@ class ViewController: UIViewController {
         
         // remove views of cards that were already matched (and aren't in openCards anymore)
         for view in openCardsCanvas.subviews {
-            if let index = cardsToViewsMapper.values.firstIndex(of: view){
-                let card = cardsToViewsMapper.keys[index]
-                if !game.openCards.contains(card) {
-                    view.removeFromSuperview()
-                }
+            guard let index = cardsToViewsMapper.values.firstIndex(of: view) else {
+                print("todo - some informative message")
+                return
+            }
+            let card = cardsToViewsMapper.keys[index]
+            if !game.openCards.contains(card) {
+                view.removeFromSuperview()
             }
         }
         
         // adds views of cards that were recently popped from the deck to openCards
         for card in game.openCards {
-            guard let currCardView = cardsToViewsMapper[card] else {
+            guard let currCardView = cardsToViewsMapper[card] else{
                 print("Couldn't find the view (cardView) for one of the open cards in the game")
                 return
             }
-            openCardsCanvas.addSubview(currCardView)
+            if !openCardsCanvas.subviews.contains(currCardView) {
+                openCardsCanvas.addSubview(currCardView)
+            }
         }
     }
     
