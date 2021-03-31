@@ -507,7 +507,7 @@ class ViewController: UIViewController {
             matchesCounter += 1
             game.replaceMatchWithCardsFromDeck()
         }
-        else {
+        else if !game.deck.isEmpty {
             if game.findMatchInOpenCards() != nil {
                 game.score -= 3 // if the user pressed "deal" but there was a match in openCards
             }

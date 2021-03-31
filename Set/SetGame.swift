@@ -116,10 +116,8 @@ struct SetGame
                 if deck.count > 0 {
                     openCards[index] = deck.removeFirst()
                 } else {
-                    print("tried to draw from an empty deck")
+                    openCards.remove(object: card)
                 }
-            } else { // if openCards doesn't include one of the selectedCards.
-                openCards.remove(object: card)
             }
         }
     }
