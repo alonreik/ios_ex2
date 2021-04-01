@@ -177,21 +177,16 @@ class ViewController: UIViewController {
      ---------------------*/
     
     @IBAction func newGamePressed(_ sender: UIButton) {
-        cardButtonsMapper = [SetCard?](repeating: nil, count: cardButtons.count)
         game = SetGame()
-        
-        for index in cardButtons.indices {
-            cardButtons[index].isHidden = false
-        }
         matchesCounter = 0
+        placeOpenCardsViewsOnGrid()
+        
     }
     
     @IBAction func dealButtonPressed(_ sender: UIButton) {
         preformThreeCardsDealing()
     }
 
-    
-    
     // This function currently doesn't penalize with points reduction (meaning, it rewards the player for a found match).
     @IBAction func cheatButtonPressed(_ sender: UIButton) {
         guard !isAMatchMarked else {return} // if a match is marked, the game is paused, and we can ignore the pressing.
@@ -200,10 +195,13 @@ class ViewController: UIViewController {
             for i in 0..<match.count {
                 game.chooseCard(chosenCard: match[i])
             }
-        } else {
-            print("There isn't a 'set' in the currently open cards")
+        } else if !game.deck.isEmpty {
+            print("There isn't a 'set' in the currently open cards, so the game is opening more cards (if available) and finds a set")
+            preformThreeCardsDealing()
+            cheatButtonPressed(sender)
         }
-//        updateViewFromMapperAndModel()
+        placeOpenCardsViewsOnGrid()
+        updateViewFromModel()
     }
     
     /* -------
