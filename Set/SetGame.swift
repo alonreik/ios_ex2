@@ -17,6 +17,9 @@ struct SetGame
     let initialBaseScoreFactor = 240
     let initialNumberOfOpenCards = 12
     let falseMatchPenalty = 5
+    let unRequiredDrawPenalty = 3
+    let scoreForEnemyTurn = 3
+    
     
     /* -------
      Properties
@@ -42,8 +45,8 @@ struct SetGame
         }
     }
     
-    private(set) var deck: [SetCard] = []
     var openCards: [SetCard] = []
+    private(set) var deck: [SetCard] = []
     private(set) var selectedCards: [SetCard] = []
     private(set) var matches: [[SetCard]] = []
 
@@ -51,6 +54,7 @@ struct SetGame
     /* -------
      Initiators
      -------- */
+    
     init() {
         startGame()
     }
@@ -91,7 +95,7 @@ struct SetGame
             }
             else {
                 // if the user chose a 3rd card which doesn't form a set
-                score -= falseMatchPenalty // the user is penalized with 5 points for unsuccessful matches.
+                score -= falseMatchPenalty // the user is penalized for unsuccessful match selections.
             }
         }
         
@@ -122,25 +126,17 @@ struct SetGame
         }
     }
     
-    
     /*
         If called after a match is found, the function removes the matched cards from openCards.
         Regardless, if the deck has at least 3 cards, the function pops 3 cards from the deck to openCards.
         (and does nothing otherwise).
     */
     mutating func popThreeCardsFromDeck() {
-//        if let lastMatch = matches.last {
-//            if lastMatch == selectedCards {
-//                openCards.removeAll(where: {value in return selectedCards[0..<3].contains(value)}) // closure
-//                selectedCards.removeAll()
-//            }
-//        }
         if deck.count > 2 {
             openCards.append(contentsOf: deck.prefix(3))
             deck.removeFirst(3)
         } // else - do nothing
     }
-    
     
     // Whenever called, this function forms a match (if such exists in openCards) and updates the enemy's score.
     mutating func makeEnemyTurn() {
@@ -150,7 +146,7 @@ struct SetGame
         // if openCards include 3 cards that form a match.
         selectedCards = match
         matches.append(selectedCards)
-        enemyScore += 3
+        enemyScore += scoreForEnemyTurn
     }
     
     /*

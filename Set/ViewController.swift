@@ -19,14 +19,6 @@ class ViewController: UIViewController {
     
     // The player will have the number of seconds listed below to find a match\set before his\her score will be damaged.
     let timeForPlayerToFindSet = 10.0
-
-    // Shapes' "strokeWidth" should be positive only for outlined shapes.
-    let strokeWidthForOutlineShapes = 5.0
-    let strokeWidthForFilledShapes = -5.0
-    
-    // Cards with filling of type 3 (striped shapes) get different alpha values (for coloring) than other cards.
-    let alphaForStripedShapes: CGFloat = 0.15
-    let alphaForFullShapes: CGFloat = 1.0
     
     // When the time for a player to find a match elapses, his\her score is updated with the value below.
     let scoreTimePenalty = 10
@@ -35,6 +27,7 @@ class ViewController: UIViewController {
     let enemyLosingTitle = "📱😢" // presented if the enemy's score >= user's score.
     let enemyWinningTitle = "📱😂" // presented otherwise.
     
+    // Dictonaries that map SetCard properties to visual elements that will be displayed on the matching SetCardViews.
     let shapesDict = [SetCard.Shape.typeOne: "▲", SetCard.Shape.typeTwo: "●", SetCard.Shape.typeThree: "■"]
     let colorDict = [SetCard.Color.typeOne: #colorLiteral(red: 0.9098039269, green: 0.4784313738, blue: 0.6431372762, alpha: 1), SetCard.Color.typeTwo: #colorLiteral(red: 0.3647058904, green: 0.06666667014, blue: 0.9686274529, alpha: 1), SetCard.Color.typeThree: #colorLiteral(red: 0.4666666687, green: 0.7647058964, blue: 0.2666666806, alpha: 1)]
     // filling dict: [1: full, 2: outline, 3: striped]
@@ -42,26 +35,19 @@ class ViewController: UIViewController {
     // Selected cards in the game are highlighted on the screen by having a border.
     let borderWidthForSelectedCards: CGFloat = 3.0
     
-    //
+    // All SetCardView will be displayed on the openCardsCanvas with the ratio (width/height) below:
     let ratioForCardViews = CGFloat(5.0/8.0)
+    
     
     /* --------------------
      Properties (variables)
      -----------------------*/
-    
-    //
-    var isJustInitiated = true
     
 //    var gameTimer: Timer?
 //    var enemyTimer: Timer?
     
     // A view that displays the SetCardViews of the setCards included in openCards.
     @IBOutlet weak var openCardsCanvas: UIView!
-    
-    // A mapper between setCard objects (part of the model) and setCardViews (part of the view)
-    var cardsToViewsMapper: [SetCard: UIView] = [:]
-    
-    // ----------------------------------------- //
     
     @IBOutlet weak var userScoreLabel: UILabel!
     
@@ -73,36 +59,27 @@ class ViewController: UIViewController {
     
     @IBOutlet weak var gameOverLabel: UILabel!
     
-    @IBOutlet var cardButtons: [UIButton]!
-
     var game: SetGame = SetGame()
     
-    /* An array mapping between cardButtons (buttons in the UI; every index represents a button)
-     to SetCard objects. (A nil value means that the button should be "empty") */
-    lazy var cardButtonsMapper = [SetCard?](repeating: nil, count: cardButtons.count)
-    
-    // (I used lazy only so I could use the count of cardButtons)
-    
-//    var isBoardFull: Bool {
-//        get {
-//            // return: cardButtonsMapper is "nil-free"?
-//            return cardButtonsMapper.filter({$0 != nil}).count == cardButtons.count
-//        }
-//    }
+    // A mapper between setCard objects (part of the model) and setCardViews (part of the view)
+    var cardsToViewsMapper: [SetCard: UIView] = [:]
     
     // A "helper variable" used to alert when a match is found
     var matchesCounter = 0
+    
     var isAMatchMarked: Bool {
         get {
             return matchesCounter < game.matches.count
         }
     }
+    
+    // A "helper varibale" used to make initial setups in the viewDidLayoutSubviews method.
+    var isJustInitiated = true
         
     /* -------
      Methods
      -------- */
 
-    //
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         // The following snippet will run only once after the initial view and its subviews will be laid out.
@@ -110,66 +87,12 @@ class ViewController: UIViewController {
             createCardsToCardsViewsMapper() // This function creates cardsToViewsMapper (a map: [SetCard: SetCardView])
             placeOpenCardsViewsOnGrid()
             
+            // Define gesture recognizers for the entire screen
             addGesturesRecognizers()
             gameOverLabel.isHidden = true
             isJustInitiated = false
         } else {
             placeOpenCardsViewsOnGrid()
-        }
-    }
-    
-    //
-    private func addGesturesRecognizers() {
-        // Adding a swipe down gesture recognizer (to the entire screen)
-        let swipeRecognizer = UISwipeGestureRecognizer(target: self, action: #selector(swipeDownHandler(recognizer:)))
-        swipeRecognizer.direction = [.down]
-        openCardsCanvas.superview?.addGestureRecognizer(swipeRecognizer)
-        
-        // Adding a rotation gesture recognizer (to the entire screen)
-        let rotationRecognizer = UIRotationGestureRecognizer(target: self, action: #selector(rotationHandler(recognizer: )))
-        openCardsCanvas.superview?.addGestureRecognizer(rotationRecognizer)
-    }
-    
-    // Creates a grid for openCardsCanvas and assigns each openCard view with a cell within that grid.
-    private func placeOpenCardsViewsOnGrid() {
-        updateOpenCardsViews() // asures openCardsCanvas.subviews only include views of cards in openCards
-                
-        var grid = Grid(layout: .aspectRatio(ratioForCardViews), frame: openCardsCanvas.bounds)
-        grid.cellCount = game.openCards.count
-        
-        // Go over all open cards, place and set their view on the grid.
-        for (index, card) in game.openCards.enumerated() {
-            guard let cardView = cardsToViewsMapper[card], let frameForCardView = grid[index] else {
-                return
-            }
-            cardView.frame = frameForCardView
-        }
-    }
-    
-    //
-    private func updateViewFromModel() {
-        
-        // Update labels
-        userScoreLabel.text = "Score: \(game.score)"
-        iphoneScoreLabel.text = "Score: \(game.enemyScore)"
-        iphoneStateLabel.text = (game.score >= game.enemyScore) ? enemyLosingTitle : enemyWinningTitle
-        
-        // go over every subview of openCardsCanvas, and set is border color (orange\green for selected\matched cards)
-        for view in openCardsCanvas.subviews {
-            if let index = cardsToViewsMapper.values.firstIndex(of: view) {
-                let card = cardsToViewsMapper.keys[index]
-                view.layer.borderColor = game.selectedCards.contains(card) ? #colorLiteral(red: 0.9607843161, green: 0.7058823705, blue: 0.200000003, alpha: 1): #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1)
-                if let lastMatch = game.matches.last {
-                    if lastMatch.contains(card) {
-                        view.layer.borderColor = #colorLiteral(red: 0.3411764801, green: 0.6235294342, blue: 0.1686274558, alpha: 1)
-                    }
-                }
-            }
-        }
-        
-        if game.isGameOver {
-            openCardsCanvas.isHidden = true
-            gameOverLabel.isHidden = false
         }
     }
     
@@ -184,11 +107,11 @@ class ViewController: UIViewController {
      ---------------------*/
     
     @IBAction func newGamePressed(_ sender: UIButton) {
+        // Reset the relevant propeties for a new game:
         game = SetGame()
         matchesCounter = 0
         openCardsCanvas.isHidden = false
         gameOverLabel.isHidden = true
-        placeOpenCardsViewsOnGrid()
         updateViewFromModel()
     }
     
@@ -209,33 +132,21 @@ class ViewController: UIViewController {
             preformThreeCardsDealing()
             cheatButtonPressed(sender)
         }
-        placeOpenCardsViewsOnGrid()
         updateViewFromModel()
     }
     
-    /* -------
-     Private Methods
-     -------- */
+    /* ---------------
+     Gesture Handlers
+     ---------------- */
     
-    //
-    @objc private func swipeDownHandler(recognizer: UISwipeGestureRecognizer){
-        guard recognizer.direction == [.down] else {
-            return
-        }
-        preformThreeCardsDealing()
-    }
-    
-    /*
-        This function is called every time a user taps on a setCardView.
-    */
+    // This function is called every time a user taps on a setCardView. It updates the model
+    // that a card was selected and it updates the view accordingly.
     @objc private func cardTapHandler(recognizer: UITapGestureRecognizer) {
-        
         // make sure that the recognizer finished recognizing the tap,
         // and then downcast the view that recognized the tap because we know its a SetCardView
         guard recognizer.state == .ended, let cardView = recognizer.view as? SetCardView else {
             return
         }
-        
         // get the SetCard instance that its view was tapped on
         if let index = cardsToViewsMapper.values.firstIndex(of: cardView){
             let card = cardsToViewsMapper.keys[index]
@@ -252,17 +163,29 @@ class ViewController: UIViewController {
             }
         }
         updateViewFromModel()
-        placeOpenCardsViewsOnGrid()
     }
     
+    // This function is called every time the user makes a swipe down gesture.
+    @objc private func swipeDownHandler(recognizer: UISwipeGestureRecognizer){
+        guard recognizer.direction == [.down] else {
+            return
+        }
+        preformThreeCardsDealing()
+    }
+    
+    // This function is called every time the user makes a rotation gesture. It
+    // shuffles the openCards (in the model) and then it displays the result on openCardsCanvas.
     @objc private func rotationHandler(recognizer: UIRotationGestureRecognizer) {
         guard recognizer.state == .ended else {
             return
         }
         game.openCards.shuffle()
         updateViewFromModel()
-        placeOpenCardsViewsOnGrid()
     }
+    
+    /* ------------------------
+     Private Methods for Timers
+     -------------------------- */
     
     // Every time the gameTimer run out of time, the potential score for a match decreases.
     @objc private func updateUserScoreForTime() {
@@ -276,119 +199,69 @@ class ViewController: UIViewController {
         if isAMatchMarked {return} // ignore (if a match is marked, the game is paused).
         
         game.makeEnemyTurn()
-//        updateViewFromMapperAndModel()
-//        stopTimers()
     }
     
-    // Makes sure cardButtonsMapper is famliar with every open card in the game (Model)
-    private func addNewOpenCardsToMapper() {
-        for index in game.openCards.indices {
-            if !cardButtonsMapper.contains(game.openCards[index]) {
-                addGameCardToButtonsMapper(gameCard: game.openCards[index])
-            }
-        }
-    }
-    
-    /*
-     Makes sure that mapper only hold references to current open cards in the game (model)
-        [and not cards that were matched and removed]
-     */
-    private func replaceMatchedCardsOnMapper() {
-        // if SetCards mapped by cardButtonsMapper are no longer in the game(model) - mark their spot as free (nil)
-        for index in cardButtonsMapper.indices {
-            if let card = cardButtonsMapper[index] {
-                if !game.openCards.contains(card) {
-                    // if this card is no longer in the game then we don't need a reference to it:
-                    cardButtonsMapper[index] = findMatchedCardReplacement()
-                }
-            }// else: gameCardsOnView[index] was already nil
-        }
-    }
-    
-    /*
-        Returns the first SetCard object that is in game.OpenCards but has yet appeared on the view.
-        If all game.OpenCards are already on the view, Returns nil.
-     */
-    private func findMatchedCardReplacement() -> SetCard? {
-        for index in game.openCards.indices {
-            if !cardButtonsMapper.contains(game.openCards[index]) {
-                return game.openCards[index]
-            }
-        }
-        return nil
-    }
+    /* -------
+     Private Methods
+     -------- */
 
-    /*
-        Presents game.score, then iterates over all cardButtons (using the cardButtonsMapper) and
-        sets their appearance (with the relevant card or as a "covered card")
-     */
-    private func updateViewFromMapperAndModel() {
+    // Updates the display settings of the labels and the SetCardViews according to their matching
+    // instances in the model.
+    private func updateViewFromModel() {
+        // Creates a grid for openCardsCanvas and assigns each openCard view with a cell within that grid.
+        placeOpenCardsViewsOnGrid()
 
+        // Update labels
         userScoreLabel.text = "Score: \(game.score)"
         iphoneScoreLabel.text = "Score: \(game.enemyScore)"
         iphoneStateLabel.text = (game.score >= game.enemyScore) ? enemyLosingTitle : enemyWinningTitle
-
-        // Go over all cardButtons (using the careButtonsMapper) and update the info that they present
-        for index in cardButtonsMapper.indices {
-            let button = cardButtons[index]
-            if let card = cardButtonsMapper[index] { // if a card is in that index
-                button.backgroundColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
-                button.setAttributedTitle(attriubtedStringForCard(card: card), for: UIControl.State.normal)
-                button.layer.borderColor = game.selectedCards.contains(card) ? #colorLiteral(red: 0.9607843161, green: 0.7058823705, blue: 0.200000003, alpha: 1): #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
-                button.layer.borderWidth = game.selectedCards.contains(card) ? borderWidthForSelectedCards : 0.0
-
-                if let lastMatch = game.matches.last { // take last found match (3 cards)
-                    // and if needed, mark the current card as a part of that match
-                    button.layer.borderColor = lastMatch.contains(card) ?#colorLiteral(red: 0.3411764801, green: 0.6235294342, blue: 0.1686274558, alpha: 1): #colorLiteral(red: 0.9607843161, green: 0.7058823705, blue: 0.200000003, alpha: 1)
-                } // if lastMatch is nil then there weren't any matches in the game (so no border coloring is needed).
-
-            } else { // if nil is in that index (the button should be covered).
-                button.setAttributedTitle(nil, for: UIControl.State.normal)
-                button.setTitle(nil, for: UIControl.State.normal)
-                button.backgroundColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 0)
-                button.layer.borderWidth = 0.0
+        
+        // Go over every subview of openCardsCanvas, and set is border color (orange\green for selected\matched cards)
+        for view in openCardsCanvas.subviews {
+            if let index = cardsToViewsMapper.values.firstIndex(of: view) {
+                let card = cardsToViewsMapper.keys[index]
+                view.layer.borderColor = game.selectedCards.contains(card) ? #colorLiteral(red: 0.9607843161, green: 0.7058823705, blue: 0.200000003, alpha: 1): #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1)
+                if let lastMatch = game.matches.last {
+                    if lastMatch.contains(card) {
+                        view.layer.borderColor = #colorLiteral(red: 0.3411764801, green: 0.6235294342, blue: 0.1686274558, alpha: 1)
+                    }
+                }
             }
         }
-
+        // Check if need to display the game over label and hide the cards' canvas
         if game.isGameOver {
-            for index in cardButtons.indices {
-                cardButtons[index].isHidden = true
-            }
-//            stopTimers()
+            openCardsCanvas.isHidden = true
+            gameOverLabel.isHidden = false
         }
-    }
-        
-    // Maps a SetCard object to the NSAttributedString representing it (in this implementation).
-    private func attriubtedStringForCard(card: SetCard) -> NSAttributedString? {
-        // Different filling types for cards get different alpha value for coloring.
-        let alpha = (card.filling == SetCard.Filling.typeThree) ? alphaForStripedShapes: alphaForFullShapes
-
-        guard let color = colorDict[card.color], let shape = shapesDict[card.shapeType] else {
-            print("Encountered an error, the given setCard instance probably was not configured correctly")
-            return nil
-        }
-        
-        let attributes: [NSAttributedString.Key: Any] = [
-            // different filling types for cards get different .strokeWidth values.
-            .strokeWidth: (card.filling == SetCard.Filling.typeTwo) ? strokeWidthForOutlineShapes : strokeWidthForFilledShapes,
-            .strokeColor: color,
-            .foregroundColor: color.withAlphaComponent(alpha)
-            ]
-        var string = ""
-        for _ in 0..<card.shapesNum.rawValue {
-            string += shape + " "
-        }
-        return NSAttributedString(string: string, attributes: attributes)
     }
     
-    // Inserts the given SetCard object to the first index of cardButtonsMapper that its value is nil.
-    private func addGameCardToButtonsMapper(gameCard: SetCard) {
-        for index in cardButtonsMapper.indices {
-            if cardButtonsMapper[index] == nil {
-                cardButtonsMapper[index] = gameCard
-                break
+    // Creates a grid for openCardsCanvas and assigns each openCard view with a cell within that grid.
+    private func placeOpenCardsViewsOnGrid() {
+        updateOpenCardsViews() // asures openCardsCanvas.subviews only include views of cards in openCards
+                
+        var grid = Grid(layout: .aspectRatio(ratioForCardViews), frame: openCardsCanvas.bounds)
+        grid.cellCount = game.openCards.count
+        
+        // Go over all open cards, place and set their view on the grid.
+        for (index, card) in game.openCards.enumerated() {
+            guard let cardView = cardsToViewsMapper[card], let frameForCardView = grid[index] else {
+                return
             }
+            cardView.frame = frameForCardView
         }
+    }
+    
+    // Define gesture recognizers and add them to the entire screen
+    // (meaning, the gestures will be recognized wherever they will be made on the screen [not only on cards])
+    private func addGesturesRecognizers() {
+        // Adding a swipe down gesture recognizer (to the entire screen)
+        let swipeRecognizer = UISwipeGestureRecognizer(target: self, action: #selector(swipeDownHandler(recognizer:)))
+        swipeRecognizer.direction = [.down]
+        openCardsCanvas.superview?.addGestureRecognizer(swipeRecognizer)
+        
+        // Adding a rotation gesture recognizer (to the entire screen)
+        let rotationRecognizer = UIRotationGestureRecognizer(target: self, action: #selector(rotationHandler(recognizer: )))
+        openCardsCanvas.superview?.addGestureRecognizer(rotationRecognizer)
     }
     
 //    // Invalidate timer instances.
@@ -409,13 +282,11 @@ class ViewController: UIViewController {
     
     // Creates and returns a custom SetCardView for the provided setCard object.
     private func getCardView(of card: SetCard) -> SetCardView {
-        
-        // define custom recognizers and assign them to every SetCardView
-        let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(cardTapHandler(recognizer:)))
-        
         // initiate "empty" cardView instance:
         let viewCard = SetCardView(frame: CGRect())
-        // add custom gesture recognizer to it:
+        
+        // Define a tap recognizer and assign it to every SetCardView
+        let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(cardTapHandler(recognizer:)))
         viewCard.addGestureRecognizer(tapRecognizer)
         
         // set SetCardView color:
@@ -508,20 +379,23 @@ class ViewController: UIViewController {
         return (rows,cols)
     }
     
-    //
+    // Make all necessary adjustments and setups in the model to display 3 new SetCardViews on the screen.
+    // (and then update the view from the model)
     private func preformThreeCardsDealing() {
         if isAMatchMarked {
             matchesCounter += 1
-            game.replaceMatchWithCardsFromDeck()
+            game.replaceMatchWithCardsFromDeck() // get new cards from the deck to replace the match
         }
         else if !game.deck.isEmpty {
+            // Check if need tp penalize
             if game.findMatchInOpenCards() != nil {
-                game.score -= 3 // if the user pressed "deal" but there was a match in openCards
+                // if the user pressed "deal" but there was a match in openCards
+                game.score -= game.unRequiredDrawPenalty
             }
+            
             game.resetCardSelection()
             game.popThreeCardsFromDeck()
         }
         updateViewFromModel()
-        placeOpenCardsViewsOnGrid()
     }
 }
