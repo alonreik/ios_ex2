@@ -20,7 +20,7 @@ struct SetGame
     let unRequiredDrawPenalty = 3
     let scoreForEnemyTurn = 3
     
-    
+
     /* -------
      Properties
      -------- */

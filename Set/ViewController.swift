@@ -13,19 +13,11 @@ class ViewController: UIViewController {
      Constants
      -------- */
     
-    // The enemy turns' durations will be a generated randomly between the values below:
-    let minWaitingDurationForEnemyTurn = 5.0
-    let maxWaitingDurationForEnemyTurn = 20.0
-    
     // The player will have the number of seconds listed below to find a match\set before his\her score will be damaged.
     let timeForPlayerToFindSet = 10.0
     
     // When the time for a player to find a match elapses, his\her score is updated with the value below.
     let scoreTimePenalty = 10
-    
-    // The strings below are presented on the screen as the enemy's status according to the current score.
-    let enemyLosingTitle = "📱😢" // presented if the enemy's score >= user's score.
-    let enemyWinningTitle = "📱😂" // presented otherwise.
     
     // Dictonaries that map SetCard properties to visual elements that will be displayed on the matching SetCardViews.
     let shapesDict = [SetCard.Shape.typeOne: "▲", SetCard.Shape.typeTwo: "●", SetCard.Shape.typeThree: "■"]
@@ -43,20 +35,11 @@ class ViewController: UIViewController {
      Properties (variables)
      -----------------------*/
     
-//    var gameTimer: Timer?
-//    var enemyTimer: Timer?
-    
     // A view that displays the SetCardViews of the setCards included in openCards.
     @IBOutlet weak var openCardsCanvas: UIView!
     
     @IBOutlet weak var userScoreLabel: UILabel!
-    
-    @IBOutlet weak var iphoneScoreLabel: UILabel!
         
-    // iphoneStateLabel.text = userScore >= iphoneScore? 📱😢 : 📱😂
-    // (if the enemy has higher score, it smiles. otherwise it weeps).
-    @IBOutlet weak var iphoneStateLabel: UILabel!
-    
     @IBOutlet weak var gameOverLabel: UILabel!
     
     var game: SetGame = SetGame()
@@ -213,8 +196,8 @@ class ViewController: UIViewController {
 
         // Update labels
         userScoreLabel.text = "Score: \(game.score)"
-        iphoneScoreLabel.text = "Score: \(game.enemyScore)"
-        iphoneStateLabel.text = (game.score >= game.enemyScore) ? enemyLosingTitle : enemyWinningTitle
+//        iphoneScoreLabel.text = "Score: \(game.enemyScore)"
+//        iphoneStateLabel.text = (game.score >= game.enemyScore) ? enemyLosingTitle : enemyWinningTitle
         
         // Go over every subview of openCardsCanvas, and set is border color (orange\green for selected\matched cards)
         for view in openCardsCanvas.subviews {
