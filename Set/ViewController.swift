@@ -9,30 +9,14 @@ import UIKit
 
 class ViewController: UIViewController {
     
-    /* ------------
-     Scores Updates
-     -------------- */
-    
-    var playerOneScore = 0
-    var playerOneTimer: Timer?
-    var isPlayerOneTurn = false
-    @IBOutlet weak var playerOneScoreLabel: UILabel!
-    
-    var playerTwoScore = 0
-    var playerTwoTimer: Timer?
-    var isPlayerTwoTurn = false
-    @IBOutlet weak var playerTwoScoreLabel: UILabel!
-
     /* -------
      Constants
      -------- */
     
-    // After players press their button, they have this much time to select a set.
     let timeForPlayersToFindSet = 5.0
-    
-    // When the time for players to find a match elapses, their score is penalized with the value below.
-    let scoreTimePenalty = 10
-    
+    let penaltyForMatchlessTurn = 3
+    let scoreRewardForMatch = 5
+
     // Dictonaries that map SetCard properties to visual elements that will be displayed on the matching SetCardViews.
     let shapesDict = [SetCard.Shape.typeOne: "▲", SetCard.Shape.typeTwo: "●", SetCard.Shape.typeThree: "■"]
     let colorDict = [SetCard.Color.typeOne: #colorLiteral(red: 0.9098039269, green: 0.4784313738, blue: 0.6431372762, alpha: 1), SetCard.Color.typeTwo: #colorLiteral(red: 0.3647058904, green: 0.06666667014, blue: 0.9686274529, alpha: 1), SetCard.Color.typeThree: #colorLiteral(red: 0.4666666687, green: 0.7647058964, blue: 0.2666666806, alpha: 1)]
@@ -45,9 +29,24 @@ class ViewController: UIViewController {
     let ratioForCardViews = CGFloat(5.0/8.0)
     
     
-    /* --------------------
-     Properties (variables)
-     -----------------------*/
+    /* ----------------
+     Players Properties
+     -------------- */
+    
+    var playerOneScore = 0
+    var playerOneTimer: Timer?
+    var isPlayerOneTurn = false
+    @IBOutlet weak var playerOneScoreLabel: UILabel!
+    
+    var playerTwoScore = 0
+    var playerTwoTimer: Timer?
+    var isPlayerTwoTurn = false
+    @IBOutlet weak var playerTwoScoreLabel: UILabel!
+
+    
+    /* -----------------
+     All Other Properties
+     ------------------*/
     
     // A view that displays the SetCardViews of the setCards included in openCards.
     @IBOutlet weak var openCardsCanvas: UIView!
@@ -71,9 +70,10 @@ class ViewController: UIViewController {
     // A "helper varibale" used to make initial setups in the viewDidLayoutSubviews method.
     var isJustInitiated = true
         
-    /* -------
-     Methods
-     -------- */
+    
+    /* ---------------
+     Overriden Methods
+     ---------------- */
 
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
@@ -84,16 +84,17 @@ class ViewController: UIViewController {
             
             // Define gesture recognizers for the entire screen
             addGesturesRecognizers()
+            
+            // Hide gameOver label
             gameOverLabel.isHidden = true
+            
+            // make the scoreLabels' borders transparent but with some width.
+            initiateScoreLabelBorders()
+            
+            // make sure all the setups above only happen once.
             isJustInitiated = false
-            
-            playerOneScoreLabel.layer.borderColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 0)
-            playerOneScoreLabel.layer.borderWidth = 2.0
-            
-            playerTwoScoreLabel.layer.borderColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 0)
-            playerTwoScoreLabel.layer.borderWidth = 2.0
  
-        } else {
+        } else { // will happen every time the device will change orientation:
             placeOpenCardsViewsOnGrid()
         }
     }
@@ -102,17 +103,20 @@ class ViewController: UIViewController {
      Functions for Buttons
      ---------------------*/
     
+    // Resets the relevant propeties for a new game:
     @IBAction func newGamePressed(_ sender: UIButton) {
-        // Reset the relevant propeties for a new game:
         game = SetGame()
+        
+        // reset scores:
         playerOneScore = 0
         playerTwoScore = 0
         matchesCounter = 0
+        
+        // hide gameOverLabel and display the openCardsCanvas:
         openCardsCanvas.isHidden = false
         gameOverLabel.isHidden = true
         
-        playerOneScoreLabel.layer.borderColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 0)
-        playerTwoScoreLabel.layer.borderColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 0)
+        initiateScoreLabelBorders()
         
         updateViewFromModel()
     }
@@ -140,44 +144,13 @@ class ViewController: UIViewController {
         updateViewFromModel()
     }
     
-    //
     @IBAction func playerOneButtonPressed(_ sender: Any) {
-        playerButtonPressed(playerNumber: 1)
+        playerButtonPressed(playerIdentifier: 1)
         updateViewFromModel()
     }
     
     @IBAction func playerTwoButtonPressed(_ sender: Any) {
-        playerButtonPressed(playerNumber: 2)
-        updateViewFromModel()
-    }
-    
-    //
-    private func playerButtonPressed(playerNumber: Int) {
-        // if this is already one of the players' turns, ignore
-        if isPlayerOneTurn || isPlayerTwoTurn {
-            return
-        }
-        switch playerNumber {
-        case 1:
-            isPlayerOneTurn = true
-            playerOneTimer = Timer.scheduledTimer(timeInterval: 5.0, target: self, selector: #selector(TurnTimeElapsed), userInfo: nil, repeats: false)
-            
-        default: // if playernumber == 2
-            isPlayerTwoTurn = true
-            playerTwoTimer = Timer.scheduledTimer(timeInterval: 5.0, target: self, selector: #selector(TurnTimeElapsed), userInfo: nil, repeats: false)
-        }
-    }
-    
-    //
-    @objc private func TurnTimeElapsed() {
-        game.resetCardSelection()
-        stopTimer()
-        
-        if isPlayerOneTurn {
-            playerOneScore -= 3
-        } else {
-            playerTwoScore -= 3
-        }
+        playerButtonPressed(playerIdentifier: 2)
         updateViewFromModel()
     }
     
@@ -223,25 +196,6 @@ class ViewController: UIViewController {
         updateViewFromModel()
     }
     
-    private func stopTimer() {
-        if isPlayerOneTurn {
-            playerOneTimer?.invalidate()
-            isPlayerOneTurn = false
-        } else {
-            playerTwoTimer?.invalidate()
-            isPlayerTwoTurn = false
-        }
-    }
-    
-    
-    private func updateScoreForMatch() {
-        if isPlayerOneTurn {
-            playerOneScore += 5
-        } else {
-            playerTwoScore += 5
-        }
-    }
-    
     // This function is called every time the user makes a swipe down gesture.
     @objc private func swipeDownHandler(recognizer: UISwipeGestureRecognizer){
         guard recognizer.direction == [.down] else {
@@ -256,7 +210,7 @@ class ViewController: UIViewController {
         guard recognizer.state == .ended else {
             return
         }
-        game.openCards.shuffle()
+        game.shuffleOpenCards()
         updateViewFromModel()
     }
     
@@ -264,6 +218,18 @@ class ViewController: UIViewController {
      Private Methods for Timers
      -------------------------- */
     
+    // This function is called whenever a player turn's time has elpased.
+    @objc private func TimeForTurnElapsed() {
+        game.resetCardSelection()
+        // penalize the player
+        if isPlayerOneTurn {
+            playerOneScore -= penaltyForMatchlessTurn
+        } else {
+            playerTwoScore -= penaltyForMatchlessTurn
+        }
+        stopTimer()
+        updateViewFromModel()
+    }
 
     
     /* -------
@@ -295,10 +261,27 @@ class ViewController: UIViewController {
                 }
             }
         }
-        // Check if need to display the game over label and hide the cards' canvas
+        
+        // Check if need to display the game over label
         if game.isGameOver {
-            openCardsCanvas.isHidden = true
-            gameOverLabel.isHidden = false
+            displayGameOverLabel()
+        }
+    }
+    
+    // Whenever the setGame is over, hides openCardsCanvas and displays an informative label.
+    private func displayGameOverLabel() {
+        openCardsCanvas.isHidden = true
+        gameOverLabel.isHidden = false
+        
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.alignment = .center
+        let attributes: [NSAttributedString.Key: Any] = [.paragraphStyle: paragraphStyle]
+        
+        if playerOneScore == playerTwoScore {
+            gameOverLabel.attributedText = NSAttributedString(string: "The game ended with a tie!\n Press new game to play again!", attributes: attributes)
+        } else {
+            let winner = (playerOneScore < playerTwoScore) ? "Player 2!" : "Player 1!"
+            gameOverLabel.attributedText = NSAttributedString(string: "The winner is\n" + winner + "\n Press new game to play again!", attributes: attributes)
         }
     }
     
@@ -407,27 +390,22 @@ class ViewController: UIViewController {
         }
     }
     
-    // Returns a tuple representing the desired dimensions for a grid of openCards.count card views.
-    private func getGridDimensions(for openCardsCount: Int) -> (Int,Int) {
-        // We always seek to create a "perfect square" grid (2x2 or 3x3, 4x4..).
-        // When openCardsCount is not a perfect square, we create a perfect square grid with bigger capacity
-        // than openCardsCount (dim*dim > openCardsCount), and if this grid (dim*dim)
-        // is too big for openCardsCount, we "trim" one column from the grid.
+    // Initiates a turn for the player of the given player identifier.
+    private func playerButtonPressed(playerIdentifier: Int) {
+        // if this is already one of the players' turns, ignore
+        if isPlayerOneTurn || isPlayerTwoTurn {return}
         
-        var rows, cols: Int
-        
-        // number of rows is the integer root of "openCardsCount"
-        rows = Int(sqrt(Double(openCardsCount)))
-        
-        // if the current square grid (rows x rows) isn't big enough, extend it to (rows+1) x (rows+1)
-        if rows * rows < openCardsCount {
-            rows += 1
+        // "start a turn" for player #\(playerNumber)
+        switch playerIdentifier {
+        case 1:
+            isPlayerOneTurn = true
+            playerOneTimer = Timer.scheduledTimer(timeInterval: timeForPlayersToFindSet, target: self, selector: #selector(TimeForTurnElapsed), userInfo: nil, repeats: false)
+        case 2: // if playernumber == 2
+            isPlayerTwoTurn = true
+            playerTwoTimer = Timer.scheduledTimer(timeInterval: timeForPlayersToFindSet, target: self, selector: #selector(TimeForTurnElapsed), userInfo: nil, repeats: false)
+        default:
+            print("Provided an unsupported player identifier")
         }
-        
-        // if openCardsCount can fit into (rows+1) x (rows), use these dimensions. otherwise, use (rows+1)x(rows+1)
-        cols = (rows * (rows - 1) >= openCardsCount) ? rows - 1: rows
-        
-        return (rows,cols)
     }
     
     // Make all necessary adjustments and setups in the model to display 3 new SetCardViews on the screen.
@@ -447,5 +425,34 @@ class ViewController: UIViewController {
             game.popThreeCardsFromDeck()
         }
         updateViewFromModel()
+    }
+    
+    // Stops the current player's (whose turn just ended) timer
+    private func stopTimer() {
+        if isPlayerOneTurn {
+            playerOneTimer?.invalidate()
+            isPlayerOneTurn = false
+        } else {
+            playerTwoTimer?.invalidate()
+            isPlayerTwoTurn = false
+        }
+    }
+    
+    // Rewards the current player (whose turn is now) if a score boost.
+    private func updateScoreForMatch() {
+        if isPlayerOneTurn {
+            playerOneScore += scoreRewardForMatch
+        } else {
+            playerTwoScore += scoreRewardForMatch
+        }
+    }
+    
+    // make the scoreLabels' borders transparent but with some width.
+    private func initiateScoreLabelBorders() {
+        playerOneScoreLabel.layer.borderColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 0)
+        playerOneScoreLabel.layer.borderWidth = 2.0
+        
+        playerTwoScoreLabel.layer.borderColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 0)
+        playerTwoScoreLabel.layer.borderWidth = 2.0
     }
 }

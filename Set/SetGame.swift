@@ -16,7 +16,7 @@ struct SetGame
 
     let initialNumberOfOpenCards = 12
     let falseMatchPenalty = 5
-    let unRequiredDrawPenalty = 3    
+    let unRequiredDrawPenalty = 3
 
     /* -------
      Properties
@@ -28,7 +28,7 @@ struct SetGame
         }
     }
     
-    var openCards: [SetCard] = []
+    private(set) var openCards: [SetCard] = []
     private(set) var deck: [SetCard] = []
     private(set) var selectedCards: [SetCard] = []
     private(set) var matches: [[SetCard]] = []
@@ -49,6 +49,11 @@ struct SetGame
     // Resets the selectedCards array.
     mutating func resetCardSelection() {
         selectedCards.removeAll()
+    }
+    
+    // Shuffles the cards' order openCards.
+    mutating func shuffleOpenCards() {
+        openCards.shuffle()
     }
     
     /*
