@@ -78,7 +78,7 @@
                                 </subviews>
                             </stackView>
                             <view contentMode="redraw" translatesAutoresizingMaskIntoConstraints="NO" id="TMH-ES-Haf">
-                                <rect key="frame" x="20" y="54" width="374" height="687"/>
+                                <rect key="frame" x="20" y="54" width="374" height="686.66666666666663"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                             </view>
                         </subviews>
@@ -86,7 +86,7 @@
                         <color key="backgroundColor" systemColor="systemGray5Color"/>
                         <constraints>
                             <constraint firstItem="TMH-ES-Haf" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="20" id="7YB-YG-hwS"/>
-                            <constraint firstItem="Z8l-28-Slw" firstAttribute="firstBaseline" secondItem="TMH-ES-Haf" secondAttribute="baseline" constant="30.5" symbolType="layoutAnchor" id="HBa-8x-o0K"/>
+                            <constraint firstItem="Z8l-28-Slw" firstAttribute="firstBaseline" secondItem="TMH-ES-Haf" secondAttribute="baseline" constant="30.333333333333332" symbolType="layoutAnchor" id="HBa-8x-o0K"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="Z8l-28-Slw" secondAttribute="trailing" constant="10" id="Qfd-fR-eB3"/>
                             <constraint firstItem="Z8l-28-Slw" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="10" id="U1N-Gf-SFF"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="dxm-f4-KUh" secondAttribute="bottom" constant="13" id="a7J-NQ-ngW"/>

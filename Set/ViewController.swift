@@ -100,6 +100,18 @@ class ViewController: UIViewController {
      -------- */
     
     //
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        
+        print(UIDevice.current.orientation.isPortrait)
+        
+        openCardsCanvas.layoutSubviews()
+        openCardsCanvas.setNeedsLayout()
+        openCardsCanvas.setNeedsDisplay()
+    }
+    
+    
+    //
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         // The following snippet will run only once after the initial view and its subviews will be laid out.
@@ -129,8 +141,9 @@ class ViewController: UIViewController {
     private func placeOpenCardsViewsOnGrid() {
         updateOpenCardsViews() // asures openCardsCanvas.subviews only include views of cards in openCards
                 
-        let (rows, cols) = getGridDimensions(for: game.openCards.count)
-        let grid = Grid(layout: .dimensions(rowCount: rows, columnCount: cols), frame: openCardsCanvas.bounds)
+        // todo - magic number
+        var grid = Grid(layout: .aspectRatio(5.0/8.0), frame: openCardsCanvas.bounds)
+        grid.cellCount = game.openCards.count
         
         // Go over all open cards, place and set their view on the grid.
         for (index, card) in game.openCards.enumerated() {
