@@ -9,14 +9,24 @@ import UIKit
 
 class ViewController: UIViewController {
     
+    /* ------------
+     Scores Updates
+     -------------- */
+    
+    var playerOneScore = 0
+    var playerOneTimer: Timer?
+    
+    var playerTwoScore = 0
+    var playerTwoTimer: Timer?
+        
     /* -------
      Constants
      -------- */
     
-    // The player will have the number of seconds listed below to find a match\set before his\her score will be damaged.
-    let timeForPlayerToFindSet = 10.0
+    // After players press their button, they have this much time to select a set.
+    let timeForPlayersToFindSet = 5.0
     
-    // When the time for a player to find a match elapses, his\her score is updated with the value below.
+    // When the time for players to find a match elapses, their score is penalized with the value below.
     let scoreTimePenalty = 10
     
     // Dictonaries that map SetCard properties to visual elements that will be displayed on the matching SetCardViews.
@@ -38,7 +48,9 @@ class ViewController: UIViewController {
     // A view that displays the SetCardViews of the setCards included in openCards.
     @IBOutlet weak var openCardsCanvas: UIView!
     
-    @IBOutlet weak var userScoreLabel: UILabel!
+    @IBOutlet weak var playerOneScoreLabel: UILabel!
+
+    @IBOutlet weak var playerTwoScoreLabel: UILabel!
         
     @IBOutlet weak var gameOverLabel: UILabel!
     
@@ -118,6 +130,16 @@ class ViewController: UIViewController {
         updateViewFromModel()
     }
     
+    
+    @IBAction func playerOneButtonPressed(_ sender: Any) {
+        //
+    }
+    
+    @IBAction func playerTwoButtonPressed(_ sender: Any) {
+        //
+    }
+    
+    
     /* ---------------
      Gesture Handlers
      ---------------- */
@@ -195,7 +217,7 @@ class ViewController: UIViewController {
         placeOpenCardsViewsOnGrid()
 
         // Update labels
-        userScoreLabel.text = "Score: \(game.score)"
+        playerTwoScoreLabel.text = "Score: \(game.score)"
 //        iphoneScoreLabel.text = "Score: \(game.enemyScore)"
 //        iphoneStateLabel.text = (game.score >= game.enemyScore) ? enemyLosingTitle : enemyWinningTitle
         

@@ -31,6 +31,9 @@
                                                 <state key="normal" title="Player 2">
                                                     <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 </state>
+                                                <connections>
+                                                    <action selector="playerTwoButtonPressed:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Nnn-zi-vZ7"/>
+                                                </connections>
                                             </button>
                                             <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="300" verticalHuggingPriority="252" verticalCompressionResistancePriority="749" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2Tg-DG-pUV">
                                                 <rect key="frame" x="134" y="0.0" width="126" height="39"/>
@@ -48,6 +51,9 @@
                                                 <state key="normal" title="Player 1">
                                                     <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 </state>
+                                                <connections>
+                                                    <action selector="playerOneButtonPressed:" destination="BYZ-38-t0r" eventType="touchUpInside" id="FcV-fd-m9a"/>
+                                                </connections>
                                             </button>
                                         </subviews>
                                     </stackView>
@@ -136,7 +142,8 @@
                     <connections>
                         <outlet property="gameOverLabel" destination="7Y9-6Z-8KE" id="THO-kV-Pea"/>
                         <outlet property="openCardsCanvas" destination="TMH-ES-Haf" id="5jk-jf-Q7a"/>
-                        <outlet property="userScoreLabel" destination="mbR-aF-Tpf" id="u8w-YX-kEh"/>
+                        <outlet property="playerOneScoreLabel" destination="mbR-aF-Tpf" id="J7Y-RI-5fh"/>
+                        <outlet property="playerTwoScoreLabel" destination="mbR-aF-Tpf" id="u8w-YX-kEh"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
