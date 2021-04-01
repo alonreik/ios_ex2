@@ -98,19 +98,7 @@ class ViewController: UIViewController {
     /* -------
      Methods
      -------- */
-    
-    //
-    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-        super.viewWillTransition(to: size, with: coordinator)
-        
-        print(UIDevice.current.orientation.isPortrait)
-        
-        openCardsCanvas.layoutSubviews()
-        openCardsCanvas.setNeedsLayout()
-        openCardsCanvas.setNeedsDisplay()
-    }
-    
-    
+
     //
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
@@ -122,6 +110,8 @@ class ViewController: UIViewController {
             addGesturesRecognizers()
         
             isJustInitiated = false
+        } else {
+            placeOpenCardsViewsOnGrid()
         }
     }
     
