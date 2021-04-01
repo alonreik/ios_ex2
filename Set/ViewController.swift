@@ -70,6 +70,8 @@ class ViewController: UIViewController {
     // (if the enemy has higher score, it smiles. otherwise it weeps).
     @IBOutlet weak var iphoneStateLabel: UILabel!
     
+    @IBOutlet weak var gameOverLabel: UILabel!
+    
     @IBOutlet var cardButtons: [UIButton]!
 
     var game: SetGame = SetGame()
@@ -108,7 +110,7 @@ class ViewController: UIViewController {
             placeOpenCardsViewsOnGrid()
             
             addGesturesRecognizers()
-        
+            gameOverLabel.isHidden = true
             isJustInitiated = false
         } else {
             placeOpenCardsViewsOnGrid()
@@ -164,6 +166,11 @@ class ViewController: UIViewController {
                 }
             }
         }
+        
+        if game.isGameOver {
+            openCardsCanvas.isHidden = true
+            gameOverLabel.isHidden = false
+        }
     }
     
     // The sole puprpose of this (overriden) function is to invalidate the timers to prevent reference cycles in memory.
@@ -179,8 +186,10 @@ class ViewController: UIViewController {
     @IBAction func newGamePressed(_ sender: UIButton) {
         game = SetGame()
         matchesCounter = 0
+        openCardsCanvas.isHidden = false
+        gameOverLabel.isHidden = true
         placeOpenCardsViewsOnGrid()
-        
+        updateViewFromModel()
     }
     
     @IBAction func dealButtonPressed(_ sender: UIButton) {
