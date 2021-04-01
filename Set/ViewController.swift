@@ -16,11 +16,13 @@ class ViewController: UIViewController {
     var playerOneScore = 0
     var playerOneTimer: Timer?
     var isPlayerOneTurn = false
+    @IBOutlet weak var playerOneScoreLabel: UILabel!
     
     var playerTwoScore = 0
     var playerTwoTimer: Timer?
     var isPlayerTwoTurn = false
-        
+    @IBOutlet weak var playerTwoScoreLabel: UILabel!
+
     /* -------
      Constants
      -------- */
@@ -50,10 +52,6 @@ class ViewController: UIViewController {
     // A view that displays the SetCardViews of the setCards included in openCards.
     @IBOutlet weak var openCardsCanvas: UIView!
     
-    @IBOutlet weak var playerOneScoreLabel: UILabel!
-
-    @IBOutlet weak var playerTwoScoreLabel: UILabel!
-        
     @IBOutlet weak var gameOverLabel: UILabel!
     
     var game: SetGame = SetGame()
@@ -88,6 +86,13 @@ class ViewController: UIViewController {
             addGesturesRecognizers()
             gameOverLabel.isHidden = true
             isJustInitiated = false
+            
+            playerOneScoreLabel.layer.borderColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 0)
+            playerOneScoreLabel.layer.borderWidth = 2.0
+            
+            playerTwoScoreLabel.layer.borderColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 0)
+            playerTwoScoreLabel.layer.borderWidth = 2.0
+ 
         } else {
             placeOpenCardsViewsOnGrid()
         }
@@ -109,6 +114,10 @@ class ViewController: UIViewController {
         matchesCounter = 0
         openCardsCanvas.isHidden = false
         gameOverLabel.isHidden = true
+        
+        playerOneScoreLabel.layer.borderColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 0)
+        playerTwoScoreLabel.layer.borderColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 0)
+        
         updateViewFromModel()
     }
     
@@ -135,10 +144,12 @@ class ViewController: UIViewController {
     //
     @IBAction func playerOneButtonPressed(_ sender: Any) {
         playerButtonPressed(playerNumber: 1)
+        updateViewFromModel()
     }
     
     @IBAction func playerTwoButtonPressed(_ sender: Any) {
         playerButtonPressed(playerNumber: 2)
+        updateViewFromModel()
     }
     
     //
@@ -152,15 +163,10 @@ class ViewController: UIViewController {
         case 1:
             isPlayerOneTurn = true
             playerOneTimer = Timer.scheduledTimer(timeInterval: 5.0, target: self, selector: #selector(endTurn), userInfo: nil, repeats: false)
-            playerOneScoreLabel.layer.borderWidth = 2.0
-            playerOneScoreLabel.layer.borderColor = #colorLiteral(red: 0.9607843161, green: 0.7058823705, blue: 0.200000003, alpha: 1)
             
         default: // if playernumber == 2
             isPlayerTwoTurn = true
-            
             playerTwoTimer = Timer.scheduledTimer(timeInterval: 5.0, target: self, selector: #selector(endTurn), userInfo: nil, repeats: false)
-            playerTwoScoreLabel.layer.borderWidth = 2.0
-            playerTwoScoreLabel.layer.borderColor = #colorLiteral(red: 0.9607843161, green: 0.7058823705, blue: 0.200000003, alpha: 1)
         }
     }
     
@@ -168,17 +174,19 @@ class ViewController: UIViewController {
     @objc private func endTurn() {
         // todo - delete
         print("a player's turn is over")
+        game.resetCardSelection()
+        
         if isPlayerOneTurn {
             isPlayerOneTurn = false
             playerOneScore -= 3
             playerOneTimer?.invalidate()
-            playerOneScoreLabel.layer.borderColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 0)
+            
         } else {
             isPlayerTwoTurn = false
             playerTwoScore -= 3
             playerTwoTimer?.invalidate()
-            playerTwoScoreLabel.layer.borderColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 0)
         }
+        updateViewFromModel()
     }
     
     /* ---------------
@@ -188,6 +196,12 @@ class ViewController: UIViewController {
     // This function is called every time a user taps on a setCardView. It updates the model
     // that a card was selected and it updates the view accordingly.
     @objc private func cardTapHandler(recognizer: UITapGestureRecognizer) {
+        
+        guard isPlayerOneTurn || isPlayerTwoTurn else {
+            print("Tried to touch a card witout taking the turn (by pressing player 1 or player 2)")
+            return
+        }
+        
         // make sure that the recognizer finished recognizing the tap,
         // and then downcast the view that recognized the tap because we know its a SetCardView
         guard recognizer.state == .ended, let cardView = recognizer.view as? SetCardView else {
@@ -246,10 +260,13 @@ class ViewController: UIViewController {
         placeOpenCardsViewsOnGrid()
 
         // Update labels
-        playerTwoScoreLabel.text = "Score: \(game.score)"
-//        iphoneScoreLabel.text = "Score: \(game.enemyScore)"
-//        iphoneStateLabel.text = (game.score >= game.enemyScore) ? enemyLosingTitle : enemyWinningTitle
+        playerOneScoreLabel.text = "Score: \(playerOneScore)"
+        playerTwoScoreLabel.text = "Score: \(playerTwoScore)"
         
+        playerOneScoreLabel.layer.borderColor = isPlayerOneTurn ? #colorLiteral(red: 0.9607843161, green: 0.7058823705, blue: 0.200000003, alpha: 1): #colorLiteral(red: 0, green: 0, blue: 0, alpha: 0)
+        playerTwoScoreLabel.layer.borderColor = isPlayerTwoTurn ? #colorLiteral(red: 0.9607843161, green: 0.7058823705, blue: 0.200000003, alpha: 1): #colorLiteral(red: 0, green: 0, blue: 0, alpha: 0)
+
+
         // Go over every subview of openCardsCanvas, and set is border color (orange\green for selected\matched cards)
         for view in openCardsCanvas.subviews {
             if let index = cardsToViewsMapper.values.firstIndex(of: view) {

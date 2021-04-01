@@ -143,7 +143,7 @@
                         <outlet property="gameOverLabel" destination="7Y9-6Z-8KE" id="THO-kV-Pea"/>
                         <outlet property="openCardsCanvas" destination="TMH-ES-Haf" id="5jk-jf-Q7a"/>
                         <outlet property="playerOneScoreLabel" destination="mbR-aF-Tpf" id="J7Y-RI-5fh"/>
-                        <outlet property="playerTwoScoreLabel" destination="mbR-aF-Tpf" id="u8w-YX-kEh"/>
+                        <outlet property="playerTwoScoreLabel" destination="AT2-uM-Z67" id="re8-La-i4Q"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
