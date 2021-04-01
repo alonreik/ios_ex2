@@ -15,9 +15,11 @@ class ViewController: UIViewController {
     
     var playerOneScore = 0
     var playerOneTimer: Timer?
+    var isPlayerOneTurn = false
     
     var playerTwoScore = 0
     var playerTwoTimer: Timer?
+    var isPlayerTwoTurn = false
         
     /* -------
      Constants
@@ -130,15 +132,54 @@ class ViewController: UIViewController {
         updateViewFromModel()
     }
     
-    
+    //
     @IBAction func playerOneButtonPressed(_ sender: Any) {
-        //
+        playerButtonPressed(playerNumber: 1)
     }
     
     @IBAction func playerTwoButtonPressed(_ sender: Any) {
-        //
+        playerButtonPressed(playerNumber: 2)
     }
     
+    //
+    private func playerButtonPressed(playerNumber: Int) {
+        // if this is already one of the players' turns, ignore
+        if isPlayerOneTurn || isPlayerTwoTurn {
+            return
+        }
+        
+        switch playerNumber {
+        case 1:
+            isPlayerOneTurn = true
+            playerOneTimer = Timer.scheduledTimer(timeInterval: 5.0, target: self, selector: #selector(endTurn), userInfo: nil, repeats: false)
+            playerOneScoreLabel.layer.borderWidth = 2.0
+            playerOneScoreLabel.layer.borderColor = #colorLiteral(red: 0.9607843161, green: 0.7058823705, blue: 0.200000003, alpha: 1)
+            
+        default: // if playernumber == 2
+            isPlayerTwoTurn = true
+            
+            playerTwoTimer = Timer.scheduledTimer(timeInterval: 5.0, target: self, selector: #selector(endTurn), userInfo: nil, repeats: false)
+            playerTwoScoreLabel.layer.borderWidth = 2.0
+            playerTwoScoreLabel.layer.borderColor = #colorLiteral(red: 0.9607843161, green: 0.7058823705, blue: 0.200000003, alpha: 1)
+        }
+    }
+    
+    //
+    @objc private func endTurn() {
+        // todo - delete
+        print("a player's turn is over")
+        if isPlayerOneTurn {
+            isPlayerOneTurn = false
+            playerOneScore -= 3
+            playerOneTimer?.invalidate()
+            playerOneScoreLabel.layer.borderColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 0)
+        } else {
+            isPlayerTwoTurn = false
+            playerTwoScore -= 3
+            playerTwoTimer?.invalidate()
+            playerTwoScoreLabel.layer.borderColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 0)
+        }
+    }
     
     /* ---------------
      Gesture Handlers
@@ -192,19 +233,7 @@ class ViewController: UIViewController {
      Private Methods for Timers
      -------------------------- */
     
-    // Every time the gameTimer run out of time, the potential score for a match decreases.
-    @objc private func updateUserScoreForTime() {
-        if game.baseScoreFactor > 0 {
-            game.baseScoreFactor -= scoreTimePenalty
-        }
-    }
-    
-    // Every time the enemyTimer run out of time, the computer marks a match.
-    @objc private func makeEnemyTurn() {
-        if isAMatchMarked {return} // ignore (if a match is marked, the game is paused).
-        
-        game.makeEnemyTurn()
-    }
+
     
     /* -------
      Private Methods
