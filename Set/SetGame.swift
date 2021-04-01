@@ -16,7 +16,7 @@ struct SetGame
 
     let initialBaseScoreFactor = 240
     let initialNumberOfOpenCards = 12
-    let falseMatchPenalty = 3
+    let falseMatchPenalty = 5
     
     /* -------
      Properties
@@ -89,9 +89,9 @@ struct SetGame
                 score += scoreUpdate
                 matches.append(selectedCards)
             }
-            else { // todo - magic number
+            else {
                 // if the user chose a 3rd card which doesn't form a set
-                score -= 5 // the user is penalized with 5 points for unsuccessful matches.
+                score -= falseMatchPenalty // the user is penalized with 5 points for unsuccessful matches.
             }
         }
         

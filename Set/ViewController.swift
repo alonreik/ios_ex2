@@ -5,8 +5,6 @@
 //  Created by Alon Reik on 15/03/2021.
 //
 
-
-// todo - should write traitCollectionDidChange() function?
 import UIKit
 
 class ViewController: UIViewController {
@@ -43,6 +41,9 @@ class ViewController: UIViewController {
     
     // Selected cards in the game are highlighted on the screen by having a border.
     let borderWidthForSelectedCards: CGFloat = 3.0
+    
+    //
+    let ratioForCardViews = CGFloat(5.0/8.0)
     
     /* --------------------
      Properties (variables)
@@ -133,8 +134,7 @@ class ViewController: UIViewController {
     private func placeOpenCardsViewsOnGrid() {
         updateOpenCardsViews() // asures openCardsCanvas.subviews only include views of cards in openCards
                 
-        // todo - magic number
-        var grid = Grid(layout: .aspectRatio(5.0/8.0), frame: openCardsCanvas.bounds)
+        var grid = Grid(layout: .aspectRatio(ratioForCardViews), frame: openCardsCanvas.bounds)
         grid.cellCount = game.openCards.count
         
         // Go over all open cards, place and set their view on the grid.
@@ -230,7 +230,8 @@ class ViewController: UIViewController {
     */
     @objc private func cardTapHandler(recognizer: UITapGestureRecognizer) {
         
-        // todo - document and make sure i know what as? do.
+        // make sure that the recognizer finished recognizing the tap,
+        // and then downcast the view that recognized the tap because we know its a SetCardView
         guard recognizer.state == .ended, let cardView = recognizer.view as? SetCardView else {
             return
         }
@@ -262,7 +263,6 @@ class ViewController: UIViewController {
         updateViewFromModel()
         placeOpenCardsViewsOnGrid()
     }
-    
     
     // Every time the gameTimer run out of time, the potential score for a match decreases.
     @objc private func updateUserScoreForTime() {
@@ -363,25 +363,22 @@ class ViewController: UIViewController {
         // Different filling types for cards get different alpha value for coloring.
         let alpha = (card.filling == SetCard.Filling.typeThree) ? alphaForStripedShapes: alphaForFullShapes
 
-        if let color = colorDict[card.color] {
-            let attributes: [NSAttributedString.Key: Any] = [
-                // different filling types for cards get different .strokeWidth values.
-                .strokeWidth: (card.filling == SetCard.Filling.typeTwo) ? strokeWidthForOutlineShapes : strokeWidthForFilledShapes,
-                .strokeColor: color,
-                .foregroundColor: color.withAlphaComponent(alpha)
-                ]
-            if let shape = shapesDict[card.shapeType] {
-                var string = ""
-                for _ in 0..<card.shapesNum.rawValue {
-                    string += shape + " "
-                }
-                return NSAttributedString(string: string, attributes: attributes)
-            }
+        guard let color = colorDict[card.color], let shape = shapesDict[card.shapeType] else {
+            print("Encountered an error, the given setCard instance probably was not configured correctly")
+            return nil
         }
-        // todo - inspect below:
-        // next line shouldn't be reached because we assert that all cards have valid "color" property.
-        // but it was required by the compiler.
-        return NSAttributedString(string: "")
+        
+        let attributes: [NSAttributedString.Key: Any] = [
+            // different filling types for cards get different .strokeWidth values.
+            .strokeWidth: (card.filling == SetCard.Filling.typeTwo) ? strokeWidthForOutlineShapes : strokeWidthForFilledShapes,
+            .strokeColor: color,
+            .foregroundColor: color.withAlphaComponent(alpha)
+            ]
+        var string = ""
+        for _ in 0..<card.shapesNum.rawValue {
+            string += shape + " "
+        }
+        return NSAttributedString(string: string, attributes: attributes)
     }
     
     // Inserts the given SetCard object to the first index of cardButtonsMapper that its value is nil.
@@ -464,10 +461,10 @@ class ViewController: UIViewController {
     // Makes sure that the cardView of every open card in the game is a subview of openCardsCanvas
     private func updateOpenCardsViews() {
         
-        // remove views of cards that were already matched (and aren't in openCards anymore)
+        // remove from the canvas views of cards that were already matched (and aren't in openCards anymore)
         for view in openCardsCanvas.subviews {
             guard let index = cardsToViewsMapper.values.firstIndex(of: view) else {
-                print("todo - some informative message")
+                print("Encountered an error.")
                 return
             }
             let card = cardsToViewsMapper.keys[index]
