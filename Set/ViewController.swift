@@ -98,12 +98,6 @@ class ViewController: UIViewController {
         }
     }
     
-    // The sole puprpose of this (overriden) function is to invalidate the timers to prevent reference cycles in memory.
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-//        stopTimers()
-    }
-    
     /* -------------------
      Functions for Buttons
      ---------------------*/
@@ -111,6 +105,8 @@ class ViewController: UIViewController {
     @IBAction func newGamePressed(_ sender: UIButton) {
         // Reset the relevant propeties for a new game:
         game = SetGame()
+        playerOneScore = 0
+        playerTwoScore = 0
         matchesCounter = 0
         openCardsCanvas.isHidden = false
         gameOverLabel.isHidden = true
@@ -125,9 +121,11 @@ class ViewController: UIViewController {
         preformThreeCardsDealing()
     }
 
-    // This function currently doesn't penalize with points reduction (meaning, it rewards the player for a found match).
+    // Pressing the cheatButton on a player's turn automatically finds a match and ends the turn
+    // (no scores rewards or penalties).
     @IBAction func cheatButtonPressed(_ sender: UIButton) {
         guard !isAMatchMarked else {return} // if a match is marked, the game is paused, and we can ignore the pressing.
+        
         game.resetCardSelection()
         if let match = game.findMatchInOpenCards() {
             for i in 0..<match.count {
@@ -138,6 +136,7 @@ class ViewController: UIViewController {
             preformThreeCardsDealing()
             cheatButtonPressed(sender)
         }
+        stopTimer()
         updateViewFromModel()
     }
     
@@ -158,33 +157,26 @@ class ViewController: UIViewController {
         if isPlayerOneTurn || isPlayerTwoTurn {
             return
         }
-        
         switch playerNumber {
         case 1:
             isPlayerOneTurn = true
-            playerOneTimer = Timer.scheduledTimer(timeInterval: 5.0, target: self, selector: #selector(endTurn), userInfo: nil, repeats: false)
+            playerOneTimer = Timer.scheduledTimer(timeInterval: 5.0, target: self, selector: #selector(TurnTimeElapsed), userInfo: nil, repeats: false)
             
         default: // if playernumber == 2
             isPlayerTwoTurn = true
-            playerTwoTimer = Timer.scheduledTimer(timeInterval: 5.0, target: self, selector: #selector(endTurn), userInfo: nil, repeats: false)
+            playerTwoTimer = Timer.scheduledTimer(timeInterval: 5.0, target: self, selector: #selector(TurnTimeElapsed), userInfo: nil, repeats: false)
         }
     }
     
     //
-    @objc private func endTurn() {
-        // todo - delete
-        print("a player's turn is over")
+    @objc private func TurnTimeElapsed() {
         game.resetCardSelection()
+        stopTimer()
         
         if isPlayerOneTurn {
-            isPlayerOneTurn = false
             playerOneScore -= 3
-            playerOneTimer?.invalidate()
-            
         } else {
-            isPlayerTwoTurn = false
             playerTwoScore -= 3
-            playerTwoTimer?.invalidate()
         }
         updateViewFromModel()
     }
@@ -197,7 +189,7 @@ class ViewController: UIViewController {
     // that a card was selected and it updates the view accordingly.
     @objc private func cardTapHandler(recognizer: UITapGestureRecognizer) {
         
-        guard isPlayerOneTurn || isPlayerTwoTurn else {
+        if !isPlayerOneTurn && !isPlayerTwoTurn { // if this is already one of the players' turns, ignore
             print("Tried to touch a card witout taking the turn (by pressing player 1 or player 2)")
             return
         }
@@ -220,9 +212,34 @@ class ViewController: UIViewController {
                 }
             } else {
                 game.chooseCard(chosenCard: card)
+                if let lastMatch = game.matches.last {
+                    if game.selectedCards == lastMatch {
+                        updateScoreForMatch()
+                        stopTimer()
+                    }
+                }
             }
         }
         updateViewFromModel()
+    }
+    
+    private func stopTimer() {
+        if isPlayerOneTurn {
+            playerOneTimer?.invalidate()
+            isPlayerOneTurn = false
+        } else {
+            playerTwoTimer?.invalidate()
+            isPlayerTwoTurn = false
+        }
+    }
+    
+    
+    private func updateScoreForMatch() {
+        if isPlayerOneTurn {
+            playerOneScore += 5
+        } else {
+            playerTwoScore += 5
+        }
     }
     
     // This function is called every time the user makes a swipe down gesture.
@@ -263,9 +280,8 @@ class ViewController: UIViewController {
         playerOneScoreLabel.text = "Score: \(playerOneScore)"
         playerTwoScoreLabel.text = "Score: \(playerTwoScore)"
         
-        playerOneScoreLabel.layer.borderColor = isPlayerOneTurn ? #colorLiteral(red: 0.9607843161, green: 0.7058823705, blue: 0.200000003, alpha: 1): #colorLiteral(red: 0, green: 0, blue: 0, alpha: 0)
-        playerTwoScoreLabel.layer.borderColor = isPlayerTwoTurn ? #colorLiteral(red: 0.9607843161, green: 0.7058823705, blue: 0.200000003, alpha: 1): #colorLiteral(red: 0, green: 0, blue: 0, alpha: 0)
-
+        playerOneScoreLabel.layer.borderColor = isPlayerOneTurn ? #colorLiteral(red: 0.9254902005, green: 0.2352941185, blue: 0.1019607857, alpha: 1): #colorLiteral(red: 0, green: 0, blue: 0, alpha: 0)
+        playerTwoScoreLabel.layer.borderColor = isPlayerTwoTurn ? #colorLiteral(red: 0.2588235438, green: 0.7568627596, blue: 0.9686274529, alpha: 1): #colorLiteral(red: 0, green: 0, blue: 0, alpha: 0)
 
         // Go over every subview of openCardsCanvas, and set is border color (orange\green for selected\matched cards)
         for view in openCardsCanvas.subviews {
@@ -314,22 +330,6 @@ class ViewController: UIViewController {
         let rotationRecognizer = UIRotationGestureRecognizer(target: self, action: #selector(rotationHandler(recognizer: )))
         openCardsCanvas.superview?.addGestureRecognizer(rotationRecognizer)
     }
-    
-//    // Invalidate timer instances.
-//    private func stopTimers() {
-//        gameTimer?.invalidate()
-//        enemyTimer?.invalidate()
-//    }
-//
-    // Start timers and reset the Base for score (which decreases as the timer proceeds).
-//    private func startTimers() {
-//        gameTimer = Timer.scheduledTimer(timeInterval: timeForPlayerToFindSet, target: self, selector: #selector(updateUserScoreForTime), userInfo: nil, repeats: true)
-//
-//        let enemyTime = Double.random(in: minWaitingDurationForEnemyTurn..<maxWaitingDurationForEnemyTurn)
-//        enemyTimer = Timer.scheduledTimer(timeInterval: enemyTime, target: self, selector: #selector(makeEnemyTurn), userInfo: nil, repeats: true)
-//        game.baseScoreFactor = game.initialBaseScoreFactor
-//    }
-    
     
     // Creates and returns a custom SetCardView for the provided setCard object.
     private func getCardView(of card: SetCard) -> SetCardView {
@@ -433,17 +433,16 @@ class ViewController: UIViewController {
     // Make all necessary adjustments and setups in the model to display 3 new SetCardViews on the screen.
     // (and then update the view from the model)
     private func preformThreeCardsDealing() {
+        if isPlayerOneTurn || isPlayerTwoTurn {
+            print("Try to deal again when the turn time is over ")
+            return
+        }
+        
         if isAMatchMarked {
             matchesCounter += 1
             game.replaceMatchWithCardsFromDeck() // get new cards from the deck to replace the match
         }
         else if !game.deck.isEmpty {
-            // Check if need tp penalize
-            if game.findMatchInOpenCards() != nil {
-                // if the user pressed "deal" but there was a match in openCards
-                game.score -= game.unRequiredDrawPenalty
-            }
-            
             game.resetCardSelection()
             game.popThreeCardsFromDeck()
         }
