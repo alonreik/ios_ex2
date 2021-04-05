@@ -59,16 +59,18 @@ class ConcentrationViewController: UIViewController {
                   GameTheme(emojis: ["🏳️‍🌈", "🏳️", "🏴","🏴‍☠️","🏁","🇧🇿","🇫🇯","🇹🇭","🇮🇳"], cardsColor: #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1), bgColor: #colorLiteral(red: 0.2588235438, green: 0.7568627596, blue: 0.9686274529, alpha: 1))
     ]
     
-    var gameTheme: GameTheme?
+    var gameTheme: GameTheme? {
+        didSet {
+            if let gameTheme = self.gameTheme {
+                emoji.removeAll()
+                emojies = gameTheme.emojies
+                updateViewFromModel()
+            }
+        }
+    }
     
     // Resets all Model and View properties
     func startNewGame() {
-        // choose a new random theme.
-//        let themeIndex = Int.random(in: 0..<themes.count)
-        
-        // todo - alon changed here
-//        gameTheme = themes[themeIndex]
-        
         if let currentTheme = gameTheme {
             background.backgroundColor = currentTheme.bgColor
             emojies = currentTheme.emojies
@@ -85,9 +87,11 @@ class ConcentrationViewController: UIViewController {
     }
 
     func updateViewFromModel() {
-        guard let gameTheme = self.gameTheme else {
+        guard let gameTheme = self.gameTheme, let background = self.background else {
             return
         }
+        background.backgroundColor = gameTheme.bgColor
+        
         scoreLabel.text = "Score: \(game.score)"
         flipCountLabel.text = "Flips: \(game.flipCount)"
         for index in cardButtons.indices { // making sure every card is viewed correctly
