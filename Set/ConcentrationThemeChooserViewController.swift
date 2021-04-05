@@ -14,42 +14,24 @@ class ConcentrationThemeChooserViewController: UIViewController {
     // their indices correspond to the indices of the themes array in ConcentrationViewController.swift.
     let themes = ["Halloween", "Animals", "Sports", "Food", "Faces", "Flags"]
     
-    // The nearest ancestor in the view controller hierarchy that is a split view controller.
-    // (could be nil if there are no splitViews in the hierarchy.
     private var splitViewDetailConcentrationViewController: ConcentrationViewController? {
-        // if a splitViewController is found, return the "detail" (viewControllers.last) as a ConcentrationViewController
         return splitViewController?.viewControllers.last as? ConcentrationViewController
-    }
-    
-    // The nearest ancestor in the view controller hierarchy that is a split view controller.
-    // (could be nil if there are no splitViews in the hierarchy.
-    private var splitViewMasterConcentrationViewController: ConcentrationThemeChooserViewController? {
-        // if a splitViewController is found, return the "detail" (viewControllers.last) as a ConcentrationViewController
-        return splitViewController?.viewControllers.first as? ConcentrationThemeChooserViewController
     }
     
     private var lastSeguedToConcentartionViewController: ConcentrationViewController?
     
     //
     @IBAction func changeTheme(_ sender: Any) {
-        
-        // Search the hirerachy for a splitView controller that its detail is a ConcentrationViewController:
         if let concentrationVC = splitViewDetailConcentrationViewController {
-            // Assuming that sender is a button on the master view (in the splitView), get the
-            // title of the button and use it to set\change the gameTheme for Concentration.
-            // (without creating a new MVC)
             if let themeName = (sender as? UIButton)?.currentTitle, let themeIndex = themes.firstIndex(of: themeName) {
                 concentrationVC.gameTheme = concentrationVC.themes[themeIndex]
             }
-        }
-//        else if let concentrationVC = lastSeguedToConcentartionViewController {
-//            if let themeName = (sender as? UIButton)?.currentTitle, let themeIndex = themes.firstIndex(of: themeName) {
-//                concentrationVC.gameTheme = concentrationVC.themes[themeIndex]
-//            }
-//            navigationController?.pushViewController(concentrationVC, animated: true)
-//        }
-         else {
-            // if the hirerachy didn't include a splitView controller that its detail is a ConcentrationViewController, create a new MVC:
+        } else if let concentrationVC = lastSeguedToConcentartionViewController {
+            if let themeName = (sender as? UIButton)?.currentTitle, let themeIndex = themes.firstIndex(of: themeName) {
+                concentrationVC.gameTheme = concentrationVC.themes[themeIndex]
+            }
+            navigationController?.pushViewController(concentrationVC, animated: true)
+        } else {
             performSegue(withIdentifier: "Choose Theme", sender: sender)
         }
     }
@@ -61,7 +43,7 @@ class ConcentrationThemeChooserViewController: UIViewController {
                 if let concentrationVC = segue.destination as? ConcentrationViewController {
                     // Set the gameTheme of the destination-viewController according to the currently pressed UIButton
                     concentrationVC.gameTheme = concentrationVC.themes[themeIndex]
-//                    lastSeguedToConcentartionViewController = concentrationVC
+                    lastSeguedToConcentartionViewController = concentrationVC
                 }
             }
         }

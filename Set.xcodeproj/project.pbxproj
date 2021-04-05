@@ -72,7 +72,10 @@
 		9434415C25FF41C10015C4D5 /* Set */ = {
 			isa = PBXGroup;
 			children = (
-				94959DA5261AE97600C3C4C4 /* Concentration */,
+				94959DA7261AE9A200C3C4C4 /* ConcentrationThemeChooserViewController.swift */,
+				94959DA8261AE9A200C3C4C4 /* Card.swift */,
+				94959DA9261AE9A200C3C4C4 /* Concentration.swift */,
+				94959DA6261AE9A200C3C4C4 /* ConcentrationViewController.swift */,
 				9434417325FF41F50015C4D5 /* Supporting Files */,
 				9434416125FF41C10015C4D5 /* ViewController.swift */,
 				9434417525FF4F230015C4D5 /* SetCard.swift */,
@@ -94,17 +97,6 @@
 				9434416825FF41C20015C4D5 /* LaunchScreen.storyboard */,
 			);
 			path = "Supporting Files";
-			sourceTree = "<group>";
-		};
-		94959DA5261AE97600C3C4C4 /* Concentration */ = {
-			isa = PBXGroup;
-			children = (
-				94959DA7261AE9A200C3C4C4 /* ConcentrationThemeChooserViewController.swift */,
-				94959DA8261AE9A200C3C4C4 /* Card.swift */,
-				94959DA9261AE9A200C3C4C4 /* Concentration.swift */,
-				94959DA6261AE9A200C3C4C4 /* ConcentrationViewController.swift */,
-			);
-			path = Concentration;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
