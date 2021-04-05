@@ -159,7 +159,7 @@
                                                 <fontDescription key="fontDescription" type="system" pointSize="35"/>
                                                 <state key="normal" title="Halloween"/>
                                                 <connections>
-                                                    <segue destination="ZTA-G6-bty" kind="showDetail" identifier="Choose Theme" id="7dm-bH-q0p"/>
+                                                    <action selector="changeTheme:" destination="cEq-1E-2aw" eventType="touchUpInside" id="7uR-CA-q1h"/>
                                                 </connections>
                                             </button>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="NwJ-bF-QyP">
@@ -167,7 +167,7 @@
                                                 <fontDescription key="fontDescription" type="system" pointSize="35"/>
                                                 <state key="normal" title="Animals"/>
                                                 <connections>
-                                                    <segue destination="ZTA-G6-bty" kind="showDetail" identifier="Choose Theme" id="qbW-zZ-JW7"/>
+                                                    <action selector="changeTheme:" destination="cEq-1E-2aw" eventType="touchUpInside" id="12l-2X-HuS"/>
                                                 </connections>
                                             </button>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Umw-z8-tXB">
@@ -175,7 +175,7 @@
                                                 <fontDescription key="fontDescription" type="system" pointSize="35"/>
                                                 <state key="normal" title="Sports"/>
                                                 <connections>
-                                                    <segue destination="ZTA-G6-bty" kind="showDetail" identifier="Choose Theme" id="gnv-TK-HfA"/>
+                                                    <action selector="changeTheme:" destination="cEq-1E-2aw" eventType="touchUpInside" id="fMd-Rr-Z1c"/>
                                                 </connections>
                                             </button>
                                         </subviews>
@@ -188,7 +188,7 @@
                                                 <fontDescription key="fontDescription" type="system" pointSize="35"/>
                                                 <state key="normal" title="Food"/>
                                                 <connections>
-                                                    <segue destination="ZTA-G6-bty" kind="showDetail" identifier="Choose Theme" id="4ti-kZ-lwa"/>
+                                                    <action selector="changeTheme:" destination="cEq-1E-2aw" eventType="touchUpInside" id="OxA-T1-AJo"/>
                                                 </connections>
                                             </button>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rCZ-Wg-enw">
@@ -196,7 +196,7 @@
                                                 <fontDescription key="fontDescription" type="system" pointSize="35"/>
                                                 <state key="normal" title="Faces"/>
                                                 <connections>
-                                                    <segue destination="ZTA-G6-bty" kind="showDetail" identifier="Choose Theme" id="4La-j8-koy"/>
+                                                    <action selector="changeTheme:" destination="cEq-1E-2aw" eventType="touchUpInside" id="WKj-NY-Axm"/>
                                                 </connections>
                                             </button>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="oqe-ZJ-vKm">
@@ -204,7 +204,7 @@
                                                 <fontDescription key="fontDescription" type="system" pointSize="35"/>
                                                 <state key="normal" title="Flags"/>
                                                 <connections>
-                                                    <segue destination="ZTA-G6-bty" kind="showDetail" identifier="Choose Theme" id="f1a-aL-CnU"/>
+                                                    <action selector="changeTheme:" destination="cEq-1E-2aw" eventType="touchUpInside" id="Mfz-zz-GE2"/>
                                                 </connections>
                                             </button>
                                         </subviews>
@@ -224,6 +224,9 @@
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="eQE-qh-eew"/>
+                    <connections>
+                        <segue destination="ZTA-G6-bty" kind="showDetail" identifier="Choose Theme" id="Qd0-TF-uEh"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Nz8-Au-5ph" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -508,7 +511,7 @@
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="U9e-57-rfh"/>
+        <segue reference="Qd0-TF-uEh"/>
     </inferredMetricsTieBreakers>
     <resources>
         <namedColor name="AccentColor">

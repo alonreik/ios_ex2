@@ -99,9 +99,9 @@
 		94959DA5261AE97600C3C4C4 /* Concentration */ = {
 			isa = PBXGroup;
 			children = (
+				94959DA7261AE9A200C3C4C4 /* ConcentrationThemeChooserViewController.swift */,
 				94959DA8261AE9A200C3C4C4 /* Card.swift */,
 				94959DA9261AE9A200C3C4C4 /* Concentration.swift */,
-				94959DA7261AE9A200C3C4C4 /* ConcentrationThemeChooserViewController.swift */,
 				94959DA6261AE9A200C3C4C4 /* ConcentrationViewController.swift */,
 			);
 			path = Concentration;
