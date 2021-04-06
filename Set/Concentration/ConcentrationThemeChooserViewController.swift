@@ -86,6 +86,7 @@ class ConcentrationThemeChooserViewController: UIViewController, UISplitViewCont
     // In this case, we set the delegate of the splitViewController that includes self to be self. This way, the downCasting
     // preformed in splitViewController (next function) will work correctly.
     override func awakeFromNib() {
+        super.awakeFromNib()
         splitViewController?.delegate = self
     }
     
