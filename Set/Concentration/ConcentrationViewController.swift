@@ -22,12 +22,6 @@ class ConcentrationViewController: UIViewController {
         gameTimer?.invalidate()
     }
     
-//    override func viewDidLayoutSubviews() {
-//        for button in cardButtons {
-//            button.titleLabel?.adjustsFontForContentSizeCategory = true
-//        }
-//    }
-    
     @objc func updateScoreForTime() {
         game.score -= 1
     }
