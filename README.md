@@ -1,24 +1,15 @@
-# ios_ex2
-Set (game). Second exercise in ios course. 
-
-Definition: "live play" - Every situation in the game where a match\set isn't specifically marked on the screen. 
+# ios_ex3
+Set (game). Third exercise in ios course. 
 
 Notes: 
-1. As soon as the app is initiated, the game starts a "live play", and the enemy player ("the iphone") "starts to look for matches". 
-1. If a match\set is specifically marked on the screen, the game is considered to be paused. 
 
-Scoring "mechanism": 
-
-  1. The user\player is rewarded with points for every match s.he founds:
-      a. The less open cards are in the game, the more points the user will get for a match (and vice versa). 
-      b. every 10 seconds of "live play" that goes by without the user selecting a match, the reward for a match decreases by a point 
-         (approximately; This operation is handled by a var called "baseForScore"). 
+1. The app currently only support a game of two (human) players.
+2. The set "board" (openCardCanvas) is "freezed\paused" until one of the players claim its turn by pressing its appropiate button.
+  a. Players should press their buttons only when they think they recognize a match.
+  b. If one of the players pressed their button and couldn't find a match within 5 seconds, they will be penalized with 3 points. 
   
-  2. The user\player is penalized with 5 points for every unsuccessful match (especially because deselection of cards was implemented).
+3. If one of the players managed use its turn to select 3 cards that form a set\match, the game is "paused" until new cards are dealt (using the relevant button or gesture).
 
-  3. The enemy(iphone) makes a turn every 5-20 seconds (randomized).
-      a. If the enemy's turn has arrived and the player hadn't found a match yet, the enemy is rewarded with 3 points. 
+4. Each player in its own turn may use the cheat button to find a new set\match, but it will not reward them with points. 
 
-General Notes: 
-  1. Whenever the enemy's score is higher than the user's score, it is displayed with 😂 in the bottom left corner o the screen. Otherwise, it is displayed with 😢.
-  2. Every time the user presses the "new game" button, all scores and timers are being reset, and a new game of Set is launched to the screen.
+5. An informative message will be displayed at the end of each game. The message will indicate which player has won, and will suggest starting a new game.

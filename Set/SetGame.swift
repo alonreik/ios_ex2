@@ -14,27 +14,13 @@ struct SetGame
      Constants
      -------- */
 
-    let initialBaseScoreFactor = 240
     let initialNumberOfOpenCards = 12
-    let falseMatchPenalty = 3
-    
+    let falseMatchPenalty = 5
+    let unRequiredDrawPenalty = 3
+
     /* -------
      Properties
      -------- */
-    
-    // An arbitrary number utilized to score matches (update score based on matches) based on number of open cards.
-    // (The view controller also uses a timer to decreases this value if the player takes a long time to find a match).
-    lazy var baseScoreFactor = initialBaseScoreFactor
-    
-    var score = 0
-    var enemyScore = 0
-    private var scoreUpdate: Int {
-        // every time a match is found, the scoring update depends on the
-        // number of open cards. (more open card = less score)
-        mutating get {
-            return baseScoreFactor / openCards.count // (integer division)
-        }
-    }
     
     var isGameOver: Bool {
         get {
@@ -42,8 +28,8 @@ struct SetGame
         }
     }
     
-    private var deck: [SetCard] = []
     private(set) var openCards: [SetCard] = []
+    private(set) var deck: [SetCard] = []
     private(set) var selectedCards: [SetCard] = []
     private(set) var matches: [[SetCard]] = []
 
@@ -51,10 +37,10 @@ struct SetGame
     /* -------
      Initiators
      -------- */
+    
     init() {
         startGame()
     }
-    
     
     /* -------
      Methods
@@ -65,6 +51,11 @@ struct SetGame
         selectedCards.removeAll()
     }
     
+    // Shuffles the cards' order openCards.
+    mutating func shuffleOpenCards() {
+        openCards.shuffle()
+    }
+    
     /*
         If the provided card is already selected: it is diselected or ignored.
         otherwise, the provided card is added to the selected cards, and the necessary updates are preformed.
@@ -73,15 +64,13 @@ struct SetGame
         // assert that the provided SetCard is currently in the game (in openCards).
         assert(openCards.contains(chosenCard), "Set.chooseCard(currentCard): Provided this function with a reference to a card which isn't in the openCards array.")
         
-        // if chosenCard in the selected cards, remove it from selectedCards or ignore (depends of number of selectedCards):
+        // if chosenCard is in selectedCards, remove it or ignore (depends of number of selectedCards):
         if selectedCards.contains(chosenCard) {
             if selectedCards.count == 3 {return} // ignore
             else { // selectedCards.count < 3
                 selectedCards.remove(object: chosenCard)
             }
-        }
-        // if the chosen card wasn't already in selectedCards, just add it:
-        else if !selectedCards.contains(chosenCard) {
+        } else { // if the chosen card wasn't already in selectedCards, just add it:
             selectedCards.append(chosenCard)
         }
         
@@ -89,26 +78,35 @@ struct SetGame
         if selectedCards.count == 3 {
             // check for match:
             if chosenCard == getMissingCardForMatch(first: selectedCards[0], second: selectedCards[1]) {
-                score += scoreUpdate
                 matches.append(selectedCards)
             }
-            else {
-                // if the user chose a 3rd card which doesn't form a set
-                score -= 5 // the user is penalized with 5 points for unsuccessful matches.
-            }
         }
+        
         // if the current card was chosen when 3 cards were already selected
         else if selectedCards.count == 4 {
             if let lastMatch = matches.last {
                 if selectedCards.contains(other: lastMatch) {
-                    openCards.removeAll(where: {value in return selectedCards[0..<3].contains(value)})
-                    popThreeCardsFromDeck()
-                } // if the last match is not in selectedCards - do nothing
-                
-            } // in any case:
-            selectedCards.removeFirst(3) // diselect 3 already selected cards
-
-        } // else: selected cards contains 0/1/2 cards, nothing to do there
+                    replaceMatchWithCardsFromDeck()
+                }
+            }
+            selectedCards.removeFirst(3)
+        }
+    }
+    
+    // When a 4th card is selected after a match is found, new cards from the deck
+    // will replace the 3 matched cards (the new cards will get the position of the
+    // old cards in openCards)
+    mutating func replaceMatchWithCardsFromDeck() {
+        // replace matched selected cards with new cards from deck
+        for card in selectedCards[0..<3] {
+            if let index = openCards.firstIndex(of: card) {
+                if deck.count > 0 {
+                    openCards[index] = deck.removeFirst()
+                } else {
+                    openCards.remove(object: card)
+                }
+            }
+        }
     }
     
     /*
@@ -117,28 +115,10 @@ struct SetGame
         (and does nothing otherwise).
     */
     mutating func popThreeCardsFromDeck() {
-        if let lastMatch = matches.last {
-            if lastMatch == selectedCards {
-                openCards.removeAll(where: {value in return selectedCards[0..<3].contains(value)}) // closure
-                selectedCards.removeAll()
-            }
-        }
         if deck.count > 2 {
             openCards.append(contentsOf: deck.prefix(3))
             deck.removeFirst(3)
         } // else - do nothing
-    }
-    
-    
-    // Whenever called, this function forms a match (if such exists in openCards) and updates the enemy's score.
-    mutating func makeEnemyTurn() {
-        guard let match = findMatchInOpenCards() else {
-            return
-        }
-        // if openCards include 3 cards that form a match.
-        selectedCards = match
-        matches.append(selectedCards)
-        enemyScore += 3
     }
     
     /*
@@ -200,13 +180,8 @@ struct SetGame
         return resultDeck.shuffled()
     }
     
-    // Resets the SetGame's instance properties (sets scores = 0, resets deck and openCards, then open 12 cards).
+    // Resets the SetGame's instance properties (resets deck and openCards, then open 12 cards).
     private mutating func startGame() {
-        
-        // reset scores
-        enemyScore = 0
-        score = 0
-        baseScoreFactor = initialBaseScoreFactor
         
         // initiate an 81 SetCards deck
         deck = getInitialDeck()
