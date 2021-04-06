@@ -80,14 +80,13 @@ class ConcentrationViewController: UIViewController {
         if let currentTheme = gameTheme {
             background.backgroundColor = currentTheme.bgColor
             emojies = currentTheme.emojies
-            
-            emoji.removeAll() // clear previous mapping between cards and emojis
-            game.resetGame()
-            
-            // reset timer
-            gameTimer?.invalidate()
-            gameTimer = Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(updateScoreForTime), userInfo: nil, repeats: true)
-            
+            resetGameProperties()
+            updateViewFromModel()
+        } else {
+            let themeIndex = Int.random(in: 0..<themes.count)
+            gameTheme = themes[themeIndex]
+            emojies = themes[themeIndex].emojies
+            resetGameProperties()
             updateViewFromModel()
         }
     }
@@ -127,6 +126,16 @@ class ConcentrationViewController: UIViewController {
             emoji[card.identifier] = emojies.remove(at: randomIndex)
         }
         return emoji[card.identifier] ?? "?"
+    }
+    
+    // Resets the emoji dictionary, the game (model) object and the game's timer.
+    private func resetGameProperties() {
+        emoji.removeAll() // clear previous mapping between cards and emojis
+        game.resetGame()
+        
+        // reset timer
+        gameTimer?.invalidate()
+        gameTimer = Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(updateScoreForTime), userInfo: nil, repeats: true)
     }
 }
 
