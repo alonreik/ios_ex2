@@ -81,13 +81,7 @@ class ConcentrationThemeChooserViewController: UIViewController, UISplitViewCont
     /* -------
       Methods
      -------- */
-    
-    override func viewDidLayoutSubviews() {
-        print("here")
-    }
-    
-    
-    
+
     // This function is called after self has been loaded from an Interface Builder (the story board).
     // In this case, we set the delegate of the splitViewController that includes self to be self. This way, the downCasting
     // preformed in splitViewController (next function) will work correctly.
